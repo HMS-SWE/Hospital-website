@@ -39,6 +39,9 @@ public class Doctor extends User {
     @Column(name = "examination_price")
     private Float examinationPrice;
 
+    @Column(name = "consultation_price")
+    private Float consultationPrice;
+
     @OneToMany(mappedBy = "doctor", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<Schedule> schedules = new ArrayList<>();

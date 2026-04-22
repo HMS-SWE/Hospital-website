@@ -27,7 +27,10 @@ public class User extends BaseEntity {
     private Long id;
 
     @Column(nullable = false, length = 100)
-    private String name;
+    private String userName;
+
+    @Column(nullable = false, length = 100)
+    private String fullName;
 
     @Column(nullable = false, unique = true, length = 150)
     private String email;
@@ -45,9 +48,6 @@ public class User extends BaseEntity {
 
     @Column(name = "birth_date")
     private LocalDate birthDate;
-
-    @Column(length = 20)
-    private String phone;
 
     @Column(name = "phone_number", length = 20)
     private String phoneNumber;
