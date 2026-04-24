@@ -22,10 +22,6 @@ import java.time.LocalDate;
 @SuperBuilder
 public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(nullable = false, length = 100)
     private String userName;
 
@@ -54,4 +50,8 @@ public class User extends BaseEntity {
 
     @Column(length = 255)
     private String address;
+
+    @Column(name = "profile_picture_path")
+    @Builder.Default
+    private String profilePicturePath = null;
 }
