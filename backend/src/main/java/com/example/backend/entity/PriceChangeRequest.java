@@ -13,10 +13,6 @@ import com.example.backend.enums.PriceChangeRequestStatus;
 @Builder
 public class PriceChangeRequest extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "old_price", nullable = false)
     private Float oldPrice;
 
