@@ -2,18 +2,27 @@ import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from './Button'
 import { Input } from './Input'
+import type { LoginCredentials } from '../auth'
 
 export type LoginFormData = {
   emailOrUsername: string
   password: string
 }
 
-const roles = ['Patient', 'Doctor', 'Admin'] as const
+const roles = [
+  { label: 'Patient', value: 'patient' },
+  { label: 'Doctor', value: 'doctor' },
+  { label: 'Admin', value: 'admin' },
+] as const
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export function LoginForm() {
-  const [role, setRole] = useState<typeof roles[number]>('Patient')
+interface LoginFormProps {
+  onLogin: (credentials: LoginCredentials) => boolean
+}
+
+export function LoginForm({ onLogin }: LoginFormProps) {
+  const [role, setRole] = useState<typeof roles[number]>(roles[0])
   const [formData, setFormData] = useState<LoginFormData>({
     emailOrUsername: '',
     password: '',
@@ -57,17 +66,18 @@ export function LoginForm() {
       return
     }
 
-    const hasValidCredentials =
-      formData.emailOrUsername.trim().toLowerCase() === 'demo@hospital.com' &&
-      formData.password === 'Demo@123'
+    const success = onLogin({
+      emailOrUsername: formData.emailOrUsername,
+      password: formData.password,
+      role: role.value,
+    })
 
-    if (!hasValidCredentials) {
+    if (!success) {
       setGeneralError('Invalid email or password')
       return
     }
 
     setGeneralError('')
-    alert(`Logged in successfully as ${role}`)
   }
 
   return (
@@ -82,14 +92,14 @@ export function LoginForm() {
         <div className="role-tabs" role="tablist" aria-label="Select user role">
           {roles.map(currentRole => (
             <button
-              key={currentRole}
+              key={currentRole.value}
               type="button"
-              className={`role-tab ${role === currentRole ? 'role-tab--active' : ''}`}
+              className={`role-tab ${role.value === currentRole.value ? 'role-tab--active' : ''}`}
               onClick={() => setRole(currentRole)}
               role="tab"
-              aria-selected={role === currentRole}
+              aria-selected={role.value === currentRole.value}
             >
-              {currentRole}
+              {currentRole.label}
             </button>
           ))}
         </div>
