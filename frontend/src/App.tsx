@@ -1,12 +1,12 @@
-import  router  from './providers/Router.tsx';
-import { RouterProvider } from 'react-router-dom';
+import './App.css'
+import { LoginForm } from './components/LoginForm'
 
 function App() {
-  return(
-    <>
-      <RouterProvider router={router} />
-    </>
-  );
+  return (
+    <main className="app-shell">
+      <LoginForm />
+    </main>
+  )
 }
 
 export default App
