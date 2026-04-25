@@ -8,6 +8,7 @@ export type LoginFormData = {
   password: string
 }
 
+<<<<<<< HEAD
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const authModes = ['Login', 'Register'] as const
@@ -20,6 +21,14 @@ const features = [
 export function LoginForm() {
   const [mode] = useState<typeof authModes[number]>('Login')
   const [rememberMe, setRememberMe] = useState(false)
+=======
+const roles = ['Patient', 'Doctor', 'Admin'] as const
+
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+
+export function LoginForm() {
+  const [role, setRole] = useState<typeof roles[number]>('Patient')
+>>>>>>> cb2d1fe (Finished login form design)
   const [formData, setFormData] = useState<LoginFormData>({
     emailOrUsername: '',
     password: '',
@@ -73,11 +82,16 @@ export function LoginForm() {
     }
 
     setGeneralError('')
+<<<<<<< HEAD
     alert(`${mode} successful`)
+=======
+    alert(`Logged in successfully as ${role}`)
+>>>>>>> cb2d1fe (Finished login form design)
   }
 
   return (
     <div className="login-page">
+<<<<<<< HEAD
       <div className="login-grid">
         <section className="login-panel">
           
@@ -168,6 +182,66 @@ export function LoginForm() {
             </p>
           </form>
         </section>
+=======
+      <div className="login-card">
+        <div className="login-header">
+          <p className="eyebrow">Hospital Management</p>
+          <h1>Sign in to your account</h1>
+          <p className="login-copy">Choose your role and enter your credentials to continue.</p>
+        </div>
+
+        <div className="role-tabs" role="tablist" aria-label="Select user role">
+          {roles.map(currentRole => (
+            <button
+              key={currentRole}
+              type="button"
+              className={`role-tab ${role === currentRole ? 'role-tab--active' : ''}`}
+              onClick={() => setRole(currentRole)}
+              role="tab"
+              aria-selected={role === currentRole}
+            >
+              {currentRole}
+            </button>
+          ))}
+        </div>
+
+        <form className="login-form" onSubmit={handleSubmit} noValidate>
+          <Input
+            id="emailOrUsername"
+            label="Email or Username"
+            value={formData.emailOrUsername}
+            placeholder="Enter your email or username"
+            onChange={value => handleFieldChange('emailOrUsername', value)}
+            error={submitted ? errors.emailOrUsername : undefined}
+          />
+
+          <Input
+            id="password"
+            label="Password"
+            type="password"
+            value={formData.password}
+            placeholder="Enter your password"
+            onChange={value => handleFieldChange('password', value)}
+            error={submitted ? errors.password : undefined}
+          />
+
+          {generalError ? <div className="general-error">{generalError}</div> : null}
+
+          <Button type="submit">Login</Button>
+
+          <div className="login-footer">
+            <a className="login-footer-link" href="#forgot-password">
+              Forgot password?
+            </a>
+            <p className="register-text">
+              Don’t have an account?{' '}
+              <a className="login-footer-link" href="#register">
+                Register
+              </a>
+            </p>
+          </div>
+        </form>
+>>>>>>> cb2d1fe (Finished login form design)
       </div>
     </div>
   )
