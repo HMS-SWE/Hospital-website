@@ -19,10 +19,6 @@ import java.time.LocalTime;
 @Builder
 public class TimeSlot extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "schedule_id", nullable = false, foreignKey = @ForeignKey(name = "fk_slot_schedule"))
     private Schedule schedule;

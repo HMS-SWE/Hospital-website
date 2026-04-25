@@ -15,10 +15,6 @@ import lombok.*;
 @Builder
 public class Notification extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "receiver_id", nullable = false, foreignKey = @ForeignKey(name = "fk_notif_receiver"))
     private User receiver;
