@@ -1,11 +1,131 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
-
-body{
-    background-color: #e4efff;
-    font-family: 'Open Sans', sans-serif;
-    justify-content: center;
-    justify-self: center;
-    width: 100%;
+body {
+  background-color: #F1F1F1;
+  font-family: 'Urbanist', sans-serif;
+  justify-content: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto;
 }
 
+.Container {
+  
+  display: flex;
+  gap: 0;
+  border-radius: 20px;
+  width: 70vw;
+  height: 75vh;
+  position: relative;
+  top: 10vh;
+  right: 5vw;
+}
+
+.Input {
+  width: 70%;
+  height: 5vh;
+  border: solid 1px white;
+  border-radius: 10px;
+  margin: 0;
+  background-color: transparent;
+  color-scheme: dark;
+}
+
+
+.RHS {
+  background-color: #EF7722;
+  width: 50%;
+  border-radius: 20px;
+  display: grid;
+  grid-template-columns: auto;
+  justify-content: center;
+  align-items: center;
+  text-align: left;
+}
+
+.LHS {
+  width: 50%;
+  margin: 0;
+  padding: 0;
+  background-color: #0BBDFF;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  z-index: -10;
+  position: relative;
+  left: 9vw;
+}
+
+.RegisterMessage {
+  width: 20%;
+  color: white;
+  position: relative;
+  left: 10%;
+  font-size: 3.5vw;
+}
+
+h3 {
+  color: white;
+}
+
+.RHS h2{
+  color: white;
+  position: relative;
+  font-size: 2vw;
+  position: relative;
+  top: 5%;
+}
+
+.Data{
+  display: grid;
+  width: 30vw;
+  grid-template-columns: 50% 50%;
+  position: relative;
+  left: 2vw;
+  bottom: 8%;
+}
+
+
+.Field label{
+ color: white;
+ font-family: 'Urbanist', sans-serif;
+ font-weight: bold;
+ font-size: 1vw;
+ position: relative;
+ top: 18%;
+}
+.Field select{
+  background-color: transparent;
+  border: 1px solid white;
+  border-radius: 10px;
+  width: 10.8vw;
+  height: 5vh;
+  margin-top: 13%;
+  color-scheme: dark;
+}
+.Field option{
+  background-color: black;
+}
+
+button{
+  width: 8vw;
+  height: 6vh;
+  font-family: 'Urbanist', sans-serif;
+  font-size: 1vw;
+  font-weight: bold;
+  justify-self: center;
+  position: relative;
+  bottom: 4vh;
+}
+
+span{
+  color: white;
+  justify-self: center;
+  position: relative;
+  bottom: 4vh;
+}
+
+a{
+  margin-left: 2vw;
+  color: white;
+}
