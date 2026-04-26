@@ -103,6 +103,8 @@
 			<artifactId>jjwt-api</artifactId>
 			<version>0.12.6</version>
 		</dependency>
+
+
 	</dependencies>
 
 	<build>
