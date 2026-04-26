@@ -15,6 +15,7 @@ import java.time.LocalDate;
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("ADMIN")
 @Getter
 @Setter
 @NoArgsConstructor
