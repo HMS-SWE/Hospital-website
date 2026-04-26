@@ -1,10 +1,7 @@
-type CheckBoxProps={
-    name: string;
-    title: string;
-}
 
 
-function CheckBox({name, title}: CheckBoxProps){
+
+function CheckBox({name, title}){
     return(
         <>
             <input id={name} name={name} type="checkbox"></input>
