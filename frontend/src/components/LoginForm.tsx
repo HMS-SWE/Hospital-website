@@ -8,12 +8,18 @@ export type LoginFormData = {
   password: string
 }
 
-const roles = ['Patient', 'Doctor', 'Admin'] as const
-
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
+const authModes = ['Login', 'Register'] as const
+const features = [
+  'Secure patient data management',
+  'Easy appointment scheduling',
+  'Real-time collaboration',
+]
+
 export function LoginForm() {
-  const [role, setRole] = useState<typeof roles[number]>('Patient')
+  const [mode] = useState<typeof authModes[number]>('Login')
+  const [rememberMe, setRememberMe] = useState(false)
   const [formData, setFormData] = useState<LoginFormData>({
     emailOrUsername: '',
     password: '',
@@ -67,69 +73,101 @@ export function LoginForm() {
     }
 
     setGeneralError('')
-    alert(`Logged in successfully as ${role}`)
+    alert(`${mode} successful`)
   }
 
   return (
     <div className="login-page">
-      <div className="login-card">
-        <div className="login-header">
-          <p className="eyebrow">Hospital Management</p>
-          <h1>Sign in to your account</h1>
-          <p className="login-copy">Choose your role and enter your credentials to continue.</p>
-        </div>
-
-        <div className="role-tabs" role="tablist" aria-label="Select user role">
-          {roles.map(currentRole => (
-            <button
-              key={currentRole}
-              type="button"
-              className={`role-tab ${role === currentRole ? 'role-tab--active' : ''}`}
-              onClick={() => setRole(currentRole)}
-              role="tab"
-              aria-selected={role === currentRole}
-            >
-              {currentRole}
-            </button>
-          ))}
-        </div>
-
-        <form className="login-form" onSubmit={handleSubmit} noValidate>
-          <Input
-            id="emailOrUsername"
-            label="Email or Username"
-            value={formData.emailOrUsername}
-            placeholder="Enter your email or username"
-            onChange={value => handleFieldChange('emailOrUsername', value)}
-            error={submitted ? errors.emailOrUsername : undefined}
-          />
-
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            value={formData.password}
-            placeholder="Enter your password"
-            onChange={value => handleFieldChange('password', value)}
-            error={submitted ? errors.password : undefined}
-          />
-
-          {generalError ? <div className="general-error">{generalError}</div> : null}
-
-          <Button type="submit">Login</Button>
-
-          <div className="login-footer">
-            <a className="login-footer-link" href="#forgot-password">
-              Forgot password?
-            </a>
-            <p className="register-text">
-              Don’t have an account?{' '}
-              <a className="login-footer-link" href="#register">
-                Register
-              </a>
-            </p>
+      <div className="login-grid">
+        <section className="login-panel">
+          
+          <div className="panel-copy">
+            <h1 className="panel-title">Hospital Management System</h1>
+            <p className="panel-subtitle">Streamline your healthcare operations with our comprehensive patient management platform</p>
+            <ul className="feature-list">
+              {features.map(feature => (
+                <li key={feature} className="feature-item">
+                  <span className="feature-mark">✓</span>
+                  {feature}
+                </li>
+              ))}
+            </ul>
           </div>
-        </form>
+        </section>
+
+        <section className="auth-card">
+          <div className="auth-card-header">
+            <p className="eyebrow">Welcome Back</p>
+            <h2>Sign in to access your dashboard</h2>
+          </div>
+
+          <div className="auth-toggle" role="tablist" aria-label="Authentication mode">
+            {authModes.map(currentMode => (
+              <button
+                key={currentMode}
+                type="button"
+                className={`auth-tab ${mode === currentMode ? 'auth-tab--active' : ''} ${currentMode === 'Register' ? 'auth-tab--disabled' : ''}`}
+                onClick={() => {
+                  if (currentMode === 'Login') return
+                }}
+                role="tab"
+                aria-selected={mode === currentMode}
+                disabled={currentMode === 'Register'}
+              >
+                {currentMode}
+              </button>
+            ))}
+          </div>
+
+          <form className="login-form" onSubmit={handleSubmit} noValidate>
+            <Input
+              id="emailOrUsername"
+              label="Email Address"
+              value={formData.emailOrUsername}
+              placeholder="Enter your email"
+              onChange={value => handleFieldChange('emailOrUsername', value)}
+              error={submitted ? errors.emailOrUsername : undefined}
+            />
+
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              value={formData.password}
+              placeholder="Enter your password"
+              onChange={value => handleFieldChange('password', value)}
+              error={submitted ? errors.password : undefined}
+            />
+
+            <div className="login-row">
+              <label className="checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={event => setRememberMe(event.target.checked)}
+                />
+                Remember me
+              </label>
+              <a className="login-footer-link" href="#forgot-password">
+                Forgot password?
+              </a>
+            </div>
+
+            {generalError ? <div className="general-error">{generalError}</div> : null}
+
+            <Button type="submit">{mode === 'Login' ? 'Sign In' : 'Create Account'}</Button>
+
+            <div className="divider">Or continue with</div>
+
+            <Button type="button" variant="secondary" className="social-button">
+              Sign in with Google
+            </Button>
+
+            <p className="register-text">
+              Don’t have an account? <button type="button" className="text-button" onClick={() => {}}>Sign up</button>
+            </p>
+          </form>
+        </section>
       </div>
     </div>
   )
