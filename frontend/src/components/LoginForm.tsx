@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from './Button'
 import { Input } from './Input'
+import type { LoginCredentials } from '../auth'
 
 export type LoginFormData = {
   emailOrUsername: string
@@ -63,11 +64,13 @@ export function LoginForm() {
       return
     }
 
-    const hasValidCredentials =
-      formData.emailOrUsername.trim().toLowerCase() === 'demo@hospital.com' &&
-      formData.password === 'Demo@123'
+    const success = onLogin({
+      emailOrUsername: formData.emailOrUsername,
+      password: formData.password,
+      role: role.value,
+    })
 
-    if (!hasValidCredentials) {
+    if (!success) {
       setGeneralError('Invalid email or password')
       return
     }
