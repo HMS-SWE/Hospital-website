@@ -1,0 +1,17 @@
+.Footer{
+    background-color: #2b2d42;
+    color: white;
+
+}
+.Container{
+    width: 90%;
+    justify-self: center;
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+}
+
+.FooterTitle{
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto auto auto;
+}
