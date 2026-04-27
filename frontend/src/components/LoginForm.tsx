@@ -1,7 +1,8 @@
-git push origin SCRUM-99-design-login-formimport { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Button } from './Button'
 import { Input } from './Input'
+import type { LoginCredentials } from '../auth'
 
 export type LoginFormData = {
   emailOrUsername: string
@@ -17,7 +18,11 @@ const features = [
   'Real-time collaboration',
 ]
 
-export function LoginForm() {
+interface LoginFormProps {
+  onLogin: (credentials: LoginCredentials) => boolean
+}
+
+export function LoginForm({ onLogin }: LoginFormProps) {
   const [mode] = useState<typeof authModes[number]>('Login')
   const [rememberMe, setRememberMe] = useState(false)
   const [formData, setFormData] = useState<LoginFormData>({
@@ -63,17 +68,15 @@ export function LoginForm() {
       return
     }
 
-    const hasValidCredentials =
-      formData.emailOrUsername.trim().toLowerCase() === 'demo@hospital.com' &&
-      formData.password === 'Demo@123'
-
-    if (!hasValidCredentials) {
-      setGeneralError('Invalid email or password')
-      return
+    const credentials: LoginCredentials = {
+      emailOrUsername: formData.emailOrUsername.trim(),
+      password: formData.password,
     }
 
-    setGeneralError('')
-    alert(`${mode} successful`)
+    const success = onLogin(credentials)
+    if (!success) {
+      setGeneralError('Invalid email or password')
+    }
   }
 
   return (

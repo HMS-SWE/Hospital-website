@@ -7,7 +7,6 @@ export type User = {
 export type LoginCredentials = {
   emailOrUsername: string
   password: string
-  role: User['role']
 }
 
 export const mockUsers: User[] = [
@@ -18,12 +17,15 @@ export const mockUsers: User[] = [
 
 export function authenticate(credentials: LoginCredentials): User | null {
   const loginId = credentials.emailOrUsername.trim().toLowerCase()
-  return (
-    mockUsers.find(
+  try {
+    const user = mockUsers.find(
       user =>
         user.email === loginId &&
-        user.password === credentials.password &&
-        user.role === credentials.role,
-    ) || null
-  )
+        user.password === credentials.password,
+    )
+    return user || null
+  } catch (error) {
+    console.error('Authentication error:', error)
+    return null
+  }
 }
