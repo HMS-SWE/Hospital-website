@@ -1,12 +1,4 @@
-
-.box{
-    background-color: rgb(136, 136, 136, 0.5);
-    display: inline-block;
-    color: white;
-    border-radius: 5px;
-    width: 40px;
-    height: 35px;
-    padding-top: 3px;
-    
+div{
+    height: 2vh;
+    width:2vw;
 }
-
