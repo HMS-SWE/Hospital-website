@@ -5,15 +5,15 @@ body {
   align-items: center;
   display: grid;
   grid-template-columns: auto;
-  
 }
+
 .Square{
   display: grid;
   grid-template-columns: 50% 50%;
-  gap: 0;
   position: relative;
   top: 5vh;
   margin-bottom: 5vh;
+  justify-self: center;
 }
 
 .LHS{
@@ -127,13 +127,16 @@ span{
   font-weight: 600;
   cursor: pointer;
   margin-top: 5%;
+  width: 100%;
 }
 
 .mailphone{
     display: grid;
     grid-template-columns: auto auto;
 }
-
+.form{
+  width: 100%;
+}
 .divider {
   font-size: 0.8vw;
   display: flex;
