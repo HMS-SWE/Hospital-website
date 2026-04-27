@@ -17,15 +17,11 @@ export const mockUsers: User[] = [
 
 export function authenticate(credentials: LoginCredentials): User | null {
   const loginId = credentials.emailOrUsername.trim().toLowerCase()
-  try {
-    const user = mockUsers.find(
+  return (
+    mockUsers.find(
       user =>
         user.email === loginId &&
         user.password === credentials.password,
-    )
-    return user || null
-  } catch (error) {
-    console.error('Authentication error:', error)
-    return null
-  }
+    ) || null
+  )
 }
