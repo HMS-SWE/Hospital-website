@@ -22,10 +22,30 @@ public class CustomOAuth2UserService extends OidcUserService {
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) {
         log.info("loadUser called!");
-        OidcUser oidcUser = super.loadUser(userRequest);
+        OidcUser oidcUser;
 
+        // Handle provider failures
+        try {
+            oidcUser = super.loadUser(userRequest);
+        } catch (Exception e) {
+            log.error("Failed to load user from Google: {}", e.getMessage());
+            throw new RuntimeException("Failed to connect to Google: " + e.getMessage(), e);
+        }
+
+        // Handle null email
         String email = oidcUser.getEmail();
+        if (email == null || email.isEmpty()) {
+            log.error("Email not provided by Google");
+            throw new RuntimeException("Email not provided by Google");
+        }
+
+        // Handle null name
         String name = oidcUser.getFullName();
+        if (name == null || name.isEmpty()) {
+            name = email.split("@")[0];
+            log.warn("Full name not provided, using: {}", name);
+        }
+
         String picture = oidcUser.getPicture();
 
         log.info("OAuth2 login attempt for email: {}", email);
