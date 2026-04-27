@@ -46,24 +46,34 @@ function App() {
   }, [route, user])
 
   const handleLogin = (credentials: LoginCredentials) => {
-    const authenticated = authenticate(credentials)
-    if (!authenticated) {
+    try {
+      const authenticated = authenticate(credentials)
+      if (!authenticated) {
+        return false
+      }
+
+      setUser(authenticated)
+      sessionStorage.setItem('hospital-session', JSON.stringify(authenticated))
+      const targetRoute = `/${authenticated.role}`
+      window.history.pushState({}, '', targetRoute)
+      setRoute(targetRoute)
+      return true
+    } catch (error) {
+      console.error('Login error:', error)
       return false
     }
-
-    setUser(authenticated)
-    sessionStorage.setItem('hospital-session', JSON.stringify(authenticated))
-    const targetRoute = `/${authenticated.role}`
-    window.history.pushState({}, '', targetRoute)
-    setRoute(targetRoute)
-    return true
   }
 
   const handleLogout = () => {
-    setUser(null)
-    sessionStorage.removeItem('hospital-session')
-    window.history.pushState({}, '', '/')
-    setRoute('/')
+    try {
+      setUser(null)
+      sessionStorage.removeItem('hospital-session')
+      window.history.pushState({}, '', '/')
+      setRoute('/')
+    } catch (error) {
+      console.error('Logout error:', error)
+      setUser(null)
+    }
   }
 
   const canViewDashboard = user !== null && route === `/${user.role}`
