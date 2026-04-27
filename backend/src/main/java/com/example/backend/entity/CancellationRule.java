@@ -12,10 +12,6 @@ import lombok.*;
 @Builder
 public class CancellationRule extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "minimum_notice_hours", nullable = false)
     private Integer minimumNoticeHours;
 }
