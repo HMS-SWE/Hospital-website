@@ -24,7 +24,6 @@ public class CustomOAuth2UserService extends OidcUserService {
         log.info("loadUser called!");
         OidcUser oidcUser;
 
-        // Handle provider failures
         try {
             oidcUser = super.loadUser(userRequest);
         } catch (Exception e) {
@@ -32,23 +31,21 @@ public class CustomOAuth2UserService extends OidcUserService {
             throw new RuntimeException("Failed to connect to Google: " + e.getMessage(), e);
         }
 
-        // Handle null email
-        String email = oidcUser.getEmail();
+        processUser(oidcUser.getEmail(), oidcUser.getFullName(), oidcUser.getPicture());
+
+        return oidcUser;
+    }
+
+    public void processUser(String email, String name, String picture) {
         if (email == null || email.isEmpty()) {
             log.error("Email not provided by Google");
             throw new RuntimeException("Email not provided by Google");
         }
 
-        // Handle null name
-        String name = oidcUser.getFullName();
         if (name == null || name.isEmpty()) {
             name = email.split("@")[0];
             log.warn("Full name not provided, using: {}", name);
         }
-
-        String picture = oidcUser.getPicture();
-
-        log.info("OAuth2 login attempt for email: {}", email);
 
         try {
             if (userRepository.findByEmail(email).isEmpty()) {
@@ -69,7 +66,5 @@ public class CustomOAuth2UserService extends OidcUserService {
             log.error("Failed to save OAuth2 user: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to save OAuth2 user: " + e.getMessage(), e);
         }
-
-        return oidcUser;
     }
 }
