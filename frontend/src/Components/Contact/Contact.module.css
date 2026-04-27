@@ -1,7 +1,14 @@
 .Contact{
     display: grid;
     grid-template-columns: 10% 90%;
+    gap: 5%;
     grid-template-rows: auto;
+}
+.LHS{
+    grid-template-rows: auto auto auto;
+    justify-content: center;
+    align-items: center;
+    
 }
 
 .RHS{
@@ -13,7 +20,8 @@
 }
 
 .Title{
-    font-size: 1.8vw;
+    font-size: 0.8vw;
+    font-weight: bold;
 }
 
 .Value , .Note{
