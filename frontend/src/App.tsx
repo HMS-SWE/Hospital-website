@@ -1,9 +1,10 @@
-import Register from './Register.tsx'
+import  router  from './providers/Router.tsx';
+import { RouterProvider } from 'react-router-dom';
 
 function App() {
   return(
     <>
-      <Register />
+      <RouterProvider router={router} />
     </>
   );
 }
