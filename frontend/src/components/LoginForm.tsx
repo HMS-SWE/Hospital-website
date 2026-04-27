@@ -69,14 +69,17 @@ export function LoginForm({ onLogin }: LoginFormProps) {
     }
 
     const credentials: LoginCredentials = {
-      emailOrUsername: formData.emailOrUsername.trim(),
+      emailOrUsername: formData.emailOrUsername,
       password: formData.password,
     }
 
     const success = onLogin(credentials)
     if (!success) {
       setGeneralError('Invalid email or password')
+      return
     }
+
+    setGeneralError('')
   }
 
   return (
@@ -158,7 +161,7 @@ export function LoginForm({ onLogin }: LoginFormProps) {
 
             {generalError ? <div className="general-error">{generalError}</div> : null}
 
-            <Button type="submit">{mode === 'Login' ? 'Sign In' : 'Create Account'}</Button>
+            <Button type="submit">{mode === 'Login' ? 'Login' : 'Create Account'}</Button>
 
             <div className="divider">Or continue with</div>
 
