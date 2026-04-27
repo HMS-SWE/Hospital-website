@@ -1,12 +1,18 @@
-
 import Styles from './SocialLink.module.css'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-function SocialLink({}){
+type IconProps = {
+  icon: any;
+};
+
+function SocialLink({icon}: IconProps){
     return(
         <>
-            <div>
-                <h1>What happened</h1>
-            </div>
+        <div className={Styles.container}>
+                <div className={Styles.box}>
+                <FontAwesomeIcon className='Icon' icon={icon} size='2x'/>
+                </div>
+        </div>
         </>
     );
 }
