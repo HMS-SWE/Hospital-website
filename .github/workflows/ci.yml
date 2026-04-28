@@ -28,7 +28,7 @@ jobs:
         env:
           SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
           SPRING_DATASOURCE_USERNAME: sa
-          SPRING_DATASOURCE_PASSWORD:
+          SPRING_DATASOURCE_PASSWORD: sa
           SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID: test-client-id
           SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET: test-client-secret
           APP_JWT_SECRET: testsecretthatisfortycharacterslong1234567890
