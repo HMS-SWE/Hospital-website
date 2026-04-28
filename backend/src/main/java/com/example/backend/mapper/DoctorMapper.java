@@ -29,5 +29,4 @@ public class DoctorMapper {
                 .examinationPrice(doctor.getExaminationPrice())
                 .build();
     }
-
 }
