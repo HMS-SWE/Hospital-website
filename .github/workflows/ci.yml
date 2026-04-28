@@ -1,39 +1,78 @@
-name: CI
+name: CI Pipeline
 
 on:
   pull_request:
-    branches: [ main ]
+    branches:
+      - main
+      - sprint-1
+      - feature/**
 
 jobs:
-  test:
+  backend-tests:
+    name: Run Backend Tests
     runs-on: ubuntu-latest
-
-    services:
-      mysql:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-          MYSQL_DATABASE: hospital_test
-        ports:
-          - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval=10s
-          --health-timeout=5s --health-retries=3
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Java 17
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: "17"
           distribution: "temurin"
           cache: maven
 
-      - name: Run tests
-        working-directory: backend
+      - name: Run backend tests
+        working-directory: ./backend
+        run: mvn test --batch-mode --no-transfer-progress
         env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/hospital_test
-          SPRING_DATASOURCE_USERNAME: ${DB_USERNAME}
-          SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
-        run: mvn test
+          SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
+          SPRING_DATASOURCE_USERNAME: sa
+          SPRING_DATASOURCE_PASSWORD:
+          SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.h2.Driver
+          SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_ID: test-client-id
+          SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GOOGLE_CLIENT_SECRET: test-client-secret
+          APP_JWT_SECRET: testsecretthatisfortycharacterslong1234567890
+          APP_JWT_EXPIRATION: 3600000
+
+      - name: Upload test failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: backend/target/surefire-reports/
+          retention-days: 7
+
+  frontend-tests:
+    name: Run Frontend Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Run frontend tests
+        working-directory: ./frontend
+        run: npm test -- --watchAll=false --ci
+        env:
+          CI: true
+
+      - name: Upload frontend test failure logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-reports
+          path: frontend/coverage/
+          retention-days: 7
