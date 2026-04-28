@@ -58,6 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
+<<<<<<< HEAD
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
@@ -77,6 +78,12 @@ public class SecurityConfig {
                                 .oidcUserService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler))
+=======
+                                "/swagger-ui.html"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
+>>>>>>> 8a710ea (implement Swagger/OpenAPI documentation with JWT support)
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
