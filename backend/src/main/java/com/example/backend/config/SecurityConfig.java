@@ -19,12 +19,26 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import java.nio.charset.StandardCharsets;
 
 @EnableMethodSecurity
+/**
+ * Main security configuration for the Hospital Management System.
+ * This class sets up the security rules for which users (Admin, Doctor, Patient)
+ * can access which parts of the API.
+ */
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    //Injected filter that intercepts every request to check for a valid JWT
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    /**
+     * Defines the security filter chain.
+     * We disable CSRF because we use JWTs and set the session to STATELESS.
+     * It maps our endpoints to specific roles and handles unauthorized/forbidden errors.
+     * * @param http the security object used to configure web security rules.
+     * @return the fully configured filter chain.
+     * @throws Exception if there is an error in the security setup.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -38,6 +52,9 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html"
                         ).permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/doctor/**").hasRole("DOCTOR")
+                        .requestMatchers("/patient/**").hasRole("PATIENT")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exceptions -> exceptions
@@ -58,7 +75,11 @@ public class SecurityConfig {
 
         return http.build();
     }
-
+    /**
+     * Bean used to hash passwords before saving them to the database.
+     * Uses the BCrypt algorithm for high security.
+     * * @return a password encoder instance.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
