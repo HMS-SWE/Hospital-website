@@ -27,34 +27,29 @@ public class ProfileService {
     // ─── GET ─────────────────────────────────────────────────
 
     public UserProfileResponse getUserProfile(Long userId) {
-        return userMapper.toResponse(userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found")));
+        return userMapper.toResponse(findUserById(userId));
     }
 
     public DoctorProfileResponse getDoctorProfile(Long userId) {
-        return doctorMapper.toResponse(doctorRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Doctor profile not found")));
+        return doctorMapper.toResponse(findDoctorByUserId(userId));
     }
 
     public PatientProfileResponse getPatientProfile(Long userId) {
-        return patientMapper.toResponse(patientRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Patient profile not found")));
+        return patientMapper.toResponse(findPatientByUserId(userId));
     }
 
     // ─── UPDATE ──────────────────────────────────────────────
 
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UserProfileRequest request) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = findUserById(userId);
         userUpdateHelper.applyUpdates(user, request);
         return userMapper.toResponse(userRepository.save(user));
     }
 
     @Transactional
     public DoctorProfileResponse updateDoctorProfile(Long userId, DoctorProfileRequest request) {
-        Doctor doctor = doctorRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Doctor profile not found"));
+        Doctor doctor = findDoctorByUserId(userId);
         userUpdateHelper.applyUpdates(doctor, request);
         doctor.setDepartment(request.getDepartment());
         doctor.setDegree(request.getDegree());
@@ -66,8 +61,7 @@ public class ProfileService {
 
     @Transactional
     public PatientProfileResponse updatePatientProfile(Long userId, PatientProfileRequest request) {
-        Patient patient = patientRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("Patient profile not found"));
+        Patient patient = findPatientByUserId(userId);
         userUpdateHelper.applyUpdates(patient, request);
         patient.setEmergencyNumber(request.getEmergencyNumber());
         patient.setWhatsappNumber(request.getWhatsappNumber());
@@ -76,4 +70,20 @@ public class ProfileService {
         return patientMapper.toResponse(patientRepository.save(patient));
     }
 
+    // ─── PRIVATE FINDERS ─────────────────────────────────────
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    private Doctor findDoctorByUserId(Long userId) {
+        return doctorRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Doctor profile not found"));
+    }
+
+    private Patient findPatientByUserId(Long userId) {
+        return patientRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Patient profile not found"));
+    }
 }
