@@ -24,7 +24,7 @@ A web application for managing hospital operations including patient registratio
 docker compose up --build
 ```
 
-## Environment Variables
+### Environment Variables
 Create a `.env` file based on `.env.example`:
 ```env
 DB_URL=jdbc:mysql://db:3306/hospital_db
