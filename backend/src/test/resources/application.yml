@@ -26,3 +26,5 @@ app:
     jwt:
         secret: testsecretthatisfortycharacterslong1234567890
         expiration: 3600000
+    seeder:
+        enabled: false
