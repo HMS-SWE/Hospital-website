@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "BackendApplication",
+            "request": "launch",
+            "mainClass": "com.example.backend.BackendApplication",
+            "projectName": "backend"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-BackendApplication<demo>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
