@@ -24,7 +24,7 @@ public class ProfileService {
 
     private final UserUpdateHelper userUpdateHelper;
 
-    // ─── GET OWN PROFILE ─────────────────────────────────────────────────────
+    // ─── GET ─────────────────────────────────────────────────
 
     public UserProfileResponse getUserProfile(Long userId) {
         return userMapper.toResponse(findUserById(userId));
@@ -38,7 +38,7 @@ public class ProfileService {
         return patientMapper.toResponse(findPatientByUserId(userId));
     }
 
-    // ─── UPDATE ──────────────────────────────────────────────────────────────
+    // ─── UPDATE ──────────────────────────────────────────────
 
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UserProfileRequest request) {
@@ -70,21 +70,7 @@ public class ProfileService {
         return patientMapper.toResponse(patientRepository.save(patient));
     }
 
-    // ─── DELETE (soft) ────────────────────────────────────────────────────────
-
-    @Transactional
-    public void deactivateUser(Long targetUserId, Long requestingUserId) {
-        // admin cannot delete themselves
-        if (targetUserId.equals(requestingUserId)) {
-            throw new RuntimeException("You cannot delete your own account");
-        }
-
-        User user = findUserById(targetUserId);
-        user.setIsActive(false);
-        userRepository.save(user);
-    }
-
-    // ─── PRIVATE FINDERS ─────────────────────────────────────────────────────
+    // ─── PRIVATE FINDERS ─────────────────────────────────────
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
