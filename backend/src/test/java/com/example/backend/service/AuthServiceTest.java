@@ -51,9 +51,12 @@ class AuthServiceTest {
         when(userRepository.findByEmail("admin@hospital.com")).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("Admin@1234", "encoded-password")).thenReturn(true);
         when(jwtService.generateToken(1L, Role.ADMIN)).thenReturn("mock-jwt-token");
+        long fakeEpochMs = System.currentTimeMillis() + 3_600_000L;
+        when(jwtService.extractExpiration("mock-jwt-token")).thenReturn(fakeEpochMs);
 
         LoginResponse response = authService.login(request);
 
+        assertTrue(response.getExpiresIn() > 3590L && response.getExpiresIn() <= 3600L);
         assertNotNull(response);
         assertEquals("mock-jwt-token", response.getToken());
         assertEquals(Role.ADMIN, response.getRole());
@@ -61,6 +64,7 @@ class AuthServiceTest {
         verify(userRepository).findByEmail("admin@hospital.com");
         verify(passwordEncoder).matches("Admin@1234", "encoded-password");
         verify(jwtService).generateToken(1L, Role.ADMIN);
+
     }
 
     @Test
