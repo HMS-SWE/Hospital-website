@@ -14,11 +14,10 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -29,26 +28,27 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final PathPatternRequestMatcher.Builder matcher =
-            PathPatternRequestMatcher.withDefaults();
     private static final List<RequestMatcher> PUBLIC_ENDPOINTS = List.of(
-            // NEW:
-            PathPatternRequestMatcher.withDefaults().matcher("/api/auth/**"),
-            PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.GET, "/api/specializations/**")
+            new AntPathRequestMatcher("/api/auth/**"),
+            new AntPathRequestMatcher("/api/specializations/**", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/v3/api-docs/**"),
+            new AntPathRequestMatcher("/swagger-ui/**"),
+            new AntPathRequestMatcher("/swagger-ui.html")
     );
 
     private static final List<RouteRoleRule> ROLE_RULES = List.of(
-            new RouteRoleRule(matcher.matcher("/api/admin/**"), Set.of(Role.ADMIN)),
-            new RouteRoleRule(matcher.matcher("/api/doctors/**"), Set.of(Role.ADMIN, Role.DOCTOR)),
-            new RouteRoleRule(matcher.matcher("/api/patients/**"), Set.of(Role.ADMIN, Role.PATIENT)),
-            new RouteRoleRule(matcher.matcher("/api/appointments/**"), Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
-            new RouteRoleRule(matcher.matcher("/api/schedules/**"), Set.of(Role.ADMIN, Role.DOCTOR))
+            new RouteRoleRule(new AntPathRequestMatcher("/api/admin/**"),        Set.of(Role.ADMIN)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),      Set.of(Role.ADMIN, Role.DOCTOR)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/patients/**"),     Set.of(Role.ADMIN, Role.PATIENT)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/**"), Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),    Set.of(Role.ADMIN, Role.DOCTOR))
     );
+
     private final JwtService jwtService;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
-        return PUBLIC_ENDPOINTS.stream().anyMatch(matcher -> matcher.matches(request));
+        return PUBLIC_ENDPOINTS.stream().anyMatch(m -> m.matches(request));
     }
 
     @Override

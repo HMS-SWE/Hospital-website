@@ -7,6 +7,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.WeakKeyException;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 public class JwtService {
 
     private final SecretKey signingKey;
+    @Getter
     private final long expirationMs;
 
     public JwtService(
@@ -49,6 +51,10 @@ public class JwtService {
             return false;
         }
     }
+    public long extractExpiration(String token) {
+        long expire = extractAllClaims(token).getExpiration().getTime();
+        return expire; // returns epoch ms
+    }
 
     public Long extractUserId(String token) {
         return Long.valueOf(extractAllClaims(token).getSubject());
@@ -66,6 +72,7 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
+
 
     private SecretKey buildSigningKey(String secret) {
         byte[] keyBytes;
