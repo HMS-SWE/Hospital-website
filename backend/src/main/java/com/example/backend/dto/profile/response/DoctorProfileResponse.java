@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class DoctorProfileResponse extends UserProfileResponse {
     private String specialtyName;
+    private String specialtyLocation;
     private String department;
     private String degree;
     private String qualifications;
