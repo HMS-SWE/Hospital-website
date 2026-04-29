@@ -1,7 +1,16 @@
 import Styles from './Contact.module.css'
 import SocialLink from '../SocialLink/SocialLink';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
-function Contact({icon, Title, Value, Note}){
+type ContactProps = {
+    icon: IconDefinition;
+    Title: string;
+    Value: string;
+    Note: string;
+}
+
+
+function Contact({icon, Title, Value, Note}: ContactProps){
     return(
         <>
         <div className={Styles.Contact}>

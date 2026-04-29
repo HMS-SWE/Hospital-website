@@ -1,8 +1,9 @@
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import Styles from './SocialLink.module.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type IconProps = {
-  icon: any;
+  icon: IconDefinition;
   className?: string;
   iconClassName?: string;
 };
