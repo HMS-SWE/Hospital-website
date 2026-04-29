@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -55,4 +56,7 @@ public class User extends BaseEntity {
     @Column(name = "profile_picture_path")
     @Builder.Default
     private String profilePicturePath = null;
+
+    @Column(name = "password_changed_at")
+    private LocalDateTime passwordChangedAt;
 }
