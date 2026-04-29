@@ -1,9 +1,6 @@
 import { faHospital, faSearch } from "@fortawesome/free-solid-svg-icons";
-import Contact from "../Contact/Contact";
-import Input from "../Input/input";
 import SocialLink from "../SocialLink/SocialLink";
 import Styles from './Header.module.css'
-import { faFacebook } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 

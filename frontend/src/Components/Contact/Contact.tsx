@@ -1,7 +1,15 @@
 import Styles from './Contact.module.css'
 import SocialLink from '../SocialLink/SocialLink';
 
-function Contact({icon, Title, Value, Note}){
+type ContactProps = {
+    icon: any;
+    Title: string;
+    Value: string;
+    Note: string;
+}
+
+
+function Contact({icon, Title, Value, Note}: ContactProps){
     return(
         <>
         <div className={Styles.Contact}>
