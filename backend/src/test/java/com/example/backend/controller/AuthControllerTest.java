@@ -40,5 +40,7 @@ class AuthControllerTest {
         assertNotNull(response.getBody());
         assertEquals("mock-jwt-token", response.getBody().getToken());
         assertEquals(Role.ADMIN, response.getBody().getRole());
+        assertEquals(3600L, response.getBody().getExpiresIn());
+
     }
 }

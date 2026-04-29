@@ -21,6 +21,7 @@ import java.util.Date;
 public class JwtService {
 
     private final SecretKey signingKey;
+    @Getter
     private final long expirationMs;
 
     public JwtService(

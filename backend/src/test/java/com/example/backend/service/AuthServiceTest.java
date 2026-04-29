@@ -64,6 +64,8 @@ class AuthServiceTest {
         verify(userRepository).findByEmail("admin@hospital.com");
         verify(passwordEncoder).matches("Admin@1234", "encoded-password");
         verify(jwtService).generateToken(1L, Role.ADMIN);
+        verify(jwtService).extractExpiration("mock-jwt-token");
+
 
     }
 
