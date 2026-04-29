@@ -1,0 +1,29 @@
+.Contact{
+    display: grid;
+    grid-template-columns: 10% 90%;
+    gap: 5%;
+    grid-template-rows: auto;
+}
+.LHS{
+    justify-content: center;
+    align-items: center;
+}
+
+.RHS{
+    text-align: left;
+    display: grid;
+    grid-template-rows: auto auto auto;
+    justify-content: left;
+    align-items: start;
+}
+
+.Title{
+    font-size: 0.8vw;
+    font-weight: bold;
+}
+
+.Value , .Note{
+    opacity: 0.5;
+    font-size: 90%;
+}
+
