@@ -11,10 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-<<<<<<< HEAD
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-=======
->>>>>>> 46419d9 (implement JWT authentication filter with role-based access control)
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -22,12 +19,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-<<<<<<< HEAD
-=======
-import org.springframework.security.config.Customizer;
-
-import java.nio.charset.StandardCharsets;
->>>>>>> 46419d9 (implement JWT authentication filter with role-based access control)
 
 import java.nio.charset.StandardCharsets;
 
@@ -58,7 +49,6 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
-<<<<<<< HEAD
                                 "/swagger-ui.html")
                         .permitAll()
                         .requestMatchers(
@@ -78,12 +68,6 @@ public class SecurityConfig {
                                 .oidcUserService(oAuth2UserService))
                         .successHandler(oAuth2SuccessHandler)
                         .failureHandler(oAuth2FailureHandler))
-=======
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
->>>>>>> 8a710ea (implement Swagger/OpenAPI documentation with JWT support)
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -96,12 +80,7 @@ public class SecurityConfig {
                             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
                             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
                             response.getWriter().write("{\"message\":\"Forbidden\"}");
-<<<<<<< HEAD
                         }))
-=======
-                        })
-                )
->>>>>>> 46419d9 (implement JWT authentication filter with role-based access control)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
