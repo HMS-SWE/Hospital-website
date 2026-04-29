@@ -52,7 +52,6 @@ class JwtAuthenticationFilterTest {
 
         assertEquals(401, response.getStatus());
         assertTrue(response.getContentAsString().contains("Missing or malformed Authorization header"));
-
         verifyNoInteractions(jwtService, userRepository);
         verifyNoInteractions(filterChain);
     }
@@ -70,7 +69,6 @@ class JwtAuthenticationFilterTest {
 
         assertEquals(401, response.getStatus());
         assertTrue(response.getContentAsString().contains("Invalid or expired token"));
-
         verify(jwtService).validateToken("invalid-token");
         verifyNoInteractions(userRepository);
         verifyNoInteractions(filterChain);
