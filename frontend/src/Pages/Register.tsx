@@ -17,6 +17,9 @@ export type RegisterFormData = {
     password: string;
 }
 
+const handleOAuthLogin = (provider: 'google') => {
+  window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+};
 
 
 function Register() {
@@ -184,7 +187,7 @@ function Register() {
                             <div className={Styles.googleIcon} >
                                 <img className={Styles.Icon} src='./icons8-google.svg' alt="User Icon" />
                             </div>
-                            <div className={Styles.ButtonText}>
+                            <div className={Styles.ButtonText} onClick={() => handleOAuthLogin('google')}>
                                 Register with google
                             </div>
                         </button>
