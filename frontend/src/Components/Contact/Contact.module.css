@@ -5,10 +5,8 @@
     grid-template-rows: auto;
 }
 .LHS{
-    grid-template-rows: auto auto auto;
     justify-content: center;
     align-items: center;
-    
 }
 
 .RHS{
