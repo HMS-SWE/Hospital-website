@@ -13,13 +13,14 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Service
 public class JwtService {
 
     private final SecretKey signingKey;
-    @Getter
     private final long expirationMs;
 
     public JwtService(
@@ -71,6 +72,13 @@ public class JwtService {
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
+    }
+
+    public LocalDateTime extractIssuedAt(String token) {
+        Date issuedAt = extractAllClaims(token).getIssuedAt();
+        return issuedAt.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
     }
 
 
