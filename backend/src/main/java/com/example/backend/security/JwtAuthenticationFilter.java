@@ -1,12 +1,15 @@
 package com.example.backend.security;
 
 import com.example.backend.enums.Role;
+import com.example.backend.repository.UserRepository;
 import com.example.backend.service.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import com.example.backend.entity.User;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -45,6 +48,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
+
+    private static final List<RequestMatcher> SENSITIVE_ROUTES = List.of(
+    new AntPathRequestMatcher("/api/admin/**"),
+    new AntPathRequestMatcher("/api/medical-records/**"),
+    new AntPathRequestMatcher("/api/profile/**")
+    );
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -72,6 +82,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Long userId = jwtService.extractUserId(token);
         Role role = jwtService.extractRole(token);
+
+        boolean isSensitiveRoute = SENSITIVE_ROUTES.stream()
+        .anyMatch(m -> m.matches(request));
+
+        if (isSensitiveRoute) {
+            User user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                writeError(response, HttpStatus.UNAUTHORIZED, "User not found");
+                return;
+            }
+            if (user.getPasswordChangedAt() != null) {
+            LocalDateTime tokenIssuedAt = jwtService.extractIssuedAt(token);
+                if (user.getPasswordChangedAt().isAfter(tokenIssuedAt)) {
+                    writeError(response, HttpStatus.UNAUTHORIZED, "Password changed — please log in again");
+                    return;
+                }
+            }
+        }
 
         RouteRoleRule matchedRule = ROLE_RULES.stream()
                 .filter(rule -> rule.matches(request))

@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.doctor.response.DoctorPublicResponse;
 import com.example.backend.dto.profile.request.*;
 import com.example.backend.dto.profile.response.*;
 import com.example.backend.entity.*;
@@ -24,7 +25,7 @@ public class ProfileService {
 
     private final UserUpdateHelper userUpdateHelper;
 
-    // ─── GET ─────────────────────────────────────────────────
+    // ─── GET OWN PROFILE ─────────────────────────────────────────────────────
 
     public UserProfileResponse getUserProfile(Long userId) {
         return userMapper.toResponse(findUserById(userId));
@@ -38,7 +39,14 @@ public class ProfileService {
         return patientMapper.toResponse(findPatientByUserId(userId));
     }
 
-    // ─── UPDATE ──────────────────────────────────────────────
+    // ─── GET PUBLIC DOCTOR PROFILE ────────────────────────────────────────────
+    // used when a doctor or patient views another doctor
+
+    public DoctorPublicResponse getDoctorPublicProfile(Long userId) {
+        return doctorMapper.toPublicResponse(findDoctorByUserId(userId));
+    }
+
+    // ─── UPDATE ──────────────────────────────────────────────────────────────
 
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UserProfileRequest request) {
@@ -70,7 +78,21 @@ public class ProfileService {
         return patientMapper.toResponse(patientRepository.save(patient));
     }
 
-    // ─── PRIVATE FINDERS ─────────────────────────────────────
+    // ─── DELETE (soft) ────────────────────────────────────────────────────────
+
+    @Transactional
+    public void deactivateUser(Long targetUserId, Long requestingUserId) {
+        // admin cannot delete themselves
+        if (targetUserId.equals(requestingUserId)) {
+            throw new RuntimeException("You cannot delete your own account");
+        }
+
+        User user = findUserById(targetUserId);
+        user.setIsActive(false);
+        userRepository.save(user);
+    }
+
+    // ─── PRIVATE FINDERS ─────────────────────────────────────────────────────
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
