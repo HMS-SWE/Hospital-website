@@ -8,6 +8,7 @@ A web application for managing hospital operations including patient registratio
 - **Database:** MySQL
 - **Authentication:** JWT + Google OAuth2
 - **Containerization:** Docker
+- **CI/CD:** GitHub Actions
 
 ## Getting Started
 
@@ -51,3 +52,27 @@ New users are automatically registered as patients.
 cd backend
 mvn test
 ```
+
+## CI/CD
+
+### Overview
+- Runs on every PR to main and sprint-1
+- Ensures code quality before merge
+
+### What it does
+- Checkout repository
+- Set up JDK 17 (with Maven cache)
+- Run backend tests (mvn test)
+- Enforce coverage ≥ 50% (JaCoCo)
+- Upload test & coverage reports
+- Run frontend lint (ESLint)
+
+### Rules
+- Protected branches: main, sprint-1
+- All checks must pass before merging
+- PR blocked if:
+  - Tests fail
+  - Coverage < 50%
+- To generate coverage :
+    - ``` mvn test jacoco:report ```
+    - open target/site/jacoco/index.html
