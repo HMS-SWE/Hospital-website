@@ -1,8 +1,9 @@
 import Styles from './Contact.module.css'
 import SocialLink from '../SocialLink/SocialLink';
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 
 type ContactProps = {
-    icon: any;
+    icon: IconDefinition;
     Title: string;
     Value: string;
     Note: string;
