@@ -3,17 +3,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 type IconProps = {
   icon: any;
+  className?: string;
+  iconClassName?: string;
 };
 
-function SocialLink({icon}: IconProps){
-    return(
-        <>
-        <div className={Styles.container}>
-                <div className={Styles.box}>
-                <FontAwesomeIcon className='Icon' icon={icon} size='2x'/>
-                </div>
+function SocialLink({ icon, className = "", iconClassName = "" }: IconProps) {
+    return (
+        <div className={`${Styles.box} ${className}`}>
+            <FontAwesomeIcon 
+                className={`${Styles.Icon} ${iconClassName}`} 
+                icon={icon} 
+                size='2x'
+            />
         </div>
-        </>
     );
 }
 

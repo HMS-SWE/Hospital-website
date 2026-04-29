@@ -11,7 +11,6 @@ body {
   display: grid;
   grid-template-columns: 50% 50%;
   position: relative;
-  top: 5vh;
   margin-bottom: 5vh;
   justify-self: center;
 }
