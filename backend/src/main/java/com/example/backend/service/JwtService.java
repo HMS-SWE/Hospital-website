@@ -75,7 +75,6 @@ public class JwtService {
                 .getPayload();
     }
 
-<<<<<<< HEAD
     public LocalDateTime extractIssuedAt(String token) {
         Date issuedAt = extractAllClaims(token).getIssuedAt();
         return issuedAt.toInstant()
@@ -83,8 +82,6 @@ public class JwtService {
                 .toLocalDateTime();
     }
 
-=======
->>>>>>> 8ca1598 (implement Swagger/OpenAPI documentation with JWT support)
 
     private SecretKey buildSigningKey(String secret) {
         byte[] keyBytes;
