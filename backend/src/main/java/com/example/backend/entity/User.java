@@ -7,11 +7,14 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users", indexes = {
         @Index(name = "idx_user_email", columnList = "email", unique = true),
-        @Index(name = "idx_user_role", columnList = "role")
+        @Index(name = "idx_user_role", columnList = "role"),
+        @Index(name = "idx_user_username", columnList = "user_name", unique = true),
+        @Index(name = "idx_user_is_active", columnList = "is_active")
 })
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
@@ -55,4 +58,11 @@ public class User extends BaseEntity {
     @Column(name = "profile_picture_path")
     @Builder.Default
     private String profilePicturePath = null;
+
+    @Column(name = "password_changed_at")
+    private LocalDateTime passwordChangedAt;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private Boolean isActive = true;
 }
