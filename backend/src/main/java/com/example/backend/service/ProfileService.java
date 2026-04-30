@@ -24,7 +24,7 @@ public class ProfileService {
 
     private final UserUpdateHelper userUpdateHelper;
 
-    // ─── GET OWN PROFILE ─────────────────────────────────────────────────────
+    // ─── GET ─────────────────────────────────────────────────
 
     public UserProfileResponse getUserProfile(Long userId) {
         return userMapper.toResponse(findUserById(userId));
@@ -38,7 +38,7 @@ public class ProfileService {
         return patientMapper.toResponse(findPatientByUserId(userId));
     }
 
-    // ─── UPDATE ──────────────────────────────────────────────────────────────
+    // ─── UPDATE ──────────────────────────────────────────────
 
     @Transactional
     public UserProfileResponse updateUserProfile(Long userId, UserProfileRequest request) {
