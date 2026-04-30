@@ -1,16 +1,20 @@
 
+import { useNavigate } from 'react-router-dom';
 import AppointmentCard from '../../../Components/AppointmentCard/AppointmentCard';
 import Styles from './Appointments.module.css'
 
 function Appointments(){
+    const navigate = useNavigate();
     return(
 
         <>
         <div className={Styles.AppointmentsConatiner}>
             <div className={Styles.AppointmentsContent}>
-                <button className={Styles.bookButton}>Book new appointment</button>
+                <h1>My appointments</h1>
+                <button className={Styles.bookButton}
+                        onClick={() => navigate("/dashboard/book-appointment")}
+                        >Book new appointment</button>
                 <div className={Styles.allAppointments}>
-                    <h3>All appointments</h3>
                     <AppointmentCard />
                     <AppointmentCard />
                 </div>

@@ -5,6 +5,7 @@ import OAuthCallback from "../Pages/OAuthCallback";
 import DashboardLayout from "../Layouts/DashboardLayout";
 import Appointments from "../Pages/Dashboard/Appointments/Appointments";
 import Dashboard from "../Pages/Dashboard/Dashboard/Dashboard"
+import BookAppointment from "../Pages/Dashboard/BookAppointment/BookAppointment";
 
 const router = createBrowserRouter([
     {
@@ -23,7 +24,8 @@ const router = createBrowserRouter([
                     element: <DashboardLayout />,
                     children: [
                         {index: true, element: <Dashboard />},
-                        {path: "appointments", element: <Appointments />}
+                        {path: "appointments", element: <Appointments />},
+                        {path: "book-appointment", element: <BookAppointment /> }
                     ]
                 }
     ]}
