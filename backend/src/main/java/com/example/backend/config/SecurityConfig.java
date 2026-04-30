@@ -1,5 +1,4 @@
 package com.example.backend.config;
-
 import com.example.backend.security.JwtAuthenticationFilter;
 import com.example.backend.security.OAuth2FailureHandler;
 import com.example.backend.security.OAuth2SuccessHandler;
@@ -24,6 +23,7 @@ import java.nio.charset.StandardCharsets;
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
+
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
