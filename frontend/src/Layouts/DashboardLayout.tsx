@@ -1,10 +1,9 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link } from "react-router-dom";
 
 import Styles from './DashboardLayout.module.css'
 
 
 function DashboardLayout() {
-    const Location = useLocation();
     const menu = [
         // { name: "Dashboard", path: "/dashboard" },
         { name: "Appointments", path: "/dashboard/appointments" },
