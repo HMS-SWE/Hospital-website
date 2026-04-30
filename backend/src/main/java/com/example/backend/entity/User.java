@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "users", indexes = {
         @Index(name = "idx_user_email", columnList = "email", unique = true),
         @Index(name = "idx_user_role", columnList = "role"),
+        @Index(name = "idx_user_username", columnList = "user_name", unique = true),
         @Index(name = "idx_user_is_active", columnList = "is_active")
 })
 @Inheritance(strategy = InheritanceType.JOINED)
