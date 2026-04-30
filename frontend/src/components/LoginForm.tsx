@@ -107,24 +107,6 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             <h2>Sign in to access your dashboard</h2>
           </div>
 
-          <div className="auth-toggle" role="tablist" aria-label="Authentication mode">
-            {authModes.map(currentMode => (
-              <button
-                key={currentMode}
-                type="button"
-                className={`auth-tab ${mode === currentMode ? 'auth-tab--active' : ''} ${currentMode === 'Register' ? 'auth-tab--disabled' : ''}`}
-                onClick={() => {
-                  if (currentMode === 'Login') return
-                }}
-                role="tab"
-                aria-selected={mode === currentMode}
-                disabled={currentMode === 'Register'}
-              >
-                {currentMode}
-              </button>
-            ))}
-          </div>
-
           <form className="login-form" onSubmit={handleSubmit} noValidate>
             <Input
               id="emailOrUsername"
