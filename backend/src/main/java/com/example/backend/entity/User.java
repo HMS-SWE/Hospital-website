@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class User extends BaseEntity {
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique=true)
     private String userName;
 
     @Column(nullable = false, length = 100)
