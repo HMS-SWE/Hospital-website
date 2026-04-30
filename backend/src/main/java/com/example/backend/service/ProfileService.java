@@ -3,6 +3,7 @@ package com.example.backend.service;
 import com.example.backend.dto.profile.request.*;
 import com.example.backend.dto.profile.response.*;
 import com.example.backend.entity.*;
+import com.example.backend.exception.ResourceNotFoundException;
 import com.example.backend.mapper.*;
 import com.example.backend.repository.*;
 import com.example.backend.service.shared.UserUpdateHelper;
@@ -88,16 +89,16 @@ public class ProfileService {
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
 
     private Doctor findDoctorByUserId(Long userId) {
         return doctorRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Doctor profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Doctor profile not found"));
     }
 
     private Patient findPatientByUserId(Long userId) {
         return patientRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Patient profile not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Patient profile not found"));
     }
 }

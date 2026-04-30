@@ -23,10 +23,6 @@ public class UserProfileRequest {
     @Pattern(regexp = "^[a-zA-Z\\s]+$", message = "Full name can only contain letters and spaces")
     private String fullName;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    private String email;
-
     private Gender gender;
 
     @Past(message = "Birth date must be in the past")
@@ -37,6 +33,11 @@ public class UserProfileRequest {
 
     @Size(max = 255, message = "Address too long")
     private String address;
+
+    @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email address")
+    @Size(max = 150, message = "Email too long")
+    private String email;
 
     // Password update — optional, only filled when user wants to change it
     @Size(min = 8, message = "Password must be at least 8 characters")
