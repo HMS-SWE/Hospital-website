@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final List<RequestMatcher> SENSITIVE_ROUTES = List.of(
     new AntPathRequestMatcher("/api/admin/**"),
     new AntPathRequestMatcher("/api/medical-records/**"),
-    new AntPathRequestMatcher("/api/profile/**")
+    new AntPathRequestMatcher("/api/**/profile")
     );
 
     @Override
