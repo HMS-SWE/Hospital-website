@@ -1,6 +1,5 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.doctor.response.DoctorPublicResponse;
 import com.example.backend.dto.profile.request.*;
 import com.example.backend.dto.profile.response.*;
 import com.example.backend.entity.*;
@@ -37,13 +36,6 @@ public class ProfileService {
 
     public PatientProfileResponse getPatientProfile(Long userId) {
         return patientMapper.toResponse(findPatientByUserId(userId));
-    }
-
-    // ─── GET PUBLIC DOCTOR PROFILE ────────────────────────────────────────────
-    // used when a doctor or patient views another doctor
-
-    public DoctorPublicResponse getDoctorPublicProfile(Long userId) {
-        return doctorMapper.toPublicResponse(findDoctorByUserId(userId));
     }
 
     // ─── UPDATE ──────────────────────────────────────────────────────────────

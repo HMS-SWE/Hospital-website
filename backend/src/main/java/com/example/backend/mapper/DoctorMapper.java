@@ -1,6 +1,5 @@
 package com.example.backend.mapper;
 
-import com.example.backend.dto.doctor.response.DoctorPublicResponse;
 import com.example.backend.dto.profile.response.DoctorProfileResponse;
 import com.example.backend.entity.Doctor;
 import org.springframework.stereotype.Component;
@@ -31,17 +30,4 @@ public class DoctorMapper {
                 .build();
     }
 
-    public DoctorPublicResponse toPublicResponse(Doctor doctor) {
-        return DoctorPublicResponse.builder()
-                .id(doctor.getId())
-                .fullName(doctor.getFullName())
-                .specialtyName(doctor.getSpecialty().getName())
-                .specialtyLocation(doctor.getSpecialty().getLocation())
-                .department(doctor.getDepartment())
-                .degree(doctor.getDegree())
-                .qualifications(doctor.getQualifications())
-                .licenseNumber(doctor.getLicenseNumber())
-                .examinationPrice(doctor.getExaminationPrice())
-                .build();
-    }
 }

@@ -1,6 +1,5 @@
 package com.example.backend.controller;
 
-import com.example.backend.dto.doctor.response.DoctorPublicResponse;
 import com.example.backend.dto.profile.request.*;
 import com.example.backend.dto.profile.response.*;
 import com.example.backend.enums.Role;
@@ -34,7 +33,7 @@ public class ProfileController {
             return ResponseEntity.ok(profileService.getDoctorProfile(id));
         }
 
-        return ResponseEntity.ok(profileService.getDoctorPublicProfile(id));
+        return ResponseEntity.ok(profileService.getDoctorProfile(id));
     }
 
     // ─── GET PATIENT PROFILE ──────────────────────────────────────────────────
