@@ -29,8 +29,8 @@ public class ProfileController {
         Long requestingUserId = extractUserId(request);
         Role requestingRole   = extractRole(request);
 
-        if (requestingRole == Role.ADMIN || isSelf(requestingUserId, id)) {
-            return ResponseEntity.ok(profileService.getDoctorProfile(id));
+        if (!isAdminOrSelf(requestingRole, requestingUserId, id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         return ResponseEntity.ok(profileService.getDoctorProfile(id));

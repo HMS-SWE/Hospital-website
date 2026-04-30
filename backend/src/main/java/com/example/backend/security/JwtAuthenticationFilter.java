@@ -45,7 +45,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),      Set.of(Role.ADMIN, Role.DOCTOR)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/patients/**"),     Set.of(Role.ADMIN, Role.PATIENT)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/**"), Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),    Set.of(Role.ADMIN, Role.DOCTOR))
+            new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),    Set.of(Role.ADMIN, Role.DOCTOR)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/users/**"),        Set.of(Role.ADMIN))
     );
 
     private final JwtService jwtService;
@@ -106,6 +107,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 .filter(rule -> rule.matches(request))
                 .findFirst()
                 .orElse(null);
+
+        if (matchedRule == null) {writeError(response, HttpStatus.FORBIDDEN, "No access rule defined");
+            return;
+        }
 
         if (matchedRule != null && !matchedRule.allows(role)) {
             writeError(response, HttpStatus.FORBIDDEN, "Forbidden");

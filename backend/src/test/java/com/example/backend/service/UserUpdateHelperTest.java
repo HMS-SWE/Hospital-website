@@ -55,7 +55,6 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john_updated")
                 .fullName("John Doe Updated")
-                .email("john@hospital.com")   // same email — no duplicate check
                 .gender(Gender.MALE)
                 .birthDate(LocalDate.of(1990, 1, 1))
                 .phoneNumber("+201111111111")
@@ -80,7 +79,7 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("newemail@hospital.com")   // different email
+                .email("newemail@hospital.com")
                 .build();
 
         when(userRepository.existsByEmail("newemail@hospital.com")).thenReturn(false);
@@ -97,7 +96,7 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("john@hospital.com")   // same email
+                .email("john@hospital.com")
                 .build();
 
         userUpdateHelper.applyUpdates(mockUser, request);
@@ -136,7 +135,6 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .currentPassword("oldPassword")
                 .newPassword("NewPass@123")
                 .build();
@@ -163,7 +161,6 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .currentPassword("wrongPassword")
                 .newPassword("NewPass@123")
                 .build();
@@ -185,7 +182,6 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .currentPassword(null)   // not trying to change password
                 .newPassword(null)
                 .build();
@@ -207,7 +203,6 @@ class UserUpdateHelperTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .currentPassword("oldPassword")
                 .newPassword(null)           // missing newPassword
                 .build();

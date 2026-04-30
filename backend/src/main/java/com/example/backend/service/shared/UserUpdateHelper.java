@@ -19,26 +19,30 @@ public class UserUpdateHelper {
 
     public void applyUpdates(User user, UserProfileRequest request) {
         applyBasicFields(user, request);
-        applyEmailChange(user, request);
         applyPasswordChange(user, request);
     }
 
     private void applyBasicFields(User user, UserProfileRequest request) {
-        user.setUserName(request.getUserName());
+        // only query DB if the username actually changed
+        if (!user.getUserName().equals(request.getUserName())) {
+            if (userRepository.existsByUserName(request.getUserName())) {
+                throw new RuntimeException("Username already taken");
+            }
+            user.setUserName(request.getUserName());
+        }
+
+        if (request.getEmail() != null && !request.getEmail().equals(user.getEmail())) {
+            if (userRepository.existsByEmail(request.getEmail())) {
+                throw new RuntimeException("Email already in use");
+            }
+            user.setEmail(request.getEmail());
+        }
+
         user.setFullName(request.getFullName());
         user.setGender(request.getGender());
         user.setBirthDate(request.getBirthDate());
         user.setPhoneNumber(request.getPhoneNumber());
         user.setAddress(request.getAddress());
-    }
-
-    private void applyEmailChange(User user, UserProfileRequest request) {
-        if (user.getEmail().equals(request.getEmail())) return;
-
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already in use");
-        }
-        user.setEmail(request.getEmail());
     }
 
     private void applyPasswordChange(User user, UserProfileRequest request) {

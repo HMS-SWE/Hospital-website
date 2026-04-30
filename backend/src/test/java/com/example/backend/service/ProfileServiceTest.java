@@ -244,7 +244,6 @@ class ProfileServiceTest {
                 UserProfileRequest request = UserProfileRequest.builder()
                                 .userName("john_updated")
                                 .fullName("John Doe Updated")
-                                .email("john@hospital.com")
                                 .build();
 
                 when(userRepository.findById(1L)).thenReturn(Optional.of(mockUser));
@@ -270,7 +269,6 @@ class ProfileServiceTest {
                 UserProfileRequest request = UserProfileRequest.builder()
                                 .userName("john")
                                 .fullName("John Doe")
-                                .email("john@hospital.com")
                                 .build();
 
                 assertThatThrownBy(() -> profileService.updateUserProfile(99L, request))
@@ -292,7 +290,6 @@ class ProfileServiceTest {
                 DoctorProfileRequest request = DoctorProfileRequest.builder()
                                 .userName("drsmith")
                                 .fullName("Dr. Smith")
-                                .email("smith@hospital.com")
                                 .specialtyId(1L)
                                 .department("New Department")
                                 .degree("PhD")
@@ -326,7 +323,6 @@ class ProfileServiceTest {
                 DoctorProfileRequest request = DoctorProfileRequest.builder()
                                 .userName("drsmith")
                                 .fullName("Dr. Smith")
-                                .email("smith@hospital.com")
                                 .specialtyId(1L)
                                 .build();
 
@@ -348,7 +344,6 @@ class ProfileServiceTest {
                 PatientProfileRequest request = PatientProfileRequest.builder()
                                 .userName("patient1")
                                 .fullName("Jane Doe")
-                                .email("jane@hospital.com")
                                 .emergencyNumber("+202222222222")
                                 .bloodType("B+")
                                 .chronicDisease(ChronicDisease.BLOOD_PRESSURE)
@@ -377,7 +372,6 @@ class ProfileServiceTest {
                 PatientProfileRequest request = PatientProfileRequest.builder()
                                 .userName("patient1")
                                 .fullName("Jane Doe")
-                                .email("jane@hospital.com")
                                 .build();
 
                 assertThatThrownBy(() -> profileService.updatePatientProfile(99L, request))

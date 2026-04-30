@@ -37,7 +37,6 @@ class UserProfileRequestTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("")              // ← violates @NotBlank
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .build();
 
         Set<ConstraintViolation<UserProfileRequest>> violations = validator.validate(request);
@@ -51,7 +50,7 @@ class UserProfileRequestTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("not-an-email")    
+                .email("not-an-email")
                 .build();
 
         Set<ConstraintViolation<UserProfileRequest>> violations = validator.validate(request);
@@ -65,7 +64,6 @@ class UserProfileRequestTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("john")
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .currentPassword("current")
                 .newPassword("weakpassword")  
                 .build();
@@ -81,7 +79,6 @@ class UserProfileRequestTest {
         UserProfileRequest request = UserProfileRequest.builder()
                 .userName("")
                 .fullName("John Doe")
-                .email("john@hospital.com")
                 .build();
 
         Set<ConstraintViolation<UserProfileRequest>> violations = validator.validate(request);
