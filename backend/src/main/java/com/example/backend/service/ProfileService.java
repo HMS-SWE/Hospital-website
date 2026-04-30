@@ -70,7 +70,21 @@ public class ProfileService {
         return patientMapper.toResponse(patientRepository.save(patient));
     }
 
-    // ─── PRIVATE FINDERS ─────────────────────────────────────
+    // ─── DELETE (soft) ────────────────────────────────────────────────────────
+
+    @Transactional
+    public void deactivateUser(Long targetUserId, Long requestingUserId) {
+        // admin cannot delete themselves
+        if (targetUserId.equals(requestingUserId)) {
+            throw new RuntimeException("You cannot delete your own account");
+        }
+
+        User user = findUserById(targetUserId);
+        user.setIsActive(false);
+        userRepository.save(user);
+    }
+
+    // ─── PRIVATE FINDERS ─────────────────────────────────────────────────────
 
     private User findUserById(Long userId) {
         return userRepository.findById(userId)

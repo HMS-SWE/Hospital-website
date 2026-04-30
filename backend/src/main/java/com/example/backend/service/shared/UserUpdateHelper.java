@@ -4,6 +4,9 @@ import com.example.backend.dto.profile.request.UserProfileRequest;
 import com.example.backend.entity.User;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -49,5 +52,6 @@ public class UserUpdateHelper {
             throw new RuntimeException("Current password is incorrect");
         }
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setPasswordChangedAt(LocalDateTime.now());
     }
 }
