@@ -1,5 +1,3 @@
-import Styles from './Pagination.module.css'
-
 type Props ={
     total: number;
     perPage: number;
