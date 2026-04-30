@@ -1,4 +1,4 @@
-import type { User } from '../auth'
+import type { User } from './auth'
 import { Button } from './Button'
 
 interface DashboardProps {
