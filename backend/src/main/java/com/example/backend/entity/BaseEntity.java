@@ -25,6 +25,7 @@ public abstract class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    
     @CreatedDate
     @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
