@@ -9,16 +9,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/appointments")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
     @PostMapping("/book")
-    public ResponseEntity<Appointment> bookAppointment(@RequestBody BookingRequest request) {
+    public ResponseEntity<?> bookAppointment(@RequestBody BookingRequest request) {
         try {
             Appointment appointment = appointmentService.bookAppointment(request.getPatientId(), request.getSlotId());
             return ResponseEntity.ok(appointment);
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

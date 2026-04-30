@@ -10,6 +10,6 @@ import java.time.LocalDate;
 
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
    
-    List<TimeSlot> findBySchedule_Doctor_IdAndDateAndStatus(Long doctorId, LocalDate date, TimeSlotStatus status);
-    List<TimeSlot> findById(String timeSlotId);
+   List<TimeSlot> findBySchedule_Doctor_IdAndDateAndStatus(Long doctorId, LocalDate date, TimeSlotStatus status);
+    
 }
