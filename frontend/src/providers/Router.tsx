@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
-import Register from "../Pages/Register";
 import MainLayout from "../Layouts/MainLayout";
 import OAuthCallback from "../Pages/OAuthCallback";
+import { LoginForm } from "../Components/LoginForm";
+import Register from "../Pages/Register";
 
 const router = createBrowserRouter([
     {
@@ -10,10 +11,14 @@ const router = createBrowserRouter([
             children: [
                 {
                     path: '/',
-                    element: <Register />,
+                    element: <LoginForm />,
                 },{
                     path: "/oauth-callback",   // add this
                     element: <OAuthCallback />,
+                },
+                {
+                    path: '/register',
+                    element: <Register/>,
                 },
     ]}
 
