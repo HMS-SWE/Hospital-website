@@ -1,7 +1,7 @@
 import { useState, useMemo, type FormEvent } from 'react'
 import Styles from './LoginForm.module.css'
-import { authenticate } from  './auth'
 import { useNavigate } from 'react-router-dom';
+import { authenticate } from './auth'
 type LoginFormData = {
   email: string
   password: string

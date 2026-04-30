@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+body {
+  justify-content: center;
+  align-items: center;
+  display: grid;
+  grid-template-columns: auto;
+}
+
+.Square{
+  display: grid;
+  grid-template-columns: 50% 50%;
+  position: relative;
+  margin-bottom: 5vh;
+  justify-self: center;
+}
+
+.LHS{
+  background: #299B90;
+  background: linear-gradient(152deg,rgba(41, 155, 144, 1) 0%, rgba(28, 128, 118, 1) 100%);
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.HospitalHeadline{
+  color: white;
+  width: 70%;
+  position: relative;
+  top: 18vh;
+  left: 6vw;
+}
+.HospitalHeadline h1{
+  font-size: 2vw;
+}
+
+.HospitalHeadline span{
+  font-size: 1vw;
+}
+
+
+.RHS {
+  background-color: white;
+  display: grid;
+  grid-template-columns: auto;
+  position: relative;
+}
+.Name{
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.IDDOB{
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+h3{
+  color: black;
+  font-size: 0.8vw;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.Data{
+  display: grid;
+  grid-template-rows: auto auto auto auto auto auto;
+  width: 80%;
+  justify-self: center;
+  position: relative;
+}
+
+.EmContact , .Pass{
+  width: 100%;
+}
+
+.Headline{
+  justify-self: center;
+  text-align: center;
+}
+
+span{
+  font-weight: 600;
+  opacity: 0.7;
+  position: relative;
+  bottom: 10%;
+}
+
+.genderField{
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8vw;
+}
+
+.genderField label{
+  opacity: 0.7;
+}
+.gender{
+  width: 25.5vw;
+  height: 5vh;
+  position: relative;
+  top: 10%;
+  border-radius: 10px;
+  background-color: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.25)
+}
+
+.checks{
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8vw;
+  opacity: 0.8;
+}
+
+.submitButton{
+  background-color: #1357e9;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  height: 4vh;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 1vw;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 5%;
+  width: 100%;
+}
+
+.mailphone{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+.form{
+  width: 100%;
+}
+.divider {
+  font-size: 0.8vw;
+  display: flex;
+  align-items: center;
+  opacity: 0.4;
+  margin: 3vh 0 3vh 0;
+
+}
+
+.divider::before, .divider::after {
+  flex: 1;
+  content: '';
+  padding: 0.5px;
+  background-color: black;
+  border-radius: 10px
+}
+
+.googleButton{
+  background-color: white;
+  color: black;
+  border: 0.5px solid rgb(0, 0, 0, 0.3);
+  border-radius: 10px;
+  height: 4vh;
+  cursor: pointer;
+  display: grid;
+  grid-template-rows: auto;
+  grid-template-columns: auto auto;
+  position: relative;
+  justify-content: center;
+}
+.ButtonText{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 600;
+    font-size: 1vw;
+    justify-self: center;
+    position: relative;
+    top: 4px;
+}
+.googleIcon{
+  position: relative;
+  top: 4px;
+  width: 3vw;
+}
+.Icon{
+    width: 50%;
+}
+.checklist{
+  margin-top: 5%;
+}
+
+h5{
+  justify-self: center;
+  position: relative;
+  bottom: 15%;
+  opacity: 0.8;
+}
