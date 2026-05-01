@@ -2,6 +2,8 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.LoginRequest;
 import com.example.backend.dto.LoginResponse;
+import com.example.backend.dto.RegisterRequest;
+import com.example.backend.dto.RegisterResponse;
 import com.example.backend.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +28,45 @@ public class AuthController {
     private final AuthService authService;
 
     @Operation(
+            summary = "Register patient",
+            description = "Registers a new patient account and returns a JWT access token."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Registration successful",
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = RegisterResponse.class),
+                            examples = @ExampleObject(
+                                    value = """
+                                            {
+                                              "userId": 12,
+                                              "email": "mohamed@hospital.com",
+                                              "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMiIsInJvbGUiOiJQQVRJRU5UIiwiaWF0IjoxNzE0MjMwMDAwLCJleHAiOjE3MTQyMzM2MDB9.signature",
+                                              "role": "PATIENT",
+                                              "expiresIn": 3600
+                                            }
+                                            """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Validation failed"
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Email already exists"
+            )
+    })
+    @SecurityRequirements
+    @PostMapping("/register")
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request) {
+        return ResponseEntity.ok(authService.register(request));
+    }
+
+    @Operation(
             summary = "Login user",
             description = "Authenticates a user with email and password and returns a JWT access token."
     )
@@ -40,7 +81,8 @@ public class AuthController {
                                     value = """
                                             {
                                               "token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkRPQ1RPUiIsImlhdCI6MTcxNDIzMDAwMCwiZXhwIjoxNzE0MjMzNjAwfQ.signature",
-                                              "role": "DOCTOR"
+                                              "role": "DOCTOR",
+                                              "expiresIn": 3600
                                             }
                                             """
                             )
