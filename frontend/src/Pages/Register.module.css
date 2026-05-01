@@ -1,18 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-body {
-  justify-content: center;
-  align-items: center;
-  display: grid;
-  grid-template-columns: auto;
-}
+
 
 .Square{
   display: grid;
   grid-template-columns: 50% 50%;
   position: relative;
-  margin-bottom: 5vh;
   justify-self: center;
+  font-family: 'Open Sans','sans-serif';
 }
 
 .LHS{
@@ -44,6 +39,7 @@ body {
   display: grid;
   grid-template-columns: auto;
   position: relative;
+  margin-top: 10%;
 }
 .Name{
   display: grid;

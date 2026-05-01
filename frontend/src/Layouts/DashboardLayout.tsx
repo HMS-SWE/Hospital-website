@@ -16,7 +16,8 @@ function DashboardLayout() {
         <>
             <div className={Styles.Layout}>
                 <aside className={Styles.sidebar}>
-                    <div className={Styles.logo}>
+                    <div className={Styles.sidebarContent}>
+                        <div className={Styles.logo}>
                         <h2>HealthCare</h2>
                         <span>Patient Portal</span>
                     </div>
@@ -34,6 +35,8 @@ function DashboardLayout() {
                     </ul>
 
                     <div className={Styles.logout}>Logout</div>
+
+                    </div>
                 </aside>
 
                 <main className={Styles.content}>
