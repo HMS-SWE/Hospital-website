@@ -81,4 +81,18 @@ public class GlobalExceptionHandler {
                         .build()
         );
     }
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ValidationErrorResponse> handleConflict(ConflictException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                ValidationErrorResponse.builder()
+                        .status(HttpStatus.CONFLICT.value())
+                        .errors(List.of(
+                                ValidationErrorResponse.FieldError.builder()
+                                        .field("general")
+                                        .message(ex.getMessage())
+                                        .build()
+                        ))
+                        .build()
+        );
+    }
 }
