@@ -191,12 +191,12 @@
 
 				<!-- generates report after tests -->
 				<execution>
-						<id>report</id>
-						<phase>test</phase>
-						<goals>
-							<goal>report</goal>
-						</goals>
-						</execution>
+					<id>report</id>
+					<phase>test</phase>
+					<goals>
+						<goal>report</goal>
+					</goals>
+				</execution>
 					</executions>
 			</plugin>
 		</plugins>
