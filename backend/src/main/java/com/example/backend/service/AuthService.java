@@ -26,7 +26,8 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(user.getId(), user.getRole());
+        long expiresIn = (jwtService.extractExpiration(token)-System.currentTimeMillis()) / 1000; // convert to seconds
 
-        return new LoginResponse(token, user.getRole());
+        return new LoginResponse(token, user.getRole(), expiresIn);
     }
 }

@@ -30,7 +30,7 @@ class AuthControllerTest {
         request.setEmail("admin@hospital.com");
         request.setPassword("Admin@1234");
 
-        LoginResponse responseBody = new LoginResponse("mock-jwt-token", Role.ADMIN);
+        LoginResponse responseBody = new LoginResponse("mock-jwt-token", Role.ADMIN ,3600L );
 
         when(authService.login(request)).thenReturn(responseBody);
 
