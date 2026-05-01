@@ -76,4 +76,16 @@ class JwtServiceTest {
 
         assertThrows(Exception.class, () -> jwtService.extractRole("invalid-token"));
     }
+    @Test
+    void generateToken_shouldPreserveRoleClaimForSpringSecurityMapping() {
+        JwtService jwtService = new JwtService(SECRET, VALID_EXPIRATION_MS);
+        String token = jwtService.generateToken(11L, Role.DOCTOR);
+
+        Role role = jwtService.extractRole(token);
+        String authority = "ROLE_" + role.name();
+
+        assertEquals(Role.DOCTOR, role);
+        assertEquals("ROLE_DOCTOR", authority);
+    }
+
 }

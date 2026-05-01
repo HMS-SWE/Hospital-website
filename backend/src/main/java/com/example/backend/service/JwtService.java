@@ -19,6 +19,7 @@ import java.util.Date;
 public class JwtService {
 
     private final SecretKey signingKey;
+
     @Getter
     private final long expirationMs;
 
@@ -51,10 +52,7 @@ public class JwtService {
             return false;
         }
     }
-    public long extractExpiration(String token) {
-        long expire = extractAllClaims(token).getExpiration().getTime();
-        return expire; // returns epoch ms
-    }
+
 
     public Long extractUserId(String token) {
         return Long.valueOf(extractAllClaims(token).getSubject());
@@ -65,6 +63,10 @@ public class JwtService {
         return Role.valueOf(role);
     }
 
+    public long extractExpiration(String token) {
+        return extractAllClaims(token).getExpiration().getTime();
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(signingKey)
@@ -72,7 +74,6 @@ public class JwtService {
                 .parseSignedClaims(token)
                 .getPayload();
     }
-
 
     private SecretKey buildSigningKey(String secret) {
         byte[] keyBytes;
@@ -89,5 +90,4 @@ public class JwtService {
             throw new IllegalStateException("JWT secret must be at least 32 bytes for HS256", ex);
         }
     }
-
 }
