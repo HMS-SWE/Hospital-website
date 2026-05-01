@@ -6,12 +6,16 @@ import com.example.backend.entity.User;
 import com.example.backend.enums.Role;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.security.JwtAuthenticationFilter;
+import com.example.backend.security.OAuth2FailureHandler;
+import com.example.backend.security.OAuth2SuccessHandler;
 import com.example.backend.service.AuthService;
+import com.example.backend.service.CustomOAuth2UserService;
 import com.example.backend.service.JwtService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
@@ -20,12 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Import;
 
 import java.util.Optional;
 
@@ -59,6 +58,16 @@ class SecurityAccessIntegrationTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
+    // ── New beans required by the merged SecurityConfig ───────────────────────
+    @MockitoBean
+    private CustomOAuth2UserService oAuth2UserService;
+
+    @MockitoBean
+    private OAuth2SuccessHandler oAuth2SuccessHandler;
+
+    @MockitoBean
+    private OAuth2FailureHandler oAuth2FailureHandler;
+
     @TestConfiguration
     static class TestEndpointsConfig {
         @Bean
@@ -91,10 +100,15 @@ class SecurityAccessIntegrationTest {
         }
     }
 
+    // ─────────────────────────────────────────────────────────────────────────
+    // Tests
+    // ─────────────────────────────────────────────────────────────────────────
+
     @Test
     @DisplayName("Admin accessing /api/admin/** -> allowed")
     void adminAccessingAdminEndpoint_shouldBeAllowed() throws Exception {
-        mockAuthenticatedUser("admin-token", 1L, Role.ADMIN);
+        // /api/admin/** IS a sensitive route — DB will be called
+        mockAuthenticatedUser("admin-token", 1L, Role.ADMIN, true);
 
         mockMvc.perform(get("/api/admin/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token"))
@@ -105,7 +119,8 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Patient accessing /api/admin/** -> denied")
     void patientAccessingAdminEndpoint_shouldBeDenied() throws Exception {
-        mockAuthenticatedUser("patient-token", 2L, Role.PATIENT);
+        // Role check happens before DB — no DB stub needed
+        mockAuthenticatedUser("patient-token", 2L, Role.PATIENT, false);
 
         mockMvc.perform(get("/api/admin/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer patient-token"))
@@ -116,7 +131,8 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Doctor accessing /api/admin/** -> denied")
     void doctorAccessingAdminEndpoint_shouldBeDenied() throws Exception {
-        mockAuthenticatedUser("doctor-token", 3L, Role.DOCTOR);
+        // Role check happens before DB — no DB stub needed
+        mockAuthenticatedUser("doctor-token", 3L, Role.DOCTOR, false);
 
         mockMvc.perform(get("/api/admin/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer doctor-token"))
@@ -127,7 +143,8 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Doctor accessing /api/doctors/** -> allowed")
     void doctorAccessingDoctorEndpoint_shouldBeAllowed() throws Exception {
-        mockAuthenticatedUser("doctor-token", 3L, Role.DOCTOR);
+        // /api/doctors/** is NOT a sensitive route — no DB call
+        mockAuthenticatedUser("doctor-token", 3L, Role.DOCTOR, false);
 
         mockMvc.perform(get("/api/doctors/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer doctor-token"))
@@ -164,7 +181,8 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Valid token -> success")
     void validToken_shouldSucceed() throws Exception {
-        mockAuthenticatedUser("valid-token", 4L, Role.DOCTOR);
+        // /api/schedules/** is NOT a sensitive route — no DB call
+        mockAuthenticatedUser("valid-token", 4L, Role.DOCTOR, false);
 
         mockMvc.perform(get("/api/schedules/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer valid-token"))
@@ -194,31 +212,18 @@ class SecurityAccessIntegrationTest {
                 .andExpect(jsonPath("$.message").value("Invalid or expired token"));
     }
 
-    private void mockAuthenticatedUser(String token, Long userId, Role role) {
-        User user = User.builder()
-                .id(userId)
-                .userName(role.name().toLowerCase())
-                .fullName(role.name() + " User")
-                .email(role.name().toLowerCase() + "@hospital.com")
-                .password("encoded-password")
-                .role(role)
-                .build();
-
-        when(jwtService.validateToken(token)).thenReturn(true);
-        when(jwtService.extractUserId(token)).thenReturn(userId);
-        when(jwtService.extractRole(token)).thenReturn(role);
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-    }
     @Test
     @DisplayName("Patient accessing /api/patients/** -> allowed")
     void patientAccessingPatientEndpoint_shouldBeAllowed() throws Exception {
-        mockAuthenticatedUser("patient-token", 2L, Role.PATIENT);
+        // /api/patients/** is NOT a sensitive route — no DB call
+        mockAuthenticatedUser("patient-token", 2L, Role.PATIENT, false);
 
         mockMvc.perform(get("/api/patients/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer patient-token"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("patient ok"));
     }
+
     @Test
     @DisplayName("Malformed Authorization header -> rejected")
     void malformedAuthHeader_shouldBeRejected() throws Exception {
@@ -227,13 +232,43 @@ class SecurityAccessIntegrationTest {
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.message").value("Missing or malformed Authorization header"));
     }
+
     @Test
     @DisplayName("Admin accessing /api/doctors/** -> allowed")
     void adminAccessingDoctorEndpoint_shouldBeAllowed() throws Exception {
-        mockAuthenticatedUser("admin-token", 1L, Role.ADMIN);
+        // /api/doctors/** is NOT a sensitive route — no DB call
+        mockAuthenticatedUser("admin-token", 1L, Role.ADMIN, false);
 
         mockMvc.perform(get("/api/doctors/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer admin-token"))
                 .andExpect(status().isOk());
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Stubs JWT service claims for every test.
+     * Only stubs userRepository when isSensitiveRoute=true, matching the filter's
+     * behaviour of hitting the DB only on sensitive routes.
+     */
+    private void mockAuthenticatedUser(String token, Long userId, Role role,
+                                       boolean isSensitiveRoute) {
+        when(jwtService.validateToken(token)).thenReturn(true);
+        when(jwtService.extractUserId(token)).thenReturn(userId);
+        when(jwtService.extractRole(token)).thenReturn(role);
+
+        if (isSensitiveRoute) {
+            User user = User.builder()
+                    .id(userId)
+                    .userName(role.name().toLowerCase())
+                    .fullName(role.name() + " User")
+                    .email(role.name().toLowerCase() + "@hospital.com")
+                    .password("encoded-password")
+                    .role(role)
+                    .build();
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        }
     }
 }

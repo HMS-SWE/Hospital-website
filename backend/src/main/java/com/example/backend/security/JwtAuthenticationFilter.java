@@ -1,5 +1,6 @@
 package com.example.backend.security;
 
+import com.example.backend.entity.User;
 import com.example.backend.enums.Role;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.JwtService;
@@ -8,8 +9,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import com.example.backend.entity.User;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -17,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -32,30 +32,40 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    // ── Public — no token needed ──────────────────────────────────────────────
     private static final List<RequestMatcher> PUBLIC_ENDPOINTS = List.of(
             new AntPathRequestMatcher("/api/auth/**"),
             new AntPathRequestMatcher("/api/specializations/**", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
-            new AntPathRequestMatcher("/swagger-ui.html")
+            new AntPathRequestMatcher("/swagger-ui.html"),
+            new AntPathRequestMatcher("/login/oauth2/**"),
+            new AntPathRequestMatcher("/oauth2/**")
     );
 
+    // ── Role rules — who can access what ─────────────────────────────────────
     private static final List<RouteRoleRule> ROLE_RULES = List.of(
-            new RouteRoleRule(new AntPathRequestMatcher("/api/admin/**"),        Set.of(Role.ADMIN)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),      Set.of(Role.ADMIN, Role.DOCTOR)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/patients/**"),     Set.of(Role.ADMIN, Role.PATIENT)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/**"), Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),    Set.of(Role.ADMIN, Role.DOCTOR)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/users/**"),        Set.of(Role.ADMIN))
+            new RouteRoleRule(new AntPathRequestMatcher("/api/admin/**"),
+                    Set.of(Role.ADMIN)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/specializations/**"),
+                    Set.of(Role.ADMIN)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/users/**"),
+                    Set.of(Role.ADMIN)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),
+                    Set.of(Role.ADMIN, Role.DOCTOR)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/patients/**"),
+                    Set.of(Role.ADMIN, Role.PATIENT)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/**"),
+                    Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),
+                    Set.of(Role.ADMIN, Role.DOCTOR))
     );
 
-    private final JwtService jwtService;
-    private final UserRepository userRepository;  
-
+    // ── Sensitive — DB is loaded to check password-change invalidation ────────
     private static final List<RequestMatcher> SENSITIVE_ROUTES = List.of(
-    new AntPathRequestMatcher("/api/admin/**"),
-    new AntPathRequestMatcher("/api/medical-records/**"),
-    new AntPathRequestMatcher("/api/**/profile")
+            new AntPathRequestMatcher("/api/admin/**"),
+            new AntPathRequestMatcher("/api/medical-records/**"),
+            new AntPathRequestMatcher("/api/**/profile")
     );
 
     private final JwtService jwtService;
@@ -67,73 +77,82 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain filterChain
-    ) throws ServletException, IOException {
-        String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            writeError(response, HttpStatus.UNAUTHORIZED, "Missing or malformed Authorization header");
+        // 1. Token presence
+        String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            writeError(response, HttpStatus.UNAUTHORIZED,
+                    "Missing or malformed Authorization header");
             return;
         }
 
-        String token = authorizationHeader.substring(7).trim();
+        // 2. Token validity
+        String token = authHeader.substring(7).trim();
         if (token.isEmpty() || !jwtService.validateToken(token)) {
             writeError(response, HttpStatus.UNAUTHORIZED, "Invalid or expired token");
             return;
         }
 
+        // 3. Extract claims from token — no DB yet
         Long userId = jwtService.extractUserId(token);
-        Role role = jwtService.extractRole(token);
+        Role role   = jwtService.extractRole(token);
 
-        boolean isSensitiveRoute = SENSITIVE_ROUTES.stream()
-        .anyMatch(m -> m.matches(request));
-
-        if (isSensitiveRoute) {
-            User user = userRepository.findById(userId).orElse(null);
-            if (user == null) {
-                writeError(response, HttpStatus.UNAUTHORIZED, "User not found");
-                return;
-            }
-            if (user.getPasswordChangedAt() != null) {
-            LocalDateTime tokenIssuedAt = jwtService.extractIssuedAt(token);
-                if (user.getPasswordChangedAt().isAfter(tokenIssuedAt)) {
-                    writeError(response, HttpStatus.UNAUTHORIZED, "Password changed — please log in again");
-                    return;
-                }
-            }
-        }
-
+        // 4. Role check — no DB needed
         RouteRoleRule matchedRule = ROLE_RULES.stream()
                 .filter(rule -> rule.matches(request))
                 .findFirst()
                 .orElse(null);
-
-        if (matchedRule == null) {writeError(response, HttpStatus.FORBIDDEN, "No access rule defined");
-            return;
-        }
 
         if (matchedRule != null && !matchedRule.allows(role)) {
             writeError(response, HttpStatus.FORBIDDEN, "Forbidden");
             return;
         }
 
+        // 5. DB call — only for sensitive routes (password-change invalidation)
+        User user = null;
+        boolean isSensitiveRoute = SENSITIVE_ROUTES.stream()
+                .anyMatch(m -> m.matches(request));
+
+        if (isSensitiveRoute) {
+            user = userRepository.findById(userId).orElse(null);
+            if (user == null) {
+                writeError(response, HttpStatus.UNAUTHORIZED, "User not found");
+                return;
+            }
+            if (user.getPasswordChangedAt() != null) {
+                LocalDateTime tokenIssuedAt = jwtService.extractIssuedAt(token);
+                if (user.getPasswordChangedAt().isAfter(tokenIssuedAt)) {
+                    writeError(response, HttpStatus.UNAUTHORIZED,
+                            "Password changed — please log in again");
+                    return;
+                }
+            }
+        }
+
+        // 6. Stamp request attributes for downstream use
         request.setAttribute(AuthenticatedUserRequestAttributes.USER_ID, userId);
         request.setAttribute(AuthenticatedUserRequestAttributes.USER_ROLE, role);
 
-        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                userId,
-                null,
-                List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        // 7. Set auth context
+        UsernamePasswordAuthenticationToken auth =
+                new UsernamePasswordAuthenticationToken(
+                        user != null ? user : userId,
+                        null,
+                        List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
+                );
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
     }
 
-    private void writeError(HttpServletResponse response, HttpStatus status, String message) throws IOException {
+    private void writeError(HttpServletResponse response,
+                            HttpStatus status,
+                            String message) throws IOException {
         response.setStatus(status.value());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -141,12 +160,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private record RouteRoleRule(RequestMatcher matcher, Set<Role> allowedRoles) {
-
-        private boolean matches(HttpServletRequest request) {
+        boolean matches(HttpServletRequest request) {
             return matcher.matches(request);
         }
-
-        private boolean allows(Role role) {
+        boolean allows(Role role) {
             return allowedRoles.contains(role);
         }
     }
