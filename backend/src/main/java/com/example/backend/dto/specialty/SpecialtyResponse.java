@@ -10,4 +10,5 @@ public class SpecialtyResponse {
     private Long id;
     private String name;
     private String location;
+    private int doctorCount;
 }
