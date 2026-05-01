@@ -24,6 +24,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -49,13 +50,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     );
 
     private final JwtService jwtService;
-    private final UserRepository userRepository;
+    private final UserRepository userRepository;  
 
     private static final List<RequestMatcher> SENSITIVE_ROUTES = List.of(
     new AntPathRequestMatcher("/api/admin/**"),
     new AntPathRequestMatcher("/api/medical-records/**"),
     new AntPathRequestMatcher("/api/**/profile")
     );
+
+    private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {

@@ -55,7 +55,7 @@ public class ProfileController {
 
     // ─── GET USER PROFILE ─────────────────────────────────────────────────────
 
-    @GetMapping("/users/{id}/profile")
+    @GetMapping("/admin/{id}/profile")
     public ResponseEntity<UserProfileResponse> getUserProfile(
             @PathVariable Long id,
             HttpServletRequest request) {
@@ -108,7 +108,7 @@ public class ProfileController {
 
     // ─── DELETE USER ──────────────────────────────────────────────────────────
 
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/admin/{id}")
     public ResponseEntity<Void> deactivateUser(
             @PathVariable Long id,
             HttpServletRequest request) {
