@@ -8,7 +8,6 @@ import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -46,13 +45,14 @@ class JwtAuthenticationFilterTest {
     @Test
     void doFilterInternal_shouldReturn401_whenAuthorizationHeaderMissing() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/admin/dashboard");
+        request.setServletPath("/api/admin/dashboard");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
         assertEquals(401, response.getStatus());
         assertTrue(response.getContentAsString().contains("Missing or malformed Authorization header"));
+
         verifyNoInteractions(jwtService, userRepository);
         verifyNoInteractions(filterChain);
     }
@@ -60,7 +60,7 @@ class JwtAuthenticationFilterTest {
     @Test
     void doFilterInternal_shouldReturn401_whenTokenInvalid() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/admin/dashboard");
+        request.setServletPath("/api/admin/dashboard");
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer invalid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -70,6 +70,7 @@ class JwtAuthenticationFilterTest {
 
         assertEquals(401, response.getStatus());
         assertTrue(response.getContentAsString().contains("Invalid or expired token"));
+
         verify(jwtService).validateToken("invalid-token");
         verifyNoInteractions(userRepository);
         verifyNoInteractions(filterChain);
@@ -78,7 +79,7 @@ class JwtAuthenticationFilterTest {
     @Test
     void doFilterInternal_shouldReturn401_whenUserNotFound() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/doctors/profile");
+        request.setServletPath("/api/doctors/profile"); // ✅ important fix
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer valid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
@@ -91,29 +92,21 @@ class JwtAuthenticationFilterTest {
 
         assertEquals(401, response.getStatus());
         assertTrue(response.getContentAsString().contains("User not found"));
+
+        verify(userRepository).findById(10L);
         verifyNoInteractions(filterChain);
     }
 
     @Test
     void doFilterInternal_shouldAuthenticateAndContinue_whenTokenValid() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/patients/me");
+        request.setServletPath("/api/patients/me"); // ✅ not sensitive
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer valid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
-
-        User user = User.builder()
-                .id(25L)
-                .userName("patient1")
-                .fullName("Patient One")
-                .email("patient@hospital.com")
-                .password("encoded-password")
-                .role(Role.PATIENT)
-                .build();
 
         when(jwtService.validateToken("valid-token")).thenReturn(true);
         when(jwtService.extractUserId("valid-token")).thenReturn(25L);
         when(jwtService.extractRole("valid-token")).thenReturn(Role.PATIENT);
-        when(userRepository.findById(25L)).thenReturn(Optional.of(user));
 
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
@@ -129,12 +122,16 @@ class JwtAuthenticationFilterTest {
         UsernamePasswordAuthenticationToken auth =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-        assertEquals(user, auth.getPrincipal());
+        // ✅ FIX: principal is userId, not User
+        assertEquals(25L, auth.getPrincipal());
+
         assertTrue(auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT")));
 
         verify(filterChain).doFilter(request, response);
+        verifyNoInteractions(userRepository);
     }
+
     @Test
     void shouldNotFilter_shouldReturnTrue_forSwaggerEndpoint() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -145,7 +142,6 @@ class JwtAuthenticationFilterTest {
 
         assertTrue(result);
     }
-
 
     @Test
     void doFilter_shouldSkipJwtValidation_forPublicAuthEndpoint() throws Exception {
@@ -160,5 +156,4 @@ class JwtAuthenticationFilterTest {
         verify(filterChain).doFilter(request, response);
         verifyNoInteractions(jwtService, userRepository);
     }
-
 }
