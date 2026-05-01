@@ -4,7 +4,6 @@ import com.example.backend.security.JwtAuthenticationFilter;
 import com.example.backend.security.OAuth2FailureHandler;
 import com.example.backend.security.OAuth2SuccessHandler;
 import com.example.backend.service.CustomOAuth2UserService;
-import com.example.backend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +31,7 @@ import java.nio.charset.StandardCharsets;
  * can access which parts of the API.
  */
 @Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -39,15 +39,12 @@ public class SecurityConfig {
     private final CustomOAuth2UserService oAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     /**
      * Defines the security filter chain.
-     * We disable CSRF because we use JWTs and set the session to STATELESS.
-     * It maps our endpoints to specific roles and handles unauthorized/forbidden errors.
-     * * @param http the security object used to configure web security rules.
-     * @return the fully configured filter chain.
-     * @throws Exception if there is an error in the security setup.
+     * Combines JWT-based stateless auth with OAuth2 login.
+     * CSRF is disabled since we use JWTs.
+     * Session is STATELESS — OAuth2 redirects are handled via JWT issued in the success handler.
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -98,10 +95,9 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     /**
-     * Bean used to hash passwords before saving them to the database.
-     * Uses the BCrypt algorithm for high security.
-     * * @return a password encoder instance.
+     * BCrypt password encoder used for hashing passwords before persisting them.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {
