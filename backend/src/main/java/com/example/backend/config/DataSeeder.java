@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataSeeder implements ApplicationRunner {
 
+   
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
