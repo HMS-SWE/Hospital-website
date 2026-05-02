@@ -1,5 +1,4 @@
 package com.example.backend.config;
-
 import com.example.backend.security.JwtAuthenticationFilter;
 import com.example.backend.security.OAuth2FailureHandler;
 import com.example.backend.security.OAuth2SuccessHandler;
@@ -24,9 +23,10 @@ import java.nio.charset.StandardCharsets;
 /**
  * Main security configuration for the Hospital Management System.
  */
-@EnableMethodSecurity
 @Configuration
+@EnableMethodSecurity
 @RequiredArgsConstructor
+
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -34,6 +34,12 @@ public class SecurityConfig {
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
     private final OAuth2FailureHandler oAuth2FailureHandler;
 
+    /**
+     * Defines the security filter chain.
+     * Combines JWT-based stateless auth with OAuth2 login.
+     * CSRF is disabled since we use JWTs.
+     * Session is STATELESS — OAuth2 redirects are handled via JWT issued in the success handler.
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -84,6 +90,9 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * BCrypt password encoder used for hashing passwords before persisting them.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();

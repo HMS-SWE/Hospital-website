@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class DataSeeder implements ApplicationRunner {
 
+   
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -27,9 +28,12 @@ public class DataSeeder implements ApplicationRunner {
 
         User admin = User.builder()
                 .userName("Admin")
+                .createdAt(java.time.LocalDateTime.now())
+                .updatedAt(java.time.LocalDateTime.now())
                 .fullName("System Admin")
                 .email("admin@hospital.com")
                 .password(passwordEncoder.encode("Admin@1234"))
+                .role(Role.ADMIN)
                 .build();
         userRepository.save(admin);
         log.info("Admin account created successfully");

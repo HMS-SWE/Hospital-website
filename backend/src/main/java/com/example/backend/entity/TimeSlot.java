@@ -36,4 +36,9 @@ public class TimeSlot extends BaseEntity {
     @Column(nullable = false, length = 15)
     @Builder.Default
     private TimeSlotStatus status = TimeSlotStatus.AVAILABLE;
+
+    public TimeSlot orElseThrow(Object object) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'orElseThrow'");
+    }
 }

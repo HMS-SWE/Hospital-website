@@ -1,5 +1,10 @@
 package com.example.backend.repository;
 
-public class CancellationRuleRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.example.backend.entity.CancellationRule;
+
+
+public interface CancellationRuleRepository extends JpaRepository<CancellationRule, Long> {
 
 }
