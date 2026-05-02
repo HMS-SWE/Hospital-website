@@ -1,11 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
-body {
-  justify-content: center;
-  align-items: center;
-  display: grid;
-  grid-template-columns: auto;
-  margin: 0;
-}
 
 .TitleLogo h4
 {
@@ -16,16 +10,18 @@ body {
     color: white;
     display: grid;
     grid-template-columns: auto;
-
+    font-family: 'Open Sans','sans-serif';
+    width: 100%;
 }
 
 
 .FooterContainer{
-    grid-template-columns: 30% 20% 25% 25%;
+    grid-template-columns: 30% 20% 30% 20%;
     display: grid;
     width: 90%;
     justify-self: center;
     position: relative;
+    margin-top: 3%;
 }
 
 .FooterTitle{
