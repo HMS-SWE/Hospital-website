@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
             new AntPathRequestMatcher("/swagger-ui.html"),
+            // OAuth2 redirect URIs — handled internally by Spring
             new AntPathRequestMatcher("/login/oauth2/**"),
             new AntPathRequestMatcher("/oauth2/**")
     );
@@ -48,8 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             new RouteRoleRule(new AntPathRequestMatcher("/api/admin/**"),
                     Set.of(Role.ADMIN)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/specializations/**"),
-                    Set.of(Role.ADMIN)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/users/**"),
                     Set.of(Role.ADMIN)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),
                     Set.of(Role.ADMIN, Role.DOCTOR)),
@@ -138,6 +137,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         request.setAttribute(AuthenticatedUserRequestAttributes.USER_ROLE, role);
 
         // 7. Set auth context
+        //    Principal is the full User entity on sensitive routes, userId (Long) elsewhere.
+        //    Downstream code should use request attributes (USER_ID, USER_ROLE) for
+        //    simplicity, or instanceof-check the principal if the entity is needed:
+        //      if (authentication.getPrincipal() instanceof User user) { ... }
         UsernamePasswordAuthenticationToken auth =
                 new UsernamePasswordAuthenticationToken(
                         user != null ? user : userId,

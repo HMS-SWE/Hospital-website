@@ -84,9 +84,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-    /**
-     * Bean used to hash passwords before saving them to the database.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
