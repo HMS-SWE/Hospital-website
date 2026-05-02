@@ -20,6 +20,7 @@ const appointments = [
   },
 ];
 
+
 const medications = [
   {
     name: 'Lisinopril 10mg',
