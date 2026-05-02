@@ -23,12 +23,6 @@ import java.nio.charset.StandardCharsets;
 /**
  * Main security configuration for the Hospital Management System.
  */
-@EnableMethodSecurity
-/**
- * Main security configuration for the Hospital Management System.
- * This class sets up the security rules for which users (Admin, Doctor, Patient)
- * can access which parts of the API.
- */
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
