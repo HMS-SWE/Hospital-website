@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.stereotype.Component;
@@ -34,17 +35,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // ── Public — no token needed ──────────────────────────────────────────────
     private static final List<RequestMatcher> PUBLIC_ENDPOINTS = List.of(
             new AntPathRequestMatcher("/api/auth/**"),
-            new AntPathRequestMatcher("/api/specialties/**", HttpMethod.GET.name()),
+            new AntPathRequestMatcher("/api/specializations/**", HttpMethod.GET.name()),
             new AntPathRequestMatcher("/v3/api-docs/**"),
             new AntPathRequestMatcher("/swagger-ui/**"),
-            new AntPathRequestMatcher("/swagger-ui.html")
+            new AntPathRequestMatcher("/swagger-ui.html"),
+            // OAuth2 redirect URIs — handled internally by Spring
+            new AntPathRequestMatcher("/login/oauth2/**"),
+            new AntPathRequestMatcher("/oauth2/**")
     );
 
     // ── Role rules — who can access what ─────────────────────────────────────
     private static final List<RouteRoleRule> ROLE_RULES = List.of(
             new RouteRoleRule(new AntPathRequestMatcher("/api/admin/**"),
                     Set.of(Role.ADMIN)),
-            new RouteRoleRule(new AntPathRequestMatcher("/api/specialties/**"),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/specializations/**"),
                     Set.of(Role.ADMIN)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),
                     Set.of(Role.ADMIN, Role.DOCTOR)),
@@ -56,7 +60,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Set.of(Role.ADMIN, Role.DOCTOR))
     );
 
-    // ── Sensitive — password change check ────────────────────────────────────
+    // ── Sensitive — DB is loaded to check password-change invalidation ────────
     private static final List<RequestMatcher> SENSITIVE_ROUTES = List.of(
             new AntPathRequestMatcher("/api/admin/**"),
             new AntPathRequestMatcher("/api/medical-records/**"),
@@ -92,16 +96,28 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 3. Extract claims
+        // 3. Extract claims from token — no DB yet
         Long userId = jwtService.extractUserId(token);
         Role role   = jwtService.extractRole(token);
 
-        // 4. Password change check — sensitive routes only
+        // 4. Role check — no DB needed
+        RouteRoleRule matchedRule = ROLE_RULES.stream()
+                .filter(rule -> rule.matches(request))
+                .findFirst()
+                .orElse(null);
+
+        if (matchedRule != null && !matchedRule.allows(role)) {
+            writeError(response, HttpStatus.FORBIDDEN, "Forbidden");
+            return;
+        }
+
+        // 5. DB call — only for sensitive routes (password-change invalidation)
+        User user = null;
         boolean isSensitiveRoute = SENSITIVE_ROUTES.stream()
                 .anyMatch(m -> m.matches(request));
 
         if (isSensitiveRoute) {
-            User user = userRepository.findById(userId).orElse(null);
+            user = userRepository.findById(userId).orElse(null);
             if (user == null) {
                 writeError(response, HttpStatus.UNAUTHORIZED, "User not found");
                 return;
@@ -116,28 +132,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        // 5. Role check
-        RouteRoleRule matchedRule = ROLE_RULES.stream()
-                .filter(rule -> rule.matches(request))
-                .findFirst()
-                .orElse(null);
-
-        if (matchedRule != null && !matchedRule.allows(role)) {
-            writeError(response, HttpStatus.FORBIDDEN, "Forbidden");
-            return;
-        }
-
-        // 6. Set auth context and continue
+        // 6. Stamp request attributes for downstream use
         request.setAttribute(AuthenticatedUserRequestAttributes.USER_ID, userId);
         request.setAttribute(AuthenticatedUserRequestAttributes.USER_ROLE, role);
 
-        SecurityContextHolder.getContext().setAuthentication(
+        // 7. Set auth context
+        //    Principal is the full User entity on sensitive routes, userId (Long) elsewhere.
+        //    Downstream code should use request attributes (USER_ID, USER_ROLE) for
+        //    simplicity, or instanceof-check the principal if the entity is needed:
+        //      if (authentication.getPrincipal() instanceof User user) { ... }
+        UsernamePasswordAuthenticationToken auth =
                 new UsernamePasswordAuthenticationToken(
-                        userId,
+                        user != null ? user : userId,
                         null,
                         List.of(new SimpleGrantedAuthority("ROLE_" + role.name()))
-                )
-        );
+                );
+        auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(auth);
 
         filterChain.doFilter(request, response);
     }
@@ -148,14 +159,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         response.setStatus(status.value());
         response.setCharacterEncoding(StandardCharsets.UTF_8.name());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.getWriter().write("{\"error\":\"" + message + "\"}");
+        response.getWriter().write("{\"message\":\"" + message + "\"}");
     }
 
     private record RouteRoleRule(RequestMatcher matcher, Set<Role> allowedRoles) {
-        private boolean matches(HttpServletRequest request) {
+        boolean matches(HttpServletRequest request) {
             return matcher.matches(request);
         }
-        private boolean allows(Role role) {
+        boolean allows(Role role) {
             return allowedRoles.contains(role);
         }
     }
