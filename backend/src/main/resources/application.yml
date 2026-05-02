@@ -1,53 +1,4 @@
 spring:
-<<<<<<< HEAD
-    security:
-        oauth2:
-            client:
-                registration:
-                    google:
-                        client-id: ${GOOGLE_CLIENT_ID}
-                        client-secret: ${GOOGLE_CLIENT_SECRET}
-                        scope: openid, email, profile
-    application:
-        name: backend
-    datasource:
-        url: ${DB_URL}
-        username: ${DB_USERNAME}
-        password: ${DB_PASSWORD}
-        driver-class-name: com.mysql.cj.jdbc.Driver
-    jpa:
-        hibernate:
-            ddl-auto: update
-        show-sql: true
-        properties:
-            hibernate:
-                dialect: org.hibernate.dialect.MySQLDialect
-
-app:
-    jwt:
-        secret: ${APP_JWT_SECRET}
-        expiration: ${APP_JWT_EXPIRATION:3600000}
-=======
-  application:
-    name: backend
-  
-  # 1. إعدادات قاعدة البيانات (XAMPP)
-  datasource:
-    url: jdbc:mysql://localhost:3306/hospital_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: 
-    driver-class-name: com.mysql.cj.jdbc.Driver
-
-  # 2. إعدادات JPA و Hibernate
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
-
-  # 3. إعدادات الـ Security (مهمة جداً عشان الـ App يقوم)
   security:
     oauth2:
       client:
@@ -56,10 +7,22 @@ app:
             client-id: ${GOOGLE_CLIENT_ID:dummy_id}
             client-secret: ${GOOGLE_CLIENT_SECRET:dummy_secret}
             scope: openid, email, profile
+  application:
+    name: backend
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/hospital_db}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 
-# 4. إعدادات الـ JWT (سيبها زي ما هي أو حط قيم افتراضية)
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:my_super_secret_key_that_is_long_enough_for_256_bits}
+    secret: ${APP_JWT_SECRET:EverythingIsWorkingFineAndThisIsALongSecretKey2026}
     expiration: ${APP_JWT_EXPIRATION:3600000}
->>>>>>> ba37b6c (saveeeeeeeeeeeeeeeeee)
