@@ -4,6 +4,7 @@ import Styles from './BookAppointment.module.css'
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import DoctorCard from '../../../Components/DoctorCard/DctorCard';
 
+
 function BookAppointment(){
     return(
         <>
