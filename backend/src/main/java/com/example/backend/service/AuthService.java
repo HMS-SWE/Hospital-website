@@ -67,29 +67,48 @@ public class AuthService {
 
         Patient savedPatient = (Patient) userRepository.save(patient);
 
-        String token = jwtService.generateToken(savedPatient.getId(), Role.PATIENT);
-        long expiresIn = (jwtService.extractExpiration(token) - System.currentTimeMillis()) / 1000;
+        String accessToken = jwtService.generateAccessToken(savedPatient.getId(), Role.PATIENT);
+        String refreshToken = jwtService.generateRefreshToken(savedPatient.getId(), Role.PATIENT);
+        long expiresIn = (jwtService.extractExpiration(accessToken) - System.currentTimeMillis()) / 1000;
 
         return new RegisterResponse(
                 savedPatient.getId(),
                 savedPatient.getEmail(),
-                token,
+                accessToken,
+                refreshToken,
                 Role.PATIENT,
                 expiresIn
         );
     }
 
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
+        User user = userRepository.findByEmail(request.getEmail().trim())
                 .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new BadCredentialsException("Invalid email or password");
         }
 
-        String token = jwtService.generateToken(user.getId(), user.getRole());
-        long expiresIn = (jwtService.extractExpiration(token) - System.currentTimeMillis()) / 1000;
+        String accessToken = jwtService.generateAccessToken(user.getId(), user.getRole());
+        String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getRole());
+        long expiresIn = (jwtService.extractExpiration(accessToken) - System.currentTimeMillis()) / 1000;
 
-        return new LoginResponse(token, user.getRole(), expiresIn);
+        return new LoginResponse(accessToken, refreshToken, user.getRole(), expiresIn);
+    }
+
+    public LoginResponse refresh(String refreshToken) {
+        if (!jwtService.validateToken(refreshToken) || !jwtService.isRefreshToken(refreshToken)) {
+            throw new BadCredentialsException("Invalid refresh token");
+        }
+
+        Long userId = jwtService.extractUserId(refreshToken);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadCredentialsException("User not found"));
+
+        String newAccessToken = jwtService.generateAccessToken(user.getId(), user.getRole());
+        String newRefreshToken = jwtService.generateRefreshToken(user.getId(), user.getRole());
+        long expiresIn = (jwtService.extractExpiration(newAccessToken) - System.currentTimeMillis()) / 1000;
+
+        return new LoginResponse(newAccessToken, newRefreshToken, user.getRole(), expiresIn);
     }
 }

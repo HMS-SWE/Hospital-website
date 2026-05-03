@@ -77,13 +77,35 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
+    void doFilterInternal_shouldReturn401_whenTokenIsRefreshToken() throws Exception {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setServletPath("/api/admin/dashboard");
+        request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer refresh-token");
+        MockHttpServletResponse response = new MockHttpServletResponse();
+
+        when(jwtService.validateToken("refresh-token")).thenReturn(true);
+        when(jwtService.isAccessToken("refresh-token")).thenReturn(false);
+
+        jwtAuthenticationFilter.doFilter(request, response, filterChain);
+
+        assertEquals(401, response.getStatus());
+        assertTrue(response.getContentAsString().contains("Invalid access token"));
+
+        verify(jwtService).validateToken("refresh-token");
+        verify(jwtService).isAccessToken("refresh-token");
+        verifyNoInteractions(userRepository);
+        verifyNoInteractions(filterChain);
+    }
+
+    @Test
     void doFilterInternal_shouldReturn401_whenUserNotFound() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServletPath("/api/doctors/profile"); // ✅ important fix
+        request.setServletPath("/api/doctors/profile");
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer valid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         when(jwtService.validateToken("valid-token")).thenReturn(true);
+        when(jwtService.isAccessToken("valid-token")).thenReturn(true);
         when(jwtService.extractUserId("valid-token")).thenReturn(10L);
         when(jwtService.extractRole("valid-token")).thenReturn(Role.DOCTOR);
         when(userRepository.findById(10L)).thenReturn(Optional.empty());
@@ -100,11 +122,12 @@ class JwtAuthenticationFilterTest {
     @Test
     void doFilterInternal_shouldAuthenticateAndContinue_whenTokenValid() throws Exception {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setServletPath("/api/patients/me"); // ✅ not sensitive
+        request.setServletPath("/api/patients/me");
         request.addHeader(HttpHeaders.AUTHORIZATION, "Bearer valid-token");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         when(jwtService.validateToken("valid-token")).thenReturn(true);
+        when(jwtService.isAccessToken("valid-token")).thenReturn(true);
         when(jwtService.extractUserId("valid-token")).thenReturn(25L);
         when(jwtService.extractRole("valid-token")).thenReturn(Role.PATIENT);
 
@@ -122,9 +145,7 @@ class JwtAuthenticationFilterTest {
         UsernamePasswordAuthenticationToken auth =
                 (UsernamePasswordAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
 
-        // ✅ FIX: principal is userId, not User
         assertEquals(25L, auth.getPrincipal());
-
         assertTrue(auth.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_PATIENT")));
 
@@ -133,7 +154,7 @@ class JwtAuthenticationFilterTest {
     }
 
     @Test
-    void shouldNotFilter_shouldReturnTrue_forSwaggerEndpoint() throws Exception {
+    void shouldNotFilter_shouldReturnTrue_forSwaggerEndpoint() {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         request.setServletPath("/swagger-ui/index.html");

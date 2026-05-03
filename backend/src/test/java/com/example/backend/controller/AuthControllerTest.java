@@ -2,6 +2,7 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.LoginRequest;
 import com.example.backend.dto.LoginResponse;
+import com.example.backend.dto.RefreshTokenRequest;
 import com.example.backend.dto.RegisterRequest;
 import com.example.backend.dto.RegisterResponse;
 import com.example.backend.enums.Role;
@@ -41,8 +42,14 @@ class AuthControllerTest {
         request.setPassword("Patient@123");
         request.setRole("patient");
 
-        RegisterResponse responseBody =
-                new RegisterResponse(10L, "patient@hospital.com", "patient-jwt-token", Role.PATIENT, 3600L);
+        RegisterResponse responseBody = new RegisterResponse(
+                10L,
+                "patient@hospital.com",
+                "patient-access-token",
+                "patient-refresh-token",
+                Role.PATIENT,
+                3600L
+        );
 
         when(authService.register(request)).thenReturn(responseBody);
 
@@ -52,18 +59,24 @@ class AuthControllerTest {
         assertNotNull(response.getBody());
         assertEquals(10L, response.getBody().getUserId());
         assertEquals("patient@hospital.com", response.getBody().getEmail());
-        assertEquals("patient-jwt-token", response.getBody().getToken());
+        assertEquals("patient-access-token", response.getBody().getAccessToken());
+        assertEquals("patient-refresh-token", response.getBody().getRefreshToken());
         assertEquals(Role.PATIENT, response.getBody().getRole());
         assertEquals(3600L, response.getBody().getExpiresIn());
     }
 
     @Test
-    void login_shouldReturn200AndTokenAndRole_whenCredentialsAreValid() {
+    void login_shouldReturn200AndTokensAndRole_whenCredentialsAreValid() {
         LoginRequest request = new LoginRequest();
         request.setEmail("admin@hospital.com");
         request.setPassword("Admin@1234");
 
-        LoginResponse responseBody = new LoginResponse("mock-jwt-token", Role.ADMIN, 3600L);
+        LoginResponse responseBody = new LoginResponse(
+                "mock-access-token",
+                "mock-refresh-token",
+                Role.ADMIN,
+                3600L
+        );
 
         when(authService.login(request)).thenReturn(responseBody);
 
@@ -71,8 +84,33 @@ class AuthControllerTest {
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("mock-jwt-token", response.getBody().getToken());
+        assertEquals("mock-access-token", response.getBody().getAccessToken());
+        assertEquals("mock-refresh-token", response.getBody().getRefreshToken());
         assertEquals(Role.ADMIN, response.getBody().getRole());
+        assertEquals(3600L, response.getBody().getExpiresIn());
+    }
+
+    @Test
+    void refresh_shouldReturn200AndNewTokens_whenRefreshTokenIsValid() {
+        RefreshTokenRequest request = new RefreshTokenRequest();
+        request.setRefreshToken("valid-refresh-token");
+
+        LoginResponse responseBody = new LoginResponse(
+                "new-access-token",
+                "new-refresh-token",
+                Role.DOCTOR,
+                3600L
+        );
+
+        when(authService.refresh("valid-refresh-token")).thenReturn(responseBody);
+
+        ResponseEntity<LoginResponse> response = authController.refresh(request);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+        assertEquals("new-access-token", response.getBody().getAccessToken());
+        assertEquals("new-refresh-token", response.getBody().getRefreshToken());
+        assertEquals(Role.DOCTOR, response.getBody().getRole());
         assertEquals(3600L, response.getBody().getExpiresIn());
     }
 }
