@@ -7,19 +7,18 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@Schema(description = "Login response containing the JWT token and user role")
+@Schema(description = "Login response containing access token and refresh token")
 public class LoginResponse {
 
-    @Schema(
-            description = "JWT access token used in Authorization header as Bearer token",
-            example = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwicm9sZSI6IkRPQ1RPUiIsImlhdCI6MTcxNDIzMDAwMCwiZXhwIjoxNzE0MjMzNjAwfQ.signature"
-    )
-    private String token;
+    @Schema(description = "Short-lived JWT access token")
+    private String accessToken;
 
-    @Schema(
-            description = "Authenticated user's role",
-            example = "DOCTOR"
-    )
+    @Schema(description = "Long-lived refresh token")
+    private String refreshToken;
+
+    @Schema(description = "Authenticated user's role", example = "DOCTOR")
     private Role role;
+
+    @Schema(description = "Access token expiry in seconds", example = "900")
     private long expiresIn;
 }

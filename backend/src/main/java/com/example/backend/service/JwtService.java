@@ -25,21 +25,35 @@ public class JwtService {
     @Getter
     private final long expirationMs;
 
+    @Getter
+    private final long refreshExpirationMs;
+
     public JwtService(
             @Value("${app.jwt.secret}") String secret,
-            @Value("${app.jwt.expiration}") long expirationMs
+            @Value("${app.jwt.expiration}") long expirationMs,
+            @Value("${app.jwt.refresh-expiration}") long refreshExpirationMs
     ) {
         this.signingKey = buildSigningKey(secret);
         this.expirationMs = expirationMs;
+        this.refreshExpirationMs = refreshExpirationMs;
     }
 
-    public String generateToken(Long userId, Role role) {
+    public String generateAccessToken(Long userId, Role role) {
+        return buildToken(userId, role, "access", expirationMs);
+    }
+
+    public String generateRefreshToken(Long userId, Role role) {
+        return buildToken(userId, role, "refresh", refreshExpirationMs);
+    }
+
+    private String buildToken(Long userId, Role role, String type, long ttl) {
         Date now = new Date();
-        Date expiration = new Date(now.getTime() + expirationMs);
+        Date expiration = new Date(now.getTime() + ttl);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))
                 .claim("role", role.name())
+                .claim("type", type)
                 .issuedAt(now)
                 .expiration(expiration)
                 .signWith(signingKey)
@@ -55,6 +69,13 @@ public class JwtService {
         }
     }
 
+    public boolean isRefreshToken(String token) {
+        return "refresh".equals(extractAllClaims(token).get("type", String.class));
+    }
+
+    public boolean isAccessToken(String token) {
+        return "access".equals(extractAllClaims(token).get("type", String.class));
+    }
 
     public Long extractUserId(String token) {
         return Long.valueOf(extractAllClaims(token).getSubject());
@@ -83,7 +104,6 @@ public class JwtService {
                 .atZone(ZoneId.systemDefault())
                 .toLocalDateTime();
     }
-
 
     private SecretKey buildSigningKey(String secret) {
         byte[] keyBytes;

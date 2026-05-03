@@ -58,7 +58,6 @@ class SecurityAccessIntegrationTest {
     @MockitoBean
     private JpaMetamodelMappingContext jpaMappingContext;
 
-    // ── New beans required by the merged SecurityConfig ───────────────────────
     @MockitoBean
     private CustomOAuth2UserService oAuth2UserService;
 
@@ -100,14 +99,9 @@ class SecurityAccessIntegrationTest {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Tests
-    // ─────────────────────────────────────────────────────────────────────────
-
     @Test
     @DisplayName("Admin accessing /api/admin/** -> allowed")
     void adminAccessingAdminEndpoint_shouldBeAllowed() throws Exception {
-        // /api/admin/** IS a sensitive route — DB will be called
         mockAuthenticatedUser("admin-token", 1L, Role.ADMIN, true);
 
         mockMvc.perform(get("/api/admin/health")
@@ -119,7 +113,6 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Patient accessing /api/admin/** -> denied")
     void patientAccessingAdminEndpoint_shouldBeDenied() throws Exception {
-        // Role check happens before DB — no DB stub needed
         mockAuthenticatedUser("patient-token", 2L, Role.PATIENT, false);
 
         mockMvc.perform(get("/api/admin/health")
@@ -131,7 +124,6 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Doctor accessing /api/admin/** -> denied")
     void doctorAccessingAdminEndpoint_shouldBeDenied() throws Exception {
-        // Role check happens before DB — no DB stub needed
         mockAuthenticatedUser("doctor-token", 3L, Role.DOCTOR, false);
 
         mockMvc.perform(get("/api/admin/health")
@@ -143,7 +135,6 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Doctor accessing /api/doctors/** -> allowed")
     void doctorAccessingDoctorEndpoint_shouldBeAllowed() throws Exception {
-        // /api/doctors/** is NOT a sensitive route — no DB call
         mockAuthenticatedUser("doctor-token", 3L, Role.DOCTOR, false);
 
         mockMvc.perform(get("/api/doctors/health")
@@ -163,7 +154,9 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Public endpoints accessible without login")
     void publicAuthEndpoint_shouldBeAccessibleWithoutLogin() throws Exception {
-        when(authService.login(any())).thenReturn(new LoginResponse("jwt-token", Role.ADMIN, 3600L));
+        when(authService.login(any())).thenReturn(
+                new LoginResponse("jwt-access-token", "jwt-refresh-token", Role.ADMIN, 3600L)
+        );
 
         mockMvc.perform(post("/api/auth/login")
                         .contentType(APPLICATION_JSON)
@@ -174,20 +167,32 @@ class SecurityAccessIntegrationTest {
                                 }
                                 """))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("jwt-token"))
+                .andExpect(jsonPath("$.accessToken").value("jwt-access-token"))
+                .andExpect(jsonPath("$.refreshToken").value("jwt-refresh-token"))
                 .andExpect(jsonPath("$.role").value("ADMIN"));
     }
 
     @Test
-    @DisplayName("Valid token -> success")
+    @DisplayName("Valid access token -> success")
     void validToken_shouldSucceed() throws Exception {
-        // /api/schedules/** is NOT a sensitive route — no DB call
         mockAuthenticatedUser("valid-token", 4L, Role.DOCTOR, false);
 
         mockMvc.perform(get("/api/schedules/health")
                         .header(HttpHeaders.AUTHORIZATION, "Bearer valid-token"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("schedule ok"));
+    }
+
+    @Test
+    @DisplayName("Refresh token on protected endpoint -> rejected")
+    void refreshTokenUsedAsAccessToken_shouldBeRejected() throws Exception {
+        when(jwtService.validateToken("refresh-token")).thenReturn(true);
+        when(jwtService.isAccessToken("refresh-token")).thenReturn(false);
+
+        mockMvc.perform(get("/api/admin/health")
+                        .header(HttpHeaders.AUTHORIZATION, "Bearer refresh-token"))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("$.message").value("Invalid access token"));
     }
 
     @Test
@@ -215,7 +220,6 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Patient accessing /api/patients/** -> allowed")
     void patientAccessingPatientEndpoint_shouldBeAllowed() throws Exception {
-        // /api/patients/** is NOT a sensitive route — no DB call
         mockAuthenticatedUser("patient-token", 2L, Role.PATIENT, false);
 
         mockMvc.perform(get("/api/patients/health")
@@ -236,7 +240,6 @@ class SecurityAccessIntegrationTest {
     @Test
     @DisplayName("Admin accessing /api/doctors/** -> allowed")
     void adminAccessingDoctorEndpoint_shouldBeAllowed() throws Exception {
-        // /api/doctors/** is NOT a sensitive route — no DB call
         mockAuthenticatedUser("admin-token", 1L, Role.ADMIN, false);
 
         mockMvc.perform(get("/api/doctors/health")
@@ -244,18 +247,9 @@ class SecurityAccessIntegrationTest {
                 .andExpect(status().isOk());
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Helpers
-    // ─────────────────────────────────────────────────────────────────────────
-
-    /**
-     * Stubs JWT service claims for every test.
-     * Only stubs userRepository when isSensitiveRoute=true, matching the filter's
-     * behaviour of hitting the DB only on sensitive routes.
-     */
-    private void mockAuthenticatedUser(String token, Long userId, Role role,
-                                       boolean isSensitiveRoute) {
+    private void mockAuthenticatedUser(String token, Long userId, Role role, boolean isSensitiveRoute) {
         when(jwtService.validateToken(token)).thenReturn(true);
+        when(jwtService.isAccessToken(token)).thenReturn(true);
         when(jwtService.extractUserId(token)).thenReturn(userId);
         when(jwtService.extractRole(token)).thenReturn(role);
 

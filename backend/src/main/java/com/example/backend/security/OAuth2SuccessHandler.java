@@ -13,6 +13,8 @@ import org.springframework.security.web.authentication.SimpleUrlAuthenticationSu
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 @Slf4j
 @Component
@@ -33,13 +35,21 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new RuntimeException("User not found after OAuth2 login"));
 
-            String token = jwtService.generateToken(user.getId(), user.getRole());
-            log.info("JWT generated successfully for user: {}", email);
+            String accessToken = jwtService.generateAccessToken(user.getId(), user.getRole());
+            String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getRole());
+            long expiresIn = (jwtService.extractExpiration(accessToken) - System.currentTimeMillis()) / 1000;
 
-            response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token);
+            log.info("OAuth2 login succeeded for user {}", email);
 
+            String redirectUrl = "http://localhost:3000/oauth2/callback"
+                    + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8)
+                    + "&refreshToken=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
+                    + "&role=" + URLEncoder.encode(user.getRole().name(), StandardCharsets.UTF_8)
+                    + "&expiresIn=" + expiresIn;
+
+            response.sendRedirect(redirectUrl);
         } catch (Exception e) {
-            log.error("Error in OAuth2 success handler: {}", e.getMessage());
+            log.error("Error in OAuth2 success handler: {}", e.getMessage(), e);
             response.sendRedirect("http://localhost:3000/login?error=Authentication failed");
         }
     }

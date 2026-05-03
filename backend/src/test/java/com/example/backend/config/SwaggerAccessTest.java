@@ -16,12 +16,10 @@ class SwaggerAccessTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // ── Swagger UI loads without a token ─────────────────────────────────────
-
     @Test
     void swaggerUiPage_isAccessibleWithoutToken() throws Exception {
         mockMvc.perform(get("/swagger-ui.html"))
-                .andExpect(status().is3xxRedirection()); // redirects to swagger-ui/index.html
+                .andExpect(status().is3xxRedirection());
     }
 
     @Test
@@ -34,10 +32,8 @@ class SwaggerAccessTest {
     void openApiJson_isAccessibleWithoutToken() throws Exception {
         mockMvc.perform(get("/v3/api-docs"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType("application/json"));
+                .andExpect(content().contentTypeCompatibleWith("application/json"));
     }
-
-    // ── OpenAPI spec contains the right content ───────────────────────────────
 
     @Test
     void openApiSpec_containsBearerSecurityScheme() throws Exception {
