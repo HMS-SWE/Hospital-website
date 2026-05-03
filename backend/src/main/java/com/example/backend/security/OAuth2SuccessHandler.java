@@ -38,20 +38,20 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String accessToken = jwtService.generateAccessToken(user.getId(), user.getRole());
             String refreshToken = jwtService.generateRefreshToken(user.getId(), user.getRole());
             long expiresIn = (jwtService.extractExpiration(accessToken) - System.currentTimeMillis()) / 1000;
-
-            response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token
-                + "&name=" + oidcUser.getFullName()
-                + "&image=" + oidcUser.getPicture()
-            );
             log.info("OAuth2 login succeeded for user {}", email);
 
-            String redirectUrl = "http://localhost:3000/oauth2/callback"
-                    + "?accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8)
-                    + "&refreshToken=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
-                    + "&role=" + URLEncoder.encode(user.getRole().name(), StandardCharsets.UTF_8)
-                    + "&expiresIn=" + expiresIn;
+            String redirectUrl = "http://localhost:3000/oauth2/callback?"
+                + "accessToken=" + URLEncoder.encode(accessToken, StandardCharsets.UTF_8)
+                + "&refreshToken=" + URLEncoder.encode(refreshToken, StandardCharsets.UTF_8)
+                + "&role=" + URLEncoder.encode(user.getRole().name(), StandardCharsets.UTF_8)
+                + "&expiresIn=" + expiresIn
+                + "&name=" + URLEncoder.encode(oidcUser.getFullName(), StandardCharsets.UTF_8)
+                + "&image=" + URLEncoder.encode(oidcUser.getPicture() != null ? oidcUser.getPicture() : "", StandardCharsets.UTF_8); // Semicolon ONLY here
 
-            response.sendRedirect(redirectUrl);
+                log.info("OAuth2 login succeeded for user {}", email);
+                response.sendRedirect(redirectUrl);
+
+                
         } catch (Exception e) {
             log.error("Error in OAuth2 success handler: {}", e.getMessage(), e);
             response.sendRedirect("http://localhost:3000/login?error=Authentication failed");
