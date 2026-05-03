@@ -11,7 +11,6 @@ import com.example.backend.dto.EditRequest;
 @RestController
 @RequestMapping("/api/appointments")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class AppointmentController {
     private final AppointmentService appointmentService;
 
