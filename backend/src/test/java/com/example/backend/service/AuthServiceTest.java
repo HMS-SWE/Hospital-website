@@ -42,20 +42,13 @@ class AuthServiceTest {
     @Test
     void register_shouldCreatePatientAndReturnToken_whenRequestIsValid() {
         RegisterRequest request = new RegisterRequest();
-        request.setFirstName("Patient");
-        request.setMiddleName("One");
-        request.setLastName("Test");
-        request.setNationalId("12345678901234");
-        request.setDob("2000-01-01");
-        request.setGender("Male");
+        request.setUserName("patient1");
+        request.setFullName("Patient One");
         request.setEmail("patient@hospital.com");
-        request.setPhone("+201001234567");
-        request.setEmergency("+201009876543");
         request.setPassword("Patient@123");
-        request.setRole("patient");
+        request.setPhoneNumber("+201001234567");
 
         when(userRepository.existsByEmail("patient@hospital.com")).thenReturn(false);
-        when(userRepository.existsByUserName("patient")).thenReturn(false);
         when(passwordEncoder.encode("Patient@123")).thenReturn("encoded-password");
         when(jwtService.generateToken(10L, Role.PATIENT)).thenReturn("patient-jwt-token");
         long fakeEpochMs = System.currentTimeMillis() + 3_600_000L;
@@ -80,14 +73,13 @@ class AuthServiceTest {
         verify(userRepository).save(patientCaptor.capture());
 
         Patient savedPatient = patientCaptor.getValue();
-        assertEquals("patient", savedPatient.getUserName());
-        assertEquals("Patient One Test", savedPatient.getFullName());
+        assertEquals("patient1", savedPatient.getUserName());
+        assertEquals("Patient One", savedPatient.getFullName());
         assertEquals("patient@hospital.com", savedPatient.getEmail());
         assertEquals("encoded-password", savedPatient.getPassword());
         assertEquals("+201001234567", savedPatient.getPhoneNumber());
 
         verify(userRepository).existsByEmail("patient@hospital.com");
-        verify(userRepository).existsByUserName("patient");
         verify(passwordEncoder).encode("Patient@123");
         verify(jwtService).generateToken(10L, Role.PATIENT);
         verify(jwtService).extractExpiration("patient-jwt-token");
@@ -96,17 +88,10 @@ class AuthServiceTest {
     @Test
     void register_shouldThrowConflict_whenEmailAlreadyExists() {
         RegisterRequest request = new RegisterRequest();
-        request.setFirstName("Patient");
-        request.setMiddleName("One");
-        request.setLastName("Test");
-        request.setNationalId("12345678901234");
-        request.setDob("2000-01-01");
-        request.setGender("Male");
+        request.setUserName("patient1");
+        request.setFullName("Patient One");
         request.setEmail("patient@hospital.com");
-        request.setPhone("+201001234567");
-        request.setEmergency("+201009876543");
         request.setPassword("Patient@123");
-        request.setRole("patient");
 
         when(userRepository.existsByEmail("patient@hospital.com")).thenReturn(true);
 
@@ -147,10 +132,10 @@ class AuthServiceTest {
 
         LoginResponse response = authService.login(request);
 
+        assertTrue(response.getExpiresIn() > 3590L && response.getExpiresIn() <= 3600L);
         assertNotNull(response);
         assertEquals("mock-jwt-token", response.getToken());
         assertEquals(Role.ADMIN, response.getRole());
-        assertTrue(response.getExpiresIn() > 3590L && response.getExpiresIn() <= 3600L);
 
         verify(userRepository).findByEmail("admin@hospital.com");
         verify(passwordEncoder).matches("Admin@1234", "encoded-password");

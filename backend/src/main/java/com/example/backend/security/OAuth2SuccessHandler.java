@@ -36,10 +36,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String token = jwtService.generateToken(user.getId(), user.getRole());
             log.info("JWT generated successfully for user: {}", email);
 
-            response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token
-                + "&name=" + oidcUser.getFullName()
-                + "&image=" + oidcUser.getPicture()
-            );
+            response.sendRedirect("http://localhost:3000/oauth2/callback?token=" + token);
 
         } catch (Exception e) {
             log.error("Error in OAuth2 success handler: {}", e.getMessage());

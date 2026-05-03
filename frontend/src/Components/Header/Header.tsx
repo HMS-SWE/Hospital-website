@@ -2,16 +2,9 @@ import { faHospital, faSearch } from "@fortawesome/free-solid-svg-icons";
 import SocialLink from "../SocialLink/SocialLink";
 import Styles from './Header.module.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from 'react';
 
 
 function Header(){
-    const [Image, setImage] = useState("");
-    useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
-        setImage(user.image || "");
-    }, []);
-
     return(
         <>
         <div className={Styles.header}>
@@ -45,7 +38,8 @@ function Header(){
                     </form>
                 </div>
                 <div className={Styles.headerButtons}>
-                    <button className={Styles.headerLink}> {Image && <img className={Styles.HeaderImg} src={Image} alt="profile pic" />} Profile </button>
+                    <button className={Styles.headerLink}>Login</button>
+                    <button className={Styles.headerLink}>Register</button>
                 </div>
             </div>
 
