@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 
 import Styles from './DashboardLayout.module.css'
+import {logout} from '../Components/auth'
 
 
 function DashboardLayout() {
@@ -32,7 +33,7 @@ function DashboardLayout() {
                         ))}
                     </ul>
 
-                    <div className={Styles.logout}>Logout</div>
+                    <div className={Styles.logout} onClick={logout}>Logout</div>
 
                     </div>
                 </aside>

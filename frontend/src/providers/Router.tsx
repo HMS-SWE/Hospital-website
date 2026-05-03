@@ -17,7 +17,7 @@ const router = createBrowserRouter([
                     path: '/',
                     element: <LoginForm />,
                 },{
-                    path: "/oauth-callback",   // add this
+                    path: "/oauth2/callback",
                     element: <OAuthCallback />,
                 },
                 {

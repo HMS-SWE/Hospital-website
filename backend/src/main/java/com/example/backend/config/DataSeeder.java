@@ -25,17 +25,23 @@ public class DataSeeder implements ApplicationRunner {
             log.info("Admin already exists — skipping seed");
             return;
         }
+        try {
+            User admin = User.builder()
+                    .userName("Admin")
+                    .createdAt(java.time.LocalDateTime.now())
+                    .updatedAt(java.time.LocalDateTime.now())
+                    .fullName("System Admin")
+                    .email("admin@hospital.com")
+                    .password(passwordEncoder.encode("Admin@1234"))
+                    .isActive(true)
+                    .role(Role.ADMIN)
+                    .gender(null)
+                    .build();
+            userRepository.save(admin);
+            log.info("Admin account created successfully");
+        } catch (Exception e) {
+            log.warn("DataSeeder skipped: {}", e.getMessage());
+        }
 
-        User admin = User.builder()
-                .userName("Admin")
-                .createdAt(java.time.LocalDateTime.now())
-                .updatedAt(java.time.LocalDateTime.now())
-                .fullName("System Admin")
-                .email("admin@hospital.com")
-                .password(passwordEncoder.encode("Admin@1234"))
-                .role(Role.ADMIN)
-                .build();
-        userRepository.save(admin);
-        log.info("Admin account created successfully");
     }
 }
