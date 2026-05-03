@@ -6,9 +6,12 @@ import Styles from './DashboardLayout.module.css'
 function DashboardLayout() {
     const location = useLocation();
     const menu = [
-        { name: "Dashboard", path: "/dashboard" },
+        // { name: "Dashboard", path: "/dashboard" },
         { name: "Appointments", path: "/dashboard/appointments" },
+        // { name: "Medical History", path: "/dashboard/medical-history" },
         { name: "Find Doctor", path: "/dashboard/book-appointment" },
+        // { name: "Messages", path: "/dashboard/messages" },
+        // { name: "Profile", path: "/dashboard/profile" },
     ];
     return (
         <>

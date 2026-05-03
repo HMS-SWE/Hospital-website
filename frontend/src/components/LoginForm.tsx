@@ -1,8 +1,7 @@
 import { useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
-import { Button } from '../Components/Button'
-import { Input } from '../Components/Input'
-
+import { Button } from './Button'
+import { Input } from './Input'
 
 export type LoginFormData = {
   emailOrUsername: string
