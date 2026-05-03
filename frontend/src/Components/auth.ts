@@ -30,6 +30,10 @@ export function authenticate(credentials: LoginCredentials): User | null {
   )
 }
 
+export const logout = () => {
+    localStorage.removeItem("token");
+    window.location.href = "/";
+    };
 
 
 export const register = async (formData: RegisterFormData) => {

@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faFileMedical, faPills, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import Styles from './Dashboard.module.css';
+import { useEffect, useState } from 'react';
 
 const appointments = [
   {
@@ -35,12 +36,17 @@ const medications = [
 ];
 
 function Dashboard() {
+  const [name, setName] = useState("");
+  useEffect(()=>{
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  setName(user.name || "User");
+  }, []);
   return (
     <div className={Styles.dashboardPage}>
       <header className={Styles.pageHeader}>
         <div>
           <p className={Styles.overline}>Dashboard</p>
-          <h1 className={Styles.pageTitle}>Welcome back, // user name // </h1>
+          <h1 className={Styles.pageTitle}>Welcome back, {name}</h1>
           <p className={Styles.pageSubtitle}>Here is a quick summary of your patient portal activity.</p>
         </div>
         <div className={Styles.headerBadge}>

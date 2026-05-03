@@ -62,9 +62,7 @@ function Register() {
                 emergency: "",
                 password: "",
             });
-            setTimeout(() => {
-                navigate("/login");
-            }, 1500);
+                navigate("/");
 
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Registration failed";
@@ -221,7 +219,7 @@ function Register() {
                             <button type='submit' className={Styles.submitButton}>Register</button>
                         </form>
                         <div className={Styles.divider}>Or continue with:</div>
-                        <button className={Styles.googleButton} onClick={() => handleOAuthLogin('google')}>
+                        <button type='button' className={Styles.googleButton} onClick={() => handleOAuthLogin('google')}>
                             <div className={Styles.googleIcon} >
                                 <img className={Styles.Icon} src='./icons8-google.svg' alt="User Icon" />
                             </div>
@@ -229,7 +227,7 @@ function Register() {
                                 Register with google
                             </div>
                         </button>
-                        <h5>Already have an account?<Link to="/login">Login</Link></h5>
+                        <h5>Already have an account?<Link to="/">Login</Link></h5>
                     </div>
 
                 </div>
