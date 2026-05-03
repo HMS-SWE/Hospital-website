@@ -1,3 +1,7 @@
+import type { RegisterFormData } from "../Pages/Register";
+
+const API_URL = "http://localhost:8080";
+
 export type User = {
   email: string
   password: string
@@ -25,3 +29,35 @@ export function authenticate(credentials: LoginCredentials): User | null {
     ) || null
   )
 }
+
+
+
+export const register = async (formData: RegisterFormData) => {
+  const res = await fetch(`${API_URL}/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      firstName: formData.firstName,
+      middleName: formData.middleName,
+      lastName: formData.lastName,
+      nationalId: formData.nationalId,
+      dateOfBirth: formData.dob,
+      gender: formData.gender,
+      email: formData.email,
+      phoneNumber: formData.phone,
+      emergencyContact: formData.emergency,
+      password: formData.password,
+      role: "patient",
+    }),
+  });
+
+  const data = await res.json().catch(()=> null);
+
+  if (!res.ok) {
+    throw new Error(data?.message || "Registration failed");
+  }
+
+  return data;
+};

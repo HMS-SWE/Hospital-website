@@ -3,6 +3,8 @@ import CheckBox from '../CheckBox';
 import Styles from './Register.module.css'
 import { useState } from "react";
 import { validateRegister } from "./RegisterValidation";
+import { register } from '../Components/auth';
+import { Link, useNavigate } from "react-router-dom";
 
 export type RegisterFormData = {
     firstName: string;
@@ -27,9 +29,16 @@ function Register() {
         Partial<Record<keyof RegisterFormData, string>>
         >({});
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault(); // stop page reload
+    const [serverError, setServerError] = useState("");
+    const [success, setSuccess] = useState("");
+    const navigate = useNavigate();
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        setServerError("");
+        setSuccess("");
+        setErrors({});
+
+        e.preventDefault();
         const validationErrors = validateRegister(formData);
 
         if (Object.keys(validationErrors).length > 0) {
@@ -37,8 +46,34 @@ function Register() {
             return;
         }
 
-        console.log("Form submitted:", formData);
+        try {
+            await register(formData);
+            
+            setSuccess("Registration successful!");
+            setFormData({
+            firstName: "",
+            middleName: "",
+            lastName: "",
+            nationalId: "",
+            dob: "",
+            gender: "Male",
+            email: "",
+            phone: "",
+            emergency: "",
+            password: "",
+            });
+            setTimeout(() => {
+            navigate("/login");
+            }, 1500);
+
+        } catch (err: any) {
+            setServerError(err.message);
+            setSuccess("");
+        }
+
         };
+
+
     const [formData, setFormData] = useState<RegisterFormData>({
         firstName: "",
         middleName: "",
@@ -68,6 +103,8 @@ function Register() {
                         <span>Create your account</span>
                     </div>
                     <div className={Styles.Data}>
+                        {serverError && <p className={Styles.error}>{serverError}</p>}
+                        {success && <p className={Styles.success}>{success}</p>}
                         <form onSubmit={handleSubmit}>
                             <div className={Styles.Name}>
                                 <Input label="First name:*"
@@ -183,15 +220,15 @@ function Register() {
                             <button type='submit' className={Styles.submitButton}>Register</button>
                         </form>
                         <div className={Styles.divider}>Or continue with:</div>
-                        <button className={Styles.googleButton}>
+                        <button className={Styles.googleButton} onClick={() => handleOAuthLogin('google')}>
                             <div className={Styles.googleIcon} >
                                 <img className={Styles.Icon} src='./icons8-google.svg' alt="User Icon" />
                             </div>
-                            <div className={Styles.ButtonText} onClick={() => handleOAuthLogin('google')}>
+                            <div className={Styles.ButtonText}>
                                 Register with google
                             </div>
                         </button>
-                        <h5>Already have an account?<a href='#'>Login</a></h5>
+                        <h5>Already have an account?<Link to="/login">Login</Link></h5>
                     </div>
 
                 </div>
