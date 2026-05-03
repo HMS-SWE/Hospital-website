@@ -4,15 +4,15 @@ spring:
       client:
         registration:
           google:
-            client-id: ${GOOGLE_CLIENT_ID:dummy_id}
-            client-secret: ${GOOGLE_CLIENT_SECRET:dummy_secret}
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope: openid, email, profile
   application:
     name: backend
   datasource:
-    url: ${DB_URL:jdbc:mysql://localhost:3306/hospital_db}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -24,5 +24,5 @@ spring:
 
 app:
   jwt:
-    secret: ${APP_JWT_SECRET:EverythingIsWorkingFineAndThisIsALongSecretKey2026}
+    secret: ${APP_JWT_SECRET}
     expiration: ${APP_JWT_EXPIRATION:3600000}

@@ -1,9 +1,10 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 
 import Styles from './DashboardLayout.module.css'
 
 
 function DashboardLayout() {
+    const location = useLocation();
     const menu = [
         // { name: "Dashboard", path: "/dashboard" },
         { name: "Appointments", path: "/dashboard/appointments" },
@@ -16,7 +17,8 @@ function DashboardLayout() {
         <>
             <div className={Styles.Layout}>
                 <aside className={Styles.sidebar}>
-                    <div className={Styles.logo}>
+                    <div className={Styles.sidebarContent}>
+                        <div className={Styles.logo}>
                         <h2>HealthCare</h2>
                         <span>Patient Portal</span>
                     </div>
@@ -34,6 +36,8 @@ function DashboardLayout() {
                     </ul>
 
                     <div className={Styles.logout}>Logout</div>
+
+                    </div>
                 </aside>
 
                 <main className={Styles.content}>
