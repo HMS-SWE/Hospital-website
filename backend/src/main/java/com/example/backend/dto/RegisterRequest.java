@@ -12,43 +12,38 @@ import lombok.Setter;
 @Schema(description = "Patient registration request payload")
 public class RegisterRequest {
 
-    @Schema(
-            description = "Unique username",
-            example = "mohamed_adel",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotBlank(message = "Username is required")
-    private String userName;
+    @NotBlank(message = "First name is required")
+    private String firstName;
 
-    @Schema(
-            description = "Full name",
-            example = "Mohamed Adel",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
-    @NotBlank(message = "Full name is required")
-    private String fullName;
+    @NotBlank(message = "Middle name is required")
+    private String middleName;
 
-    @Schema(
-            description = "User email address",
-            example = "mohamed@hospital.com",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
+    @NotBlank(message = "Last name is required")
+    private String lastName;
+
+    @NotBlank(message = "National ID is required")
+    private String nationalId;
+
+    @NotBlank(message = "Date of birth is required")
+    private String dob;
+
+    @NotBlank(message = "Gender is required")
+    private String gender;
+
     @Email(message = "Email format is invalid")
     @NotBlank(message = "Email is required")
     private String email;
 
-    @Schema(
-            description = "Account password",
-            example = "Patient@123",
-            requiredMode = Schema.RequiredMode.REQUIRED
-    )
+    @NotBlank(message = "Phone number is required")
+    private String phone;
+
+    @NotBlank(message = "Emergency contact is required")
+    private String emergency;
+
     @NotBlank(message = "Password is required")
     @ValidPassword
     private String password;
 
-    @Schema(
-            description = "Phone number",
-            example = "+201001234567"
-    )
-    private String phoneNumber;
+    @NotBlank(message = "Role is required")
+    private String role;
 }

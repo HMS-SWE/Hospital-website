@@ -2,6 +2,7 @@ package com.example.backend.config;
 import com.example.backend.security.JwtAuthenticationFilter;
 import com.example.backend.security.OAuth2FailureHandler;
 import com.example.backend.security.OAuth2SuccessHandler;
+
 import com.example.backend.service.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +44,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

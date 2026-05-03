@@ -6,14 +6,18 @@ import com.example.backend.dto.RegisterRequest;
 import com.example.backend.dto.RegisterResponse;
 import com.example.backend.entity.Patient;
 import com.example.backend.entity.User;
+import com.example.backend.enums.Gender;
 import com.example.backend.enums.Role;
 import com.example.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
+
+import java.time.LocalDate;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +32,37 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered");
         }
 
+        String userName = request.getEmail().trim().split("@")[0];
+        if (userRepository.existsByUserName(userName)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Username is already registered");
+        }
+
+        if (!"patient".equalsIgnoreCase(request.getRole())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only patient registration is allowed");
+        }
+
+        Gender gender;
+        try {
+            gender = Gender.valueOf(request.getGender().trim().toUpperCase(Locale.ROOT));
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid gender");
+        }
+
+        String fullName = String.join(" ",
+                request.getFirstName().trim(),
+                request.getMiddleName().trim(),
+                request.getLastName().trim());
+
         Patient patient = Patient.builder()
-                .userName(request.getUserName())
-                .fullName(request.getFullName())
-                .email(request.getEmail())
+                .userName(userName)
+                .fullName(fullName)
+                .email(request.getEmail().trim())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .phoneNumber(request.getPhoneNumber())
+                .gender(gender)
+                .birthDate(LocalDate.parse(request.getDob()))
+                .phoneNumber(request.getPhone().trim())
+                .emergencyNumber(request.getEmergency().trim())
+                .nationalId(request.getNationalId().trim())
                 .build();
 
         Patient savedPatient = (Patient) userRepository.save(patient);
