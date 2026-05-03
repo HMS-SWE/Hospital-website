@@ -1,7 +1,6 @@
 import type { User } from './auth'
 import { Button } from './Button'
 
-
 interface DashboardProps {
   user: User
   onLogout: () => void

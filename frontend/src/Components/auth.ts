@@ -1,7 +1,3 @@
-import type { RegisterFormData } from "../Pages/Register";
-
-const API_URL = "http://localhost:8080/api";
-
 export type User = {
   email: string
   password: string
@@ -22,50 +18,10 @@ export const mockUsers: User[] = [
 export function authenticate(credentials: LoginCredentials): User | null {
   const loginId = credentials.emailOrUsername.trim().toLowerCase()
   return (
-      mockUsers.find(
-          user =>
-              user.email === loginId &&
-              user.password === credentials.password,
-      )||  null
+    mockUsers.find(
+      user =>
+        user.email === loginId &&
+        user.password === credentials.password,
+    ) || null
   )
 }
-
-export const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/";
-    };
-
-
-export const register = async (formData: RegisterFormData) => {
-  const res = await fetch(`${API_URL}/auth/register`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      firstName: formData.firstName,
-      middleName: formData.middleName,
-      lastName: formData.lastName,
-      nationalId: formData.nationalId,
-      dob: formData.dob,
-      gender: formData.gender,
-      email: formData.email,
-      phone: formData.phone,
-      emergency: formData.emergency,
-      password: formData.password,
-      role: "patient",
-    }),
-  });
-
-  const data = await res.json().catch(()=> null);
-
-  if (!res.ok) {
-    throw new Error(data?.message || "Registration failed");
-  }
-  if (data?.token) {
-    localStorage.setItem("token", data.token);
-  }
-
-
-  return data;
-};
