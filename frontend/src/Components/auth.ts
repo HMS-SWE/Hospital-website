@@ -21,11 +21,11 @@ export const mockUsers: User[] = [
 export function authenticate(credentials: LoginCredentials): User | null {
   const loginId = credentials.emailOrUsername.trim().toLowerCase()
   return (
-      mockUsers.find(
-          user =>
-              user.email === loginId &&
-              user.password === credentials.password,
-      )||  null
+    mockUsers.find(
+      user =>
+        user.email === loginId &&
+        user.password === credentials.password,
+    ) || null
   )
 }
 

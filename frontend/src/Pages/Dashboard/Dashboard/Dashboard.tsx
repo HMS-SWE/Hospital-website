@@ -88,7 +88,7 @@ function Dashboard() {
       <header className={Styles.pageHeader}>
         <div>
           <p className={Styles.overline}>Dashboard</p>
-          <h1 className={Styles.pageTitle}>Welcome back, {name}</h1>
+          <h1 className={Styles.pageTitle}>Welcome back, // user name // </h1>
           <p className={Styles.pageSubtitle}>Here is a quick summary of your patient portal activity.</p>
         </div>
         <div className={Styles.headerBadge}>
