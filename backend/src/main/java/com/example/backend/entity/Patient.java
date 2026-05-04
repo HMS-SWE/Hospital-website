@@ -20,9 +20,6 @@ import java.util.List;
 @SuperBuilder
 public class Patient extends User {
 
-    @Column(name = "national_id", length = 30, unique = true)
-    private String nationalId;
-
     @Column(name = "emergency_number", length = 20)
     private String emergencyNumber;
 
@@ -52,5 +49,4 @@ public class Patient extends User {
     @OneToMany(mappedBy = "patient", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<MedicalRecord> medicalRecords = new ArrayList<>();
-
 }

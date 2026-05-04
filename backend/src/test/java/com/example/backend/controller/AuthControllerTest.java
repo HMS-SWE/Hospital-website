@@ -29,17 +29,11 @@ class AuthControllerTest {
     @Test
     void register_shouldReturn200AndPatientResponse_whenRequestIsValid() {
         RegisterRequest request = new RegisterRequest();
-        request.setFirstName("Patient");
-        request.setMiddleName("One");
-        request.setLastName("Test");
-        request.setNationalId("12345678901234");
-        request.setDob("2000-01-01");
-        request.setGender("Male");
+        request.setUserName("patient1");
+        request.setFullName("Patient One");
         request.setEmail("patient@hospital.com");
-        request.setPhone("+201001234567");
-        request.setEmergency("+201009876543");
         request.setPassword("Patient@123");
-        request.setRole("patient");
+        request.setPhoneNumber("+201001234567");
 
         RegisterResponse responseBody =
                 new RegisterResponse(10L, "patient@hospital.com", "patient-jwt-token", Role.PATIENT, 3600L);
