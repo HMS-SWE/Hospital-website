@@ -1,7 +1,8 @@
 import { useState, useMemo, type FormEvent } from 'react'
 import Styles from './LoginForm.module.css'
 import { useNavigate } from 'react-router-dom';
-import { authenticate } from './auth'
+import { apiCall, getCurrentUser } from '../utils/api';
+
 type LoginFormData = {
   email: string
   password: string
@@ -39,27 +40,50 @@ export function LoginForm() {
     setGeneralError('')
   }
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setSubmitted(true)
- 
-    const errs = validationErrors
-    setErrors(errs)
-    if (Object.keys(errs).length > 0) return
- 
-    const user = authenticate({
-      emailOrUsername: formData.email,
-      password: formData.password,
-    })
- 
-    if (!user) {
-      setGeneralError('Invalid email or password')
-      return
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault()
+  setSubmitted(true)
+
+  const errs = validationErrors
+  setErrors(errs)
+  if (Object.keys(errs).length > 0) return
+
+  const loginPayload = {
+    email: formData.email,
+    password: formData.password
+  };
+
+  try {
+    const response = await apiCall('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(loginPayload)
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      localStorage.setItem('token', data.token);
+      
+      // Store user info for UI
+      const user = getCurrentUser();
+      if (user) {
+        localStorage.setItem('user', JSON.stringify({
+          id: user.userId,
+          role: user.role,
+          email: formData.email
+        }));
+      }
+      
+      alert(`Signed in as ${data.role}`);
+      navigate('/dashboard');
+      
+    } else {
+      setGeneralError('Invalid email or password');
     }
- 
-    // user.role is 'patient' | 'doctor' | 'admin' — route however you like
-    alert(`Signed in as ${user.role}: ${user.email}`)
+  } catch (error) {
+    console.error("Login failed:", error);
+    setGeneralError('Server unreachable. Please try again later.');
   }
+}
 
   return (
     <div className={Styles.page}>

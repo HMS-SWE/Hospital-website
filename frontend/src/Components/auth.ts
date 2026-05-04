@@ -1,6 +1,5 @@
 import type { RegisterFormData } from "../Pages/Register";
-
-const API_URL = "http://localhost:8080/api";
+import { apiCall, getCurrentUser } from '../utils/api';
 
 export type User = {
   email: string
@@ -32,16 +31,14 @@ export function authenticate(credentials: LoginCredentials): User | null {
 
 export const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user");
     window.location.href = "/";
     };
 
 
 export const register = async (formData: RegisterFormData) => {
-  const res = await fetch(`${API_URL}/auth/register`, {
+  const res = await apiCall('/auth/register', {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
     body: JSON.stringify({
       firstName: formData.firstName,
       middleName: formData.middleName,
@@ -64,6 +61,16 @@ export const register = async (formData: RegisterFormData) => {
   }
   if (data?.token) {
     localStorage.setItem("token", data.token);
+    
+    // Store user info for UI
+    const user = getCurrentUser();
+    if (user) {
+      localStorage.setItem('user', JSON.stringify({
+        id: user.userId,
+        role: user.role,
+        email: formData.email
+      }));
+    }
   }
 
 

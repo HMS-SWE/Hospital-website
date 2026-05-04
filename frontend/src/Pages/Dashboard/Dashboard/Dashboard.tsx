@@ -3,6 +3,12 @@ import { faCalendar, faFileMedical, faPills, faClock } from '@fortawesome/free-s
 import { Link } from 'react-router-dom';
 import Styles from './Dashboard.module.css';
 import { useEffect, useState } from 'react';
+import { apiCall, getCurrentUser } from '../../../utils/api';
+
+interface UserProfile {
+  fullName: string;
+  email: string;
+}
 
 const appointments = [
   {
@@ -36,11 +42,47 @@ const medications = [
 ];
 
 function Dashboard() {
-  const [name, setName] = useState("");
-  useEffect(()=>{
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  setName(user.name || "User");
+  const [name, setName] = useState("User");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      const user = getCurrentUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const endpoint = user.role === 'PATIENT' 
+          ? `/patients/${user.userId}/profile`
+          : `/doctors/${user.userId}/profile`;
+        
+        const response = await apiCall(endpoint);
+        if (response.ok) {
+          const profile: UserProfile = await response.json();
+          setName(profile.fullName || profile.email);
+        } else {
+          // Fallback to stored user info
+          const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+          setName(storedUser.email || "User");
+        }
+      } catch (error) {
+        console.error("Failed to fetch profile:", error);
+        // Fallback to stored user info
+        const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+        setName(storedUser.email || "User");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className={Styles.dashboardPage}>
       <header className={Styles.pageHeader}>
