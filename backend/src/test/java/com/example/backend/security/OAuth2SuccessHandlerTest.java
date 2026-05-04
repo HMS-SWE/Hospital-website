@@ -52,15 +52,12 @@ class OAuth2SuccessHandlerTest {
 
         when(authentication.getPrincipal()).thenReturn(oidcUser);
         when(oidcUser.getEmail()).thenReturn("test@gmail.com");
-        when(oidcUser.getFullName()).thenReturn(null);
-        when(oidcUser.getPicture()).thenReturn(null);
         when(userRepository.findByEmail("test@gmail.com")).thenReturn(Optional.of(user));
         when(jwtService.generateToken(1L, Role.PATIENT)).thenReturn("mock-jwt-token");
 
         oAuth2SuccessHandler.onAuthenticationSuccess(request, response, authentication);
 
-        verify(response).sendRedirect(
-                "http://localhost:3000/oauth2/callback?token=mock-jwt-token&name=null&image=null");
+        verify(response).sendRedirect("http://localhost:3000/oauth2/callback?token=mock-jwt-token");
     }
 
     @Test
