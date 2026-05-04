@@ -1,7 +1,7 @@
 import { useState, useMemo, type FormEvent } from 'react'
 import Styles from './LoginForm.module.css'
 import { useNavigate } from 'react-router-dom';
-import { authenticate } from './auth'
+import { login, getProfile } from './auth'
 type LoginFormData = {
   email: string
   password: string
@@ -39,26 +39,33 @@ export function LoginForm() {
     setGeneralError('')
   }
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setSubmitted(true)
- 
+
     const errs = validationErrors
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
- 
-    const user = authenticate({
-      emailOrUsername: formData.email,
-      password: formData.password,
-    })
- 
-    if (!user) {
-      setGeneralError('Invalid email or password')
-      return
+
+    try {
+      const data = await login(formData.email, formData.password);
+
+      const profile = data.token ? await getProfile(data.role, data.token) : null;
+      const user = {
+        id: profile?.id ?? 'unknown',
+        role: data.role,
+        email: formData.email,
+        name: profile?.fullName ?? profile?.userName ?? formData.email,
+      };
+      localStorage.setItem('user', JSON.stringify(user));
+
+      alert(`Signed in as ${data.role}`);
+      navigate('/dashboard');
+
+    } catch (error) {
+      console.error("Login failed:", error);
+      setGeneralError(error instanceof Error ? error.message : 'Server unreachable. Please try again later.');
     }
- 
-    // user.role is 'patient' | 'doctor' | 'admin' — route however you like
-    alert(`Signed in as ${user.role}: ${user.email}`)
   }
 
   return (

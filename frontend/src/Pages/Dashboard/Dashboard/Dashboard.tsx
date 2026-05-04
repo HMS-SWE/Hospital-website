@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faFileMedical, faPills, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import Styles from './Dashboard.module.css';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const appointments = [
   {
@@ -36,11 +36,13 @@ const medications = [
 ];
 
 function Dashboard() {
-  const [name, setName] = useState("");
-  useEffect(()=>{
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
-  setName(user.name || "User");
-  }, []);
+  const [name] = useState(() => {
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    return user.fullName || user.name || user.userName || "User";
+  });
+
+
+  
   return (
     <div className={Styles.dashboardPage}>
       <header className={Styles.pageHeader}>
