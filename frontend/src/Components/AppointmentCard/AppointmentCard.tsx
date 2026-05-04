@@ -4,6 +4,7 @@ import Doctor from '../Doctor/Doctor';
 import Styles from './AppointmentCard.module.css'
 import { faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
 
+
 function AppointmentCard(){
     return(
         <>
