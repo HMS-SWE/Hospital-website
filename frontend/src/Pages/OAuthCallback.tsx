@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -14,7 +13,7 @@ const OAuthCallback = () => {
 
     if (token) {
       localStorage.setItem("jwt", token);
-      const user={
+      const user = {
         name,
         image
       };
@@ -25,7 +24,7 @@ const OAuthCallback = () => {
     } else {
       navigate("/?error=unknown");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "4rem" }}>

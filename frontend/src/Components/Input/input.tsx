@@ -6,9 +6,10 @@ type InputProps ={
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     error?: string;
+    inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }
 
-function Input({label, type, value, onChange, error}: InputProps){
+function Input({label, type, value, onChange, error, inputProps}: InputProps){
     return(
         <>
         <div className="Field">
@@ -17,6 +18,7 @@ function Input({label, type, value, onChange, error}: InputProps){
         type={type}
         value={value}
         onChange={onChange}
+        {...inputProps}
         ></input>
         <br></br>
         <br></br>

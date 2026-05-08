@@ -17,6 +17,7 @@ export type RegisterFormData = {
     phone: string;
     emergency: string;
     password: string;
+    confirmPassword: string;
 }
 
 const handleOAuthLogin = (provider: 'google') => {
@@ -31,6 +32,7 @@ function Register() {
 
     const [serverError, setServerError] = useState("");
     const [success, setSuccess] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -61,6 +63,7 @@ function Register() {
                 phone: "",
                 emergency: "",
                 password: "",
+                confirmPassword: "",
             });
                 navigate("/");
 
@@ -84,7 +87,11 @@ function Register() {
         phone: "",
         emergency: "",
         password: "",
+        confirmPassword: "",
     });
+
+    const today = new Date().toISOString().split("T")[0];
+
     return (
         <>
             <div className={Styles.Square}>
@@ -143,6 +150,7 @@ function Register() {
                                            (e) => setFormData({ ...formData, nationalId: e.target.value })
                                        }
                                        error={errors.nationalId}
+                                       inputProps={{ inputMode: "numeric", maxLength: 14 }}
                                 />
 
                                 <Input label="Date of Birth:*"
@@ -152,6 +160,7 @@ function Register() {
                                            (e) => setFormData({ ...formData, dob: e.target.value })
                                        }
                                        error={errors.dob}
+                                       inputProps={{ max: today }}
                                 />
                             </div>
                             <div className={Styles.genderField}>
@@ -198,14 +207,53 @@ function Register() {
 
                             </div>
                             <div className={Styles.Pass}>
-                                <Input label="Password:*"
-                                       type="password"
-                                       value={formData.password}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, password: e.target.value })
-                                       }
-                                       error={errors.password}
-                                />
+                                <div className={Styles.passwordField}>
+                                    <label>Password:*</label>
+                                    <div className={Styles.passwordInputWrapper}>
+                                        <input
+                                            className={Styles.passwordInput}
+                                            type={showPassword ? "text" : "password"}
+                                            value={formData.password}
+                                            onChange={(e) =>
+                                                setFormData({ ...formData, password: e.target.value })
+                                            }
+                                            autoComplete="new-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            className={Styles.toggleButton}
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? "Hide" : "Show"}
+                                        </button>
+                                    </div>
+                                    {errors.password && <span style={{ color: "red" }}>{errors.password}</span>}
+                                </div>
+
+                                <div className={Styles.passwordField}>
+                                    <label>Confirm Password:*</label>
+                                    <div className={Styles.passwordInputWrapper}>
+                                        <input
+                                            className={Styles.passwordInput}
+                                            type={showPassword ? "text" : "password"}
+                                            value={formData.confirmPassword}
+                                            onChange={(e) =>
+                                                setFormData({ ...formData, confirmPassword: e.target.value })
+                                            }
+                                            autoComplete="new-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            className={Styles.toggleButton}
+                                            onClick={() => setShowPassword((prev) => !prev)}
+                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                        >
+                                            {showPassword ? "Hide" : "Show"}
+                                        </button>
+                                    </div>
+                                    {errors.confirmPassword && <span style={{ color: "red" }}>{errors.confirmPassword}</span>}
+                                </div>
                             </div>
                             <div className={Styles.checklist}>
                                 <span>Chronic disease (if any):</span>

@@ -16,7 +16,12 @@ const router = createBrowserRouter([
                 {
                     path: '/',
                     element: <LoginForm />,
-                },{
+                },
+                {
+                path: '/login',
+                element: <LoginForm />,
+            },
+            {
                     path: "/oauth2/callback",
                     element: <OAuthCallback />,
                 },
@@ -32,8 +37,16 @@ const router = createBrowserRouter([
                     path: '/register',
                     element: <Register/>,
                 },
+                {
+                path: "dashboard",
+                element: <DashboardLayout />,
+                children: [
+                    { index: true, element: <Dashboard /> },
+                    { path: "appointments", element: <Appointments /> },
+                    { path: "book-appointment", element: <BookAppointment /> },
+                ]
+            },
     ]}
 
 ]);
-
 export default router;
