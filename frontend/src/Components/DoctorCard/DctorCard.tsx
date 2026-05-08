@@ -10,7 +10,7 @@ function DoctorCard(){
         <>
         <div className={Styles.CardBody}>
             <div className={Styles.Upper}>
-                <Doctor />
+                <Doctor name='Doctor 1' type='Cardiology'/>
                 <span>4.8<FontAwesomeIcon icon={faStar}></FontAwesomeIcon></span>
             </div>
             <div className={Styles.DCdivider}></div>
