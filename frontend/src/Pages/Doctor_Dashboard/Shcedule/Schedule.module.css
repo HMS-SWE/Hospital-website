@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+.ScheduleContainer{
+    height: 100%;
+    background-color: #e9f5f3;
+    font-family: 'Open Sans', 'sans-serif';
+    display: grid;
+    grid-template-columns: auto;
+}
+
+.ScheduleHeadline{
+    display: grid;
+    grid-template-columns: 60% 40%;
+    align-items: center;
+    grid-template-rows: auto;
+    padding-bottom: 3%;
+}
+
+.ScheduleHeadline h2{
+    display: inline-block;
+    margin-right: 3%;
+}
+
+.ScheduleContents{
+    width: 90%;
+    justify-self: center;
+    position: relative;
+    background-color: white;
+    padding: 3%;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 10px;
+    margin: 3% 0 5% 0;
+}
+
+
+
+.ScheduleHeadline button{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid red;
+    color: red;
+    border-radius: 5px;
+    margin-left: 2%;
+}
+
+.ScheduleHeadline button:hover{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    border: 1px solid red;
+    color: white;
+    background-color: red;
+}

@@ -7,6 +7,7 @@ import Dashboard from "../Pages/Dashboard/Dashboard/Dashboard"
 import BookAppointment from "../Pages/Dashboard/BookAppointment/BookAppointment";
 import { LoginForm } from "../Components/LoginForm";
 import Register from "../Pages/Register";
+import Schedule from "../Pages/Doctor_Dashboard/Shcedule/Schedule"
 
 const router = createBrowserRouter([
     {
@@ -22,13 +23,21 @@ const router = createBrowserRouter([
                 },
                 {
                     path: "dashboard",
-                    element: <DashboardLayout />,
+                    element: <DashboardLayout role="patient" />,
                     children: [
                         {index: true, element: <Dashboard />},
                         {path: "appointments", element: <Appointments />},
                         {path: "book-appointment", element: <BookAppointment /> }
                     ]
-                },{
+                },
+                {
+                    path: "doctor",
+                    element: <DashboardLayout role="doctor" />,
+                    children: [
+                        {index: true, element: <Schedule />},
+                    ]
+                },
+                {
                     path: '/register',
                     element: <Register/>,
                 },
