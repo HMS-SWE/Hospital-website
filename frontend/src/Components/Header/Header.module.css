@@ -12,15 +12,16 @@
 
 .headerContents{
     width: 100%;
-    display: grid;
-    grid-template-columns: 15% 30% 30% 20%;
-    justify-self: center;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
+    padding: 0 2vw;
 }
 
 .headerTitle{
-    display: grid;
-    grid-template-columns: 30% 70%;
+    display: flex;
+    align-items: center;
+    gap: 1vw;
     line-height: 2vh;
     width: 100%;
     font-size: 1.2vw;
@@ -101,6 +102,7 @@
     grid-template-columns: auto auto;
     gap: 2vw;
     height: 70%;
+    margin-right: 5vw;
 }
 
 .searchIcon{

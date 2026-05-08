@@ -1,7 +1,6 @@
-import { faHospital, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faHospital } from "@fortawesome/free-solid-svg-icons";
 import SocialLink from "../SocialLink/SocialLink";
 import Styles from './Header.module.css';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from 'react';
 
 function Header() {
@@ -26,21 +25,6 @@ function Header() {
                         <h3>MediCare HMS</h3>
                         <span>Hospital Management System</span>
                     </div>
-                </div>
-                <div className={Styles.headerLinks}>
-                    <button className={Styles.headerLink}>Home</button>
-                    <button className={Styles.headerLink}>Doctors</button>
-                    <button className={Styles.headerLink}>Appointments</button>
-                    <button className={Styles.headerLink}>Medical Records</button>
-                </div>
-                <div className={Styles.headerSearch}>
-                    <button className={Styles.headerLink}>Contact</button>
-                    <form>
-                        <div className={Styles.searchField}>
-                            <FontAwesomeIcon icon={faSearch} className={Styles.searchIcon}></FontAwesomeIcon>
-                            <input type="text" placeholder= "Search doctors, departments, ..." />
-                        </div>                    
-                    </form>
                 </div>
                 <div className={Styles.headerButtons}>
                     <button className={Styles.headerLink}> {Image && <img className={Styles.HeaderImg} src={Image} alt="profile pic" />} Profile </button>
