@@ -25,7 +25,7 @@ const OAuthCallback = () => {
     } else {
       navigate("/?error=unknown");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <div style={{ textAlign: "center", marginTop: "4rem" }}>
