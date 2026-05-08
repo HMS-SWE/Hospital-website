@@ -53,7 +53,7 @@ function Modal() {
                             {step === 1 && (
                                 <>
                                     <h2>Appointment Booking</h2>
-                                    <Doctor />
+                                    <Doctor name='Doctor' type='test'/>
 
                                     <form onSubmit={handleNextStep}>
                                         <div className={Styles.bookingFields}>

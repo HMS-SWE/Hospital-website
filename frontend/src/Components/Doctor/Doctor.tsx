@@ -1,8 +1,8 @@
 
 import Styles from './Doctor.module.css'
 type doctorProps = {
-    name: string;
-    type: string;
+    name?: string;
+    type?: string;
 }
 function Doctor({name, type}: doctorProps){
     return(
