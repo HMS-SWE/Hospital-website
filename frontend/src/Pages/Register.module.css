@@ -70,6 +70,41 @@ h3{
   width: 100%;
 }
 
+.passwordField {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInput {
+  width: 100%;
+  height: 4.5vh;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 0 4.5rem 0 1rem;
+  background-color: transparent;
+  color: black;
+  box-sizing: border-box;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #1357e9;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
 .Headline{
   justify-self: center;
   text-align: center;
