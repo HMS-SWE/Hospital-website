@@ -1,16 +1,16 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-
 import Styles from './DashboardLayout.module.css'
 import {logout} from '../Components/auth'
+import { SidebarLinks, type UserRole } from "./SidebarLinks";
 
+interface DashboardLayoutProps {
+    role: UserRole;
+}
 
-function DashboardLayout() {
+function DashboardLayout({role}: DashboardLayoutProps) {
     const location = useLocation();
-    const menu = [
-        { name: "Dashboard", path: "/dashboard" },
-        { name: "Appointments", path: "/dashboard/appointments" },
-        { name: "Find Doctor", path: "/dashboard/book-appointment" },
-    ];
+
+    const menu = SidebarLinks[role];
     return (
         <>
             <div className={Styles.Layout}>
@@ -18,7 +18,7 @@ function DashboardLayout() {
                     <div className={Styles.sidebarContent}>
                         <div className={Styles.logo}>
                         <h2>HealthCare</h2>
-                        <span>Patient Portal</span>
+                        <span>{role}'s' Portal</span>
                     </div>
                     <div className={Styles.divider}></div>
 
