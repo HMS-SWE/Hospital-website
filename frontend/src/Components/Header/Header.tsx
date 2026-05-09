@@ -1,14 +1,27 @@
 import { faHospital } from "@fortawesome/free-solid-svg-icons";
 import SocialLink from "../SocialLink/SocialLink";
 import Styles from './Header.module.css';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 function Header() {
-    const [Image] = useState(() => {
+    const [Image, setImage] = useState(() => {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         return user.image || "";
     });
 
+    useEffect(() => {
+        const handleAuthChange = () => {
+            const user = JSON.parse(localStorage.getItem("user") || "{}");
+            setImage(user.image || "");
+        };
+
+        window.addEventListener("authChange", handleAuthChange);
+
+        return () => {
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, []);
+   
     return (
         <>
         <div className={Styles.header}>

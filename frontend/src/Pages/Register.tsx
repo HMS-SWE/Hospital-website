@@ -24,7 +24,6 @@ const handleOAuthLogin = (provider: 'google') => {
     window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
 };
 
-
 function Register() {
     const [errors, setErrors] = useState<
         Partial<Record<keyof RegisterFormData, string>>
@@ -33,6 +32,7 @@ function Register() {
     const [serverError, setServerError] = useState("");
     const [success, setSuccess] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -65,7 +65,7 @@ function Register() {
                 password: "",
                 confirmPassword: "",
             });
-                navigate("/");
+            navigate("/");
 
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "Registration failed";
@@ -74,7 +74,6 @@ function Register() {
         }
 
     };
-
 
     const [formData, setFormData] = useState<RegisterFormData>({
         firstName: "",
@@ -116,28 +115,21 @@ function Register() {
                                 <Input label="First name:*"
                                        type="text"
                                        value={formData.firstName}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, firstName: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                                        error={errors.firstName}
                                 />
-
 
                                 <Input label="Middle name:*"
                                        type="text"
                                        value={formData.middleName}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, middleName: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
                                        error={errors.middleName}
                                 />
 
                                 <Input label="Last name:*"
                                        type="text"
                                        value={formData.lastName}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, lastName: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                                        error={errors.lastName}
                                 />
                             </div>
@@ -146,9 +138,7 @@ function Register() {
                                 <Input label="National ID:*"
                                        type="text"
                                        value={formData.nationalId}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, nationalId: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
                                        error={errors.nationalId}
                                        inputProps={{ inputMode: "numeric", maxLength: 14 }}
                                 />
@@ -156,9 +146,7 @@ function Register() {
                                 <Input label="Date of Birth:*"
                                        type="date"
                                        value={formData.dob}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, dob: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                                        error={errors.dob}
                                        inputProps={{ max: today }}
                                 />
@@ -168,8 +156,7 @@ function Register() {
                                 <br></br>
                                 <select className={Styles.gender}
                                         value={formData.gender}
-                                        onChange={(e) =>
-                                            setFormData({ ...formData, gender: e.target.value })}
+                                        onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                                 >
                                     <option>Male</option>
                                     <option>Female</option>
@@ -179,18 +166,14 @@ function Register() {
                                 <Input label="Email:*"
                                        type="text"
                                        value={formData.email}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, email: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                                        error={errors.email}
                                 />
 
                                 <Input label="Phone Number:*"
                                        type="text"
                                        value={formData.phone}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, phone: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                                        error={errors.phone}
                                 />
 
@@ -199,9 +182,7 @@ function Register() {
                                 <Input label="Emergency Contact:*"
                                        type="text"
                                        value={formData.emergency}
-                                       onChange={
-                                           (e) => setFormData({ ...formData, emergency: e.target.value })
-                                       }
+                                       onChange={(e) => setFormData({ ...formData, emergency: e.target.value })}
                                        error={errors.emergency}
                                 />
 
@@ -214,9 +195,7 @@ function Register() {
                                             className={Styles.passwordInput}
                                             type={showPassword ? "text" : "password"}
                                             value={formData.password}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, password: e.target.value })
-                                            }
+                                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                                             autoComplete="new-password"
                                         />
                                         <button
@@ -225,31 +204,50 @@ function Register() {
                                             onClick={() => setShowPassword((prev) => !prev)}
                                             aria-label={showPassword ? "Hide password" : "Show password"}
                                         >
-                                            {showPassword ? "Hide" : "Show"}
+                                            {showPassword ? (
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                                </svg>
+                                            ) : (
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                            )}
                                         </button>
                                     </div>
                                     {errors.password && <span style={{ color: "red" }}>{errors.password}</span>}
                                 </div>
-
                                 <div className={Styles.passwordField}>
                                     <label>Confirm Password:*</label>
                                     <div className={Styles.passwordInputWrapper}>
                                         <input
                                             className={Styles.passwordInput}
-                                            type={showPassword ? "text" : "password"}
+                                            type={showConfirmPassword ? "text" : "password"}
                                             value={formData.confirmPassword}
-                                            onChange={(e) =>
-                                                setFormData({ ...formData, confirmPassword: e.target.value })
-                                            }
+                                            onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                                             autoComplete="new-password"
                                         />
                                         <button
                                             type="button"
                                             className={Styles.toggleButton}
-                                            onClick={() => setShowPassword((prev) => !prev)}
-                                            aria-label={showPassword ? "Hide password" : "Show password"}
+                                            onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                            aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                                         >
-                                            {showPassword ? "Hide" : "Show"}
+                                            {showConfirmPassword ? (
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                                </svg>
+                                            ) : (
+                                                <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                                    <circle cx="12" cy="12" r="3" />
+                                                </svg>
+                                            )}
                                         </button>
                                     </div>
                                     {errors.confirmPassword && <span style={{ color: "red" }}>{errors.confirmPassword}</span>}
@@ -280,7 +278,6 @@ function Register() {
 
                 </div>
             </div>
-
 
         </>
     );

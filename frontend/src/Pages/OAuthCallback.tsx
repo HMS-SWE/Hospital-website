@@ -18,6 +18,8 @@ const OAuthCallback = () => {
         image
       };
       localStorage.setItem("user", JSON.stringify(user));
+      window.dispatchEvent(new Event("authChange"));
+
       navigate("/dashboard", {replace: true});
     } else if (error) {
       navigate("/?error=oauth_failed");
