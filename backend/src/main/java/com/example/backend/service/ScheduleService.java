@@ -4,7 +4,7 @@ package com.example.backend.service;
 import com.example.backend.dto.*;
 import com.example.backend.repository.*;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.backend.entity.*;
 import com.example.backend.enums.AppointmentStatus;
