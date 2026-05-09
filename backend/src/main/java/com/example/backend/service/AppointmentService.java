@@ -3,26 +3,22 @@ package com.example.backend.service;
 import com.example.backend.entity.*;
 import com.example.backend.enums.*;
 import com.example.backend.repository.*;
-import com.example.backend.dto.*;
+import com.example.backend.dto.appointment.AppointmentResponse;
+import com.example.backend.dto.appointment.DoctorAppointmentView;
 import lombok.RequiredArgsConstructor;
-
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
-
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.Duration;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
 public class AppointmentService {
     private final AppointmentRepository appointmentRepository;
     private final TimeSlotRepository timeSlotRepository;
-    private final DoctorRepository doctorRepository;
     private final PatientRepository patientRepository;
     private final CancellationRuleRepository cancellationRuleRepository;
-    private final AuthService authService;
     private final JwtService jwtService;
 
     @Transactional
@@ -190,5 +186,17 @@ public void editAppointment(String token, Long appointmentId, Long newSlotId) {
         response.setStatus(appointment.getStatus().name());
         response.setExaminationPrice(appointment.getExaminationPrice());
         return response;
+    }
+
+    // Egypt timezone — covers both EET (UTC+2) and EEST (UTC+3) automatically
+    private static final ZoneId EGYPT_ZONE = ZoneId.of("Africa/Cairo");
+
+    public List<DoctorAppointmentView> getTodaysAppointments(Long doctorId) {
+        LocalDate today = LocalDate.now(EGYPT_ZONE);   // ← timezone-aware
+        return appointmentRepository.findTodaysAppointmentsForDoctor(
+                doctorId,
+                today,
+                AppointmentStatus.CANCELLED
+        );
     }
 }
