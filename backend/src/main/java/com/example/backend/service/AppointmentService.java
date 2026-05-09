@@ -3,7 +3,7 @@ package com.example.backend.service;
 import com.example.backend.entity.*;
 import com.example.backend.enums.*;
 import com.example.backend.repository.*;
-import com.example.backend.dto.appointment.AppointmentResponse;
+import com.example.backend.dto.AppointmentResponse;
 import com.example.backend.dto.appointment.DoctorAppointmentView;
 import lombok.RequiredArgsConstructor;
 import java.time.ZoneId;
