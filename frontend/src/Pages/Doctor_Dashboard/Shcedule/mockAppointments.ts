@@ -25,7 +25,7 @@ export const mockAppointments: Appointment[] = [
         id: '3',
         patientName: 'Omar Ali',
         time: '01:00 PM',
-        status: 'Cancelled',
+        status: 'Pending',
         type: 'New'
     },
 ];
