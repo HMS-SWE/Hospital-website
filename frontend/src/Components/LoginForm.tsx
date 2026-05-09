@@ -2,6 +2,7 @@ import { useState, useMemo, type FormEvent } from 'react'
 import Styles from './LoginForm.module.css'
 import { useNavigate } from 'react-router-dom';
 import { login, getProfile } from './auth'
+
 type LoginFormData = {
   email: string
   password: string
@@ -11,8 +12,9 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export function LoginForm() {
   const handleOAuthLogin = (provider: 'google') => {
-  window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
-};
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
+  };
+  
   const navigate = useNavigate();
   const [formData, setFormData] = useState<LoginFormData>({ email: '', password: '' })
   const [errors, setErrors] = useState<Partial<Record<keyof LoginFormData, string>>>({})
@@ -57,7 +59,9 @@ export function LoginForm() {
         email: formData.email,
         name: profile?.fullName ?? profile?.userName ?? formData.email,
       };
+      
       localStorage.setItem('user', JSON.stringify(user));
+      window.dispatchEvent(new Event("authChange"));
 
       alert(`Signed in as ${data.role}`);
       navigate('/dashboard');

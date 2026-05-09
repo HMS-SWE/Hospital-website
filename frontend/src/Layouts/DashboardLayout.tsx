@@ -1,8 +1,6 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
-
+import { Outlet, Link, useLocation} from "react-router-dom";
 import Styles from './DashboardLayout.module.css'
-import {logout} from '../Components/auth'
-
+import { logout } from '../Components/auth'
 
 function DashboardLayout() {
     const location = useLocation();
@@ -11,6 +9,18 @@ function DashboardLayout() {
         { name: "Appointments", path: "/dashboard/appointments" },
         { name: "Find Doctor", path: "/dashboard/book-appointment" },
     ];
+
+    const handleLogout = async () => {
+        try {
+            await logout(); 
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+        localStorage.removeItem("user");
+        
+        window.dispatchEvent(new Event("authChange"));
+    };
+
     return (
         <>
             <div className={Styles.Layout}>
@@ -33,7 +43,8 @@ function DashboardLayout() {
                         ))}
                     </ul>
 
-                    <div className={Styles.logout} onClick={logout}>Logout</div>
+                    {}
+                    <div className={Styles.logout} onClick={handleLogout}>Logout</div>
 
                     </div>
                 </aside>
