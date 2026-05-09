@@ -9,10 +9,15 @@ function Header() {
         return user.image || "";
     });
 
+    const [isLoggedIn, setIsLoggedIn] = useState(() => {
+        return !!localStorage.getItem("user");
+    });
+
     useEffect(() => {
         const handleAuthChange = () => {
             const user = JSON.parse(localStorage.getItem("user") || "{}");
             setImage(user.image || "");
+            setIsLoggedIn(!!localStorage.getItem("user"));
         };
 
         window.addEventListener("authChange", handleAuthChange);
@@ -21,7 +26,7 @@ function Header() {
             window.removeEventListener("authChange", handleAuthChange);
         };
     }, []);
-   
+
     return (
         <>
         <div className={Styles.header}>
@@ -40,7 +45,14 @@ function Header() {
                     </div>
                 </div>
                 <div className={Styles.headerButtons}>
-                    <button className={Styles.headerLink}> {Image && <img className={Styles.HeaderImg} src={Image} alt="profile pic" />} Profile </button>
+                    
+                    {isLoggedIn && (
+                        <button className={Styles.headerLink}> 
+                            {Image && <img className={Styles.HeaderImg} src={Image} alt="profile pic" />} 
+                            Profile 
+                        </button>
+                    )}
+                    
                 </div>
             </div>
         </div>
