@@ -1,0 +1,146 @@
+.dProfileContainer{
+    font-family: 'Open Sans', 'sans-serif';
+    background-color: #e9f5f3;
+    display: grid;
+    grid-template-columns: auto;
+    height: 100%;
+}
+
+.dProfileContent{
+    justify-self: center;
+    width: 95%;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: auto;
+    background-color: white;
+    margin-top: 3%;
+    margin-bottom: 5%;
+}
+
+.dProfileContent h2{
+    width: 90%;
+    justify-self: center;
+}
+
+.changeImg{
+    width: 12%;
+    justify-self: end;
+    font-family: 'Open Sans', 'sans-serif';
+    background-color: transparent;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 10px;
+    font-size: 1vw;
+    height: 5vh;
+    cursor: pointer;
+    transition-duration: 0.5s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.changeImg:hover{
+    color: white;
+    background-color: black;
+    transition-duration: 0.5s;
+}
+.dprofile{
+    display: grid;
+    grid-template-columns: auto;
+    margin: 3% 0 3% 0;
+    width: 90%;
+}
+
+.dprofile h1{
+    justify-self: center;
+}
+.dprofile img{
+    width: 7vw;
+    height: 7vw;
+    background-color: black;
+    border-radius: 100%;
+    justify-self: center;
+}
+
+
+.dPersonal{
+    display: grid;
+    grid-template-columns: auto auto;
+    width: 90%;
+    justify-self: center;
+}
+
+.divider {
+  font-size: 0.8vw;
+  display: flex;
+  align-items: center;
+  opacity: 0.4;
+  margin: 1vh 0 1vh 0;
+  width: 90%;
+  justify-self: center;
+
+}
+
+.divider::before, .divider::after {
+  flex: 1;
+  content: '';
+  padding: 0.5px;
+  background-color: black;
+  border-radius: 10px
+}
+
+.profDetails{
+    display: grid;
+    grid-template-columns: auto auto;
+    width: 90%;
+    justify-self: center;
+}
+
+
+.saveButton{
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid orange;
+    background-color: orange;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.saveButton:hover{
+    border: 1px solid rgb(216, 141, 0);
+    background-color: rgb(216, 145, 0);
+    color: white;
+    transition-duration: 0.5s;
+}
+
+.cancelButton{
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid black;
+    color: black;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.cancelButton:hover{
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+    transition-duration: 0.5s;
+}
+
+.dProfileButtons{
+    display: grid;
+    grid-template-columns: auto auto;
+    width: 20%;
+    gap: 2vw;
+    justify-self: center;
+    padding: 3% 0 5% 0;
+}

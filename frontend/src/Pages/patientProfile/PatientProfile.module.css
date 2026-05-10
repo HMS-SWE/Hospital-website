@@ -1,0 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+
+.pProfileContainer{
+    font-family: 'Open Sans', 'sans-serif';
+    background-color: #e9f5f3;
+    display: grid;
+    grid-template-columns: auto;
+    height: 100%;
+}
+
+.pProfileContent{
+    justify-self: center;
+    width: 95%;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 20px;
+    display: grid;
+    grid-template-columns: auto;
+    background-color: white;
+    margin-top: 3%;
+    margin-bottom: 5%;
+}
+
+.pProfile{
+    display: grid;
+    grid-template-columns: auto;
+    margin: 3% 0 3% 0;
+    width: 90%;
+    justify-self: center;
+}
+
+.pProfile h1{
+    justify-self: center;
+}
+.pProfile img{
+    width: 7vw;
+    height: 7vw;
+    background-color: black;
+    border-radius: 100%;
+    justify-self: center;
+}
+
+
+.pDetails{
+    display: grid;
+    grid-template-columns: auto;
+    justify-self: center;
+    width: 90%;
+}
+
+.changeImg{
+    width: 12%;
+    justify-self: end;
+    font-family: 'Open Sans', 'sans-serif';
+    background-color: transparent;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 10px;
+    font-size: 1vw;
+    height: 5vh;
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.changeImg:hover{
+    color: white;
+    background-color: black;
+    transition-duration: 0.5s;
+}
+
+.pName{
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.IDDOB{
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.passwordField {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.passwordInputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInput {
+  width: 90%;
+  height: 4.5vh;
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 10px;
+  padding: 0 4.5rem 0 1rem;
+  background-color: transparent;
+  color: black;
+  box-sizing: border-box;
+}
+
+.toggleButton {
+  position: absolute;
+  top: 50%;
+  right: 6rem;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: #1357e9;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.saveButton{
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid orange;
+    background-color: orange;
+    color: white;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.saveButton:hover{
+    border: 1px solid rgb(216, 141, 0);
+    background-color: rgb(216, 145, 0);
+    color: white;
+    transition-duration: 0.5s;
+}
+
+.cancelButton{
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid black;
+    color: black;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition-duration: 0.5s;
+}
+
+.cancelButton:hover{
+    border: 1px solid black;
+    background-color: black;
+    color: white;
+    transition-duration: 0.5s;
+}
+
+.pButtons{
+    display: grid;
+    grid-template-columns: auto auto;
+    width: 20%;
+    gap: 2vw;
+    justify-self: center;
+    padding: 3% 0 5% 0;
+}
