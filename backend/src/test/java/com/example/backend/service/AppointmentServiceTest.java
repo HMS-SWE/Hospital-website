@@ -182,7 +182,7 @@ class AppointmentServiceTest {
                 eq(AppointmentStatus.CANCELLED)
         )).thenReturn(List.of());
 
-        appointmentService.getTodaysAppointments(doctorId);
+        appointmentService.getTodaysAppointmentsForDoctor(doctorId);
 
         // capture actual arguments passed to the repo
         ArgumentCaptor<LocalDate> dateCaptor =
@@ -230,7 +230,7 @@ class AppointmentServiceTest {
         )).thenReturn(mockResults);
 
         List<DoctorAppointmentView> result =
-                appointmentService.getTodaysAppointments(doctorId);
+                appointmentService.getTodaysAppointmentsForDoctor(doctorId);
 
         assertThat(result).hasSize(3);
 
@@ -254,7 +254,7 @@ class AppointmentServiceTest {
         )).thenReturn(List.of());
 
         List<DoctorAppointmentView> result =
-                appointmentService.getTodaysAppointments(1L);
+                appointmentService.getTodaysAppointmentsForDoctor(1L);
 
         assertThat(result).isEmpty();
 
@@ -285,7 +285,7 @@ class AppointmentServiceTest {
         )).thenReturn(mockResults);
 
         List<DoctorAppointmentView> result =
-                appointmentService.getTodaysAppointments(doctorId);
+                appointmentService.getTodaysAppointmentsForDoctor(doctorId);
 
         // none of the results should be CANCELLED
         assertThat(result)

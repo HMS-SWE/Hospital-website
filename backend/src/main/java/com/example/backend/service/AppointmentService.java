@@ -191,7 +191,7 @@ public void editAppointment(String token, Long appointmentId, Long newSlotId) {
     // Egypt timezone — covers both EET (UTC+2) and EEST (UTC+3) automatically
     private static final ZoneId EGYPT_ZONE = ZoneId.of("Africa/Cairo");
 
-    public List<DoctorAppointmentView> getTodaysAppointments(Long doctorId) {
+    public List<DoctorAppointmentView> getTodaysAppointmentsForDoctor(Long doctorId) {
         LocalDate today = LocalDate.now(EGYPT_ZONE);   // ← timezone-aware
         return appointmentRepository.findTodaysAppointmentsForDoctor(
                 doctorId,

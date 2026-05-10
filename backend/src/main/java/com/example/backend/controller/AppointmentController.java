@@ -1,12 +1,16 @@
 package com.example.backend.controller;
 import com.example.backend.dto.BookingRequest;
 import com.example.backend.entity.Appointment;
+import com.example.backend.security.AuthenticatedUserRequestAttributes;
 import com.example.backend.service.AppointmentService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.CancelRequest;
 import com.example.backend.dto.EditRequest;
+import com.example.backend.dto.appointment.DoctorAppointmentView;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -63,5 +67,17 @@ public class AppointmentController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    // getting doctor's appointments for today
+    @GetMapping("/doctor/today")
+    public ResponseEntity<List<DoctorAppointmentView>> getDoctorTodaySchedule(
+            HttpServletRequest request) {
+
+        Long doctorId = (Long) request.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ID);
+
+        return ResponseEntity.ok(
+                appointmentService.getTodaysAppointmentsForDoctor(doctorId));
     }
 }
