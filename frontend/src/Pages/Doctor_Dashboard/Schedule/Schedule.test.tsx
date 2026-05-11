@@ -1,6 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Schedule from './Schedule';
-
 describe('Schedule Component', () => {
 
     test('renders schedule header correctly', () => {
