@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.CancelRequest;
 import com.example.backend.dto.EditRequest;
 import com.example.backend.dto.appointment.VisitStatusUpdateRequest;
+import com.example.backend.dto.appointment.DoctorAppointmentView;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -106,4 +107,15 @@ public class AppointmentController {
         }
     }
 
+    // getting doctor's appointments for today
+    @GetMapping("/doctor/today")
+    public ResponseEntity<List<DoctorAppointmentView>> getDoctorTodaySchedule(
+            HttpServletRequest request) {
+
+        Long doctorId = (Long) request.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ID);
+
+        return ResponseEntity.ok(
+                appointmentService.getTodaysAppointmentsForDoctor(doctorId));
+    }
 }

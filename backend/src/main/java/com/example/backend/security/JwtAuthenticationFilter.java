@@ -56,6 +56,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     Set.of(Role.ADMIN, Role.PATIENT)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/**"),
                     Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
+            new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/doctor/**"),
+                    Set.of(Role.ADMIN, Role.DOCTOR)),
             new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),
                     Set.of(Role.ADMIN, Role.DOCTOR))
     );
