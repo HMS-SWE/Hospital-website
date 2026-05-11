@@ -18,278 +18,352 @@ import java.util.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 @ExtendWith(MockitoExtension.class)
 class AppointmentServiceTest {
 
-    @InjectMocks private AppointmentService appointmentService;
+        @InjectMocks
+        private AppointmentService appointmentService;
 
-    @Mock private AppointmentRepository appointmentRepository;
-    @Mock private TimeSlotRepository timeSlotRepository;
-    @Mock private PatientRepository patientRepository;
-    @Mock private JwtService jwtService;
-    @Mock private CancellationRuleRepository cancellationRuleRepository;
+        @Mock
+        private AppointmentRepository appointmentRepository;
+        @Mock
+        private TimeSlotRepository timeSlotRepository;
+        @Mock
+        private PatientRepository patientRepository;
+        @Mock
+        private JwtService jwtService;
+        @Mock
+        private CancellationRuleRepository cancellationRuleRepository;
 
-    private static final ZoneId EGYPT_ZONE = ZoneId.of("Africa/Cairo");
+        private static final ZoneId EGYPT_ZONE = ZoneId.of("Africa/Cairo");
 
-    // =========================================================================
-    // BOOK APPOINTMENT
-    // =========================================================================
+        // =========================================================================
+        // BOOK APPOINTMENT
+        // =========================================================================
 
-    @Test
-    @DisplayName("bookAppointment → succeeds when slot is available")
-    void shouldBookAppointmentSuccessfully() {
-        String token = "fake";
-        Long userId = 1L;
-        Long slotId = 2L;
+        @Test
+        @DisplayName("bookAppointment → succeeds when slot is available")
+        void shouldBookAppointmentSuccessfully() {
+                String token = "fake";
+                Long userId = 1L;
+                Long slotId = 2L;
 
-        Patient patient = new Patient();
-        patient.setId(userId);
-        patient.setAppointments(new ArrayList<>());
+                Patient patient = new Patient();
+                patient.setId(userId);
+                patient.setAppointments(new ArrayList<>());
 
-        Doctor doctor = new Doctor();
+                Doctor doctor = new Doctor();
 
-        TimeSlot slot = new TimeSlot();
-        slot.setId(slotId);
-        slot.setStatus(TimeSlotStatus.AVAILABLE);
-        slot.setDate(LocalDate.now().plusDays(1));
-        slot.setStartTime(LocalTime.now().plusHours(2));
+                TimeSlot slot = new TimeSlot();
+                slot.setId(slotId);
+                slot.setStatus(TimeSlotStatus.AVAILABLE);
+                slot.setDate(LocalDate.now().plusDays(1));
+                slot.setStartTime(LocalTime.now().plusHours(2));
 
-        Schedule schedule = new Schedule();
-        schedule.setDoctor(doctor);
-        slot.setSchedule(schedule);
+                Schedule schedule = new Schedule();
+                schedule.setDoctor(doctor);
+                slot.setSchedule(schedule);
 
-        when(jwtService.extractUserId(token)).thenReturn(userId);
-        lenient().when(patientRepository.findById(userId)).thenReturn(Optional.of(patient));
-        lenient().when(timeSlotRepository.findByIdForUpdate(slotId)).thenReturn(Optional.of(slot));
-        when(appointmentRepository.save(any())).thenAnswer(i -> i.getArgument(0));
-        when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
+                when(jwtService.extractUserId(token)).thenReturn(userId);
+                lenient().when(patientRepository.findById(userId)).thenReturn(Optional.of(patient));
+                lenient().when(timeSlotRepository.findByIdForUpdate(slotId)).thenReturn(Optional.of(slot));
+                when(appointmentRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+                when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
 
-        Appointment result = appointmentService.bookAppointment(token, slotId);
+                Appointment result = appointmentService.bookAppointment(token, slotId);
 
-        assertNotNull(result);
-        assertEquals(AppointmentStatus.CONFIRMED, result.getStatus());
-    }
+                assertNotNull(result);
+                assertEquals(AppointmentStatus.CONFIRMED, result.getStatus());
+        }
 
-    @Test
-    @DisplayName("bookAppointment → throws when slot is already booked")
-    void shouldFailWhenSlotNotAvailable() {
-        String token = "fake";
-        Long userId = 1L;
-        Long slotId = 2L;
+        @Test
+        @DisplayName("bookAppointment → throws when slot is already booked")
+        void shouldFailWhenSlotNotAvailable() {
+                String token = "fake";
+                Long userId = 1L;
+                Long slotId = 2L;
 
-        TimeSlot slot = new TimeSlot();
-        slot.setStatus(TimeSlotStatus.BOOKED);
+                TimeSlot slot = new TimeSlot();
+                slot.setStatus(TimeSlotStatus.BOOKED);
 
-        when(jwtService.extractUserId(token)).thenReturn(userId);
-        when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
-        when(timeSlotRepository.findByIdForUpdate(slotId)).thenReturn(Optional.of(slot));
+                when(jwtService.extractUserId(token)).thenReturn(userId);
+                when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
+                when(timeSlotRepository.findByIdForUpdate(slotId)).thenReturn(Optional.of(slot));
 
-        assertThrows(RuntimeException.class, () ->
-                appointmentService.bookAppointment(token, slotId));
-    }
+                assertThrows(RuntimeException.class, () -> appointmentService.bookAppointment(token, slotId));
+        }
 
-    // =========================================================================
-    // CANCEL APPOINTMENT
-    // =========================================================================
+        // =========================================================================
+        // CANCEL APPOINTMENT
+        // =========================================================================
 
-    @Test
-    @DisplayName("cancelAppointment → succeeds within cancellation window")
-    void shouldCancelAppointmentSuccessfully() {
-        String token = "fake";
-        Long userId = 1L;
+        @Test
+        @DisplayName("cancelAppointment → succeeds within cancellation window")
+        void shouldCancelAppointmentSuccessfully() {
+                String token = "fake";
+                Long userId = 1L;
 
-        Patient patient = new Patient();
-        patient.setId(userId);
+                Patient patient = new Patient();
+                patient.setId(userId);
 
-        TimeSlot slot = new TimeSlot();
-        slot.setDate(LocalDate.now().plusDays(1));
-        slot.setStartTime(LocalTime.now().plusHours(3));
+                TimeSlot slot = new TimeSlot();
+                slot.setDate(LocalDate.now().plusDays(1));
+                slot.setStartTime(LocalTime.now().plusHours(3));
 
-        Appointment appointment = new Appointment();
-        appointment.setId(1L);
-        appointment.setPatient(patient);
-        appointment.setTimeSlot(slot);
-        appointment.setStatus(AppointmentStatus.CONFIRMED);
+                Appointment appointment = new Appointment();
+                appointment.setId(1L);
+                appointment.setPatient(patient);
+                appointment.setTimeSlot(slot);
+                appointment.setStatus(AppointmentStatus.CONFIRMED);
 
-        CancellationRule rule = new CancellationRule();
-        rule.setMinimumNoticeHours(1);
+                CancellationRule rule = new CancellationRule();
+                rule.setMinimumNoticeHours(1);
 
-        when(jwtService.extractUserId(token)).thenReturn(userId);
-        when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
-        when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
-        when(cancellationRuleRepository.findAll()).thenReturn(List.of(rule));
+                when(jwtService.extractUserId(token)).thenReturn(userId);
+                when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
+                when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
+                when(cancellationRuleRepository.findAll()).thenReturn(List.of(rule));
 
-        appointmentService.cancelAppointment(token, 1L, "test");
+                appointmentService.cancelAppointment(token, 1L, "test");
 
-        assertEquals(AppointmentStatus.CANCELLED, appointment.getStatus());
-    }
+                assertEquals(AppointmentStatus.CANCELLED, appointment.getStatus());
+        }
 
-    // =========================================================================
-    // EDIT APPOINTMENT
-    // =========================================================================
+        @Test
+        void shouldThrowWhenNoCancellationRule() {
+                when(appointmentRepository.findById(1L))
+                                .thenReturn(Optional.of(new Appointment()));
 
-    @Test
-    @DisplayName("editAppointment → swaps timeslot successfully")
-    void shouldEditAppointmentSuccessfully() {
-        String token = "fake";
-        Long userId = 1L;
+                when(cancellationRuleRepository.findAll())
+                                .thenReturn(List.of());
 
-        Patient patient = new Patient();
-        patient.setId(userId);
-        patient.setAppointments(new ArrayList<>());
+                assertThrows(RuntimeException.class,
+                                () -> appointmentService.cancelAppointment("t", 1L, "r"));
+        }
 
-        TimeSlot oldSlot = new TimeSlot();
-        oldSlot.setId(1L);
+        // =========================================================================
+        // EDIT APPOINTMENT
+        // =========================================================================
 
-        TimeSlot newSlot = new TimeSlot();
-        newSlot.setId(2L);
-        newSlot.setStatus(TimeSlotStatus.AVAILABLE);
-        newSlot.setDate(LocalDate.now().plusDays(1));
-        newSlot.setStartTime(LocalTime.now().plusHours(2));
+        @Test
+        @DisplayName("editAppointment → swaps timeslot successfully")
+        void shouldEditAppointmentSuccessfully() {
+                String token = "fake";
+                Long userId = 1L;
 
-        Appointment appointment = new Appointment();
-        appointment.setId(1L);
-        appointment.setPatient(patient);
-        appointment.setTimeSlot(oldSlot);
-        appointment.setStatus(AppointmentStatus.CONFIRMED);
+                Patient patient = new Patient();
+                patient.setId(userId);
+                patient.setAppointments(new ArrayList<>());
 
-        when(jwtService.extractUserId(token)).thenReturn(userId);
-        when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
-        when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
-        when(timeSlotRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(newSlot));
+                TimeSlot oldSlot = new TimeSlot();
+                oldSlot.setId(1L);
 
-        appointmentService.editAppointment(token, 1L, 2L);
+                TimeSlot newSlot = new TimeSlot();
+                newSlot.setId(2L);
+                newSlot.setStatus(TimeSlotStatus.AVAILABLE);
+                newSlot.setDate(LocalDate.now().plusDays(1));
+                newSlot.setStartTime(LocalTime.now().plusHours(2));
 
-        assertEquals(newSlot, appointment.getTimeSlot());
-    }
+                Appointment appointment = new Appointment();
+                appointment.setId(1L);
+                appointment.setPatient(patient);
+                appointment.setTimeSlot(oldSlot);
+                appointment.setStatus(AppointmentStatus.CONFIRMED);
 
-    // =========================================================================
-    // GET TODAY'S APPOINTMENTS
-    // =========================================================================
+                when(jwtService.extractUserId(token)).thenReturn(userId);
+                when(jwtService.extractRole(token)).thenReturn(Role.PATIENT);
+                when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
+                when(timeSlotRepository.findByIdForUpdate(2L)).thenReturn(Optional.of(newSlot));
 
-    @Test
-    @DisplayName("getTodaysAppointments → passes Egypt date and CANCELLED to repo")
-    void getTodaysAppointments_passesCorrectParameters() {
-        Long doctorId = 1L;
-        LocalDate expectedDate = LocalDate.now(EGYPT_ZONE);
+                appointmentService.editAppointment(token, 1L, 2L);
 
-        when(appointmentRepository.findTodaysAppointmentsForDoctor(
-                eq(doctorId),
-                eq(expectedDate),
-                eq(AppointmentStatus.CANCELLED)
-        )).thenReturn(List.of());
+                assertEquals(newSlot, appointment.getTimeSlot());
+        }
 
-        appointmentService.getTodaysAppointmentsForDoctor(doctorId);
+        @Test
+        void shouldFailEditWhenSameSlot() {
+                Appointment appointment = new Appointment();
+                TimeSlot slot = new TimeSlot();
+                slot.setId(1L);
 
-        // capture actual arguments passed to the repo
-        ArgumentCaptor<LocalDate> dateCaptor =
-                ArgumentCaptor.forClass(LocalDate.class);
-        ArgumentCaptor<AppointmentStatus> statusCaptor =
-                ArgumentCaptor.forClass(AppointmentStatus.class);
+                appointment.setTimeSlot(slot);
+                appointment.setStatus(AppointmentStatus.CONFIRMED);
 
-        verify(appointmentRepository).findTodaysAppointmentsForDoctor(
-                eq(doctorId),
-                dateCaptor.capture(),
-                statusCaptor.capture()
-        );
+                when(jwtService.extractUserId("t")).thenReturn(1L);
+                when(jwtService.extractRole("t")).thenReturn(Role.PATIENT);
+                when(appointmentRepository.findById(1L)).thenReturn(Optional.of(appointment));
+                when(timeSlotRepository.findByIdForUpdate(1L)).thenReturn(Optional.of(slot));
 
-        // must be Egypt's today — not server UTC
-        assertThat(dateCaptor.getValue())
-                .isEqualTo(LocalDate.now(EGYPT_ZONE));
+                assertThrows(RuntimeException.class,
+                                () -> appointmentService.editAppointment("t", 1L, 1L));
+        }
+        // =========================================================================
+        // GET TODAY'S APPOINTMENTS
+        // =========================================================================
 
-        // must always exclude CANCELLED — not COMPLETED, not NOSHOW
-        assertThat(statusCaptor.getValue())
-                .isEqualTo(AppointmentStatus.CANCELLED);
-    }
+        @Test
+        @DisplayName("getTodaysAppointments → passes Egypt date and CANCELLED to repo")
+        void getTodaysAppointments_passesCorrectParameters() {
+                Long doctorId = 1L;
+                LocalDate expectedDate = LocalDate.now(EGYPT_ZONE);
 
-    @Test
-    @DisplayName("getTodaysAppointments → returns appointments sorted by startTime ASC")
-    void getTodaysAppointments_returnsSortedResults() {
-        Long doctorId = 1L;
+                when(appointmentRepository.findTodaysAppointmentsForDoctor(
+                                eq(doctorId),
+                                eq(expectedDate),
+                                eq(AppointmentStatus.CANCELLED))).thenReturn(List.of());
 
-        List<DoctorAppointmentView> mockResults = List.of(
-                new DoctorAppointmentView(
-                        1L, "Jane Doe",
-                        LocalTime.of(9, 0), LocalTime.of(9, 30),
-                        AppointmentStatus.CONFIRMED, null, 200.0f),
-                new DoctorAppointmentView(
-                        2L, "John Smith",
-                        LocalTime.of(9, 30), LocalTime.of(10, 0),
-                        AppointmentStatus.CONFIRMED, null, 200.0f),
-                new DoctorAppointmentView(
-                        3L, "Sara Ali",
-                        LocalTime.of(11, 0), LocalTime.of(11, 30),
-                        AppointmentStatus.CONFIRMED, "Follow up", 150.0f)
-        );
-
-        when(appointmentRepository.findTodaysAppointmentsForDoctor(
-                any(), any(), any()
-        )).thenReturn(mockResults);
-
-        List<DoctorAppointmentView> result =
                 appointmentService.getTodaysAppointmentsForDoctor(doctorId);
 
-        assertThat(result).hasSize(3);
+                // capture actual arguments passed to the repo
+                ArgumentCaptor<LocalDate> dateCaptor = ArgumentCaptor.forClass(LocalDate.class);
+                ArgumentCaptor<AppointmentStatus> statusCaptor = ArgumentCaptor.forClass(AppointmentStatus.class);
 
-        // verify sort order — each startTime is before the next
-        assertThat(result.get(0).getStartTime())
-                .isBefore(result.get(1).getStartTime());
-        assertThat(result.get(1).getStartTime())
-                .isBefore(result.get(2).getStartTime());
+                verify(appointmentRepository).findTodaysAppointmentsForDoctor(
+                                eq(doctorId),
+                                dateCaptor.capture(),
+                                statusCaptor.capture());
 
-        // verify patient names came through correctly
-        assertThat(result.get(0).getPatientFullName()).isEqualTo("Jane Doe");
-        assertThat(result.get(1).getPatientFullName()).isEqualTo("John Smith");
-        assertThat(result.get(2).getPatientFullName()).isEqualTo("Sara Ali");
-    }
+                // must be Egypt's today — not server UTC
+                assertThat(dateCaptor.getValue())
+                                .isEqualTo(LocalDate.now(EGYPT_ZONE));
 
-    @Test
-    @DisplayName("getTodaysAppointments → returns empty list when no appointments today")
-    void getTodaysAppointments_returnsEmpty_whenNone() {
-        when(appointmentRepository.findTodaysAppointmentsForDoctor(
-                any(), any(), any()
-        )).thenReturn(List.of());
+                // must always exclude CANCELLED — not COMPLETED, not NOSHOW
+                assertThat(statusCaptor.getValue())
+                                .isEqualTo(AppointmentStatus.CANCELLED);
+        }
 
-        List<DoctorAppointmentView> result =
-                appointmentService.getTodaysAppointmentsForDoctor(1L);
+        @Test
+        @DisplayName("getTodaysAppointments → returns appointments sorted by startTime ASC")
+        void getTodaysAppointments_returnsSortedResults() {
+                Long doctorId = 1L;
 
-        assertThat(result).isEmpty();
+                List<DoctorAppointmentView> mockResults = List.of(
+                                new DoctorAppointmentView(
+                                                1L, "Jane Doe",
+                                                LocalTime.of(9, 0), LocalTime.of(9, 30),
+                                                AppointmentStatus.CONFIRMED, null, 200.0f),
+                                new DoctorAppointmentView(
+                                                2L, "John Smith",
+                                                LocalTime.of(9, 30), LocalTime.of(10, 0),
+                                                AppointmentStatus.CONFIRMED, null, 200.0f),
+                                new DoctorAppointmentView(
+                                                3L, "Sara Ali",
+                                                LocalTime.of(11, 0), LocalTime.of(11, 30),
+                                                AppointmentStatus.CONFIRMED, "Follow up", 150.0f));
 
-        // repo still called exactly once even when empty
-        verify(appointmentRepository, times(1))
-                .findTodaysAppointmentsForDoctor(any(), any(), any());
-    }
+                when(appointmentRepository.findTodaysAppointmentsForDoctor(
+                                any(), any(), any())).thenReturn(mockResults);
 
-    @Test
-    @DisplayName("getTodaysAppointments → never returns CANCELLED appointments")
-    void getTodaysAppointments_neverReturnsCancelled() {
-        Long doctorId = 1L;
+                List<DoctorAppointmentView> result = appointmentService.getTodaysAppointmentsForDoctor(doctorId);
 
-        // repo returns only non-cancelled — simulating correct filter
-        List<DoctorAppointmentView> mockResults = List.of(
-                new DoctorAppointmentView(
-                        1L, "Jane Doe",
-                        LocalTime.of(9, 0), LocalTime.of(9, 30),
-                        AppointmentStatus.CONFIRMED, null, 200.0f),
-                new DoctorAppointmentView(
-                        2L, "John Smith",
-                        LocalTime.of(10, 0), LocalTime.of(10, 30),
-                        AppointmentStatus.COMPLETED, null, 200.0f)
-        );
+                assertThat(result).hasSize(3);
 
-        when(appointmentRepository.findTodaysAppointmentsForDoctor(
-                any(), any(), any()
-        )).thenReturn(mockResults);
+                // verify sort order — each startTime is before the next
+                assertThat(result.get(0).getStartTime())
+                                .isBefore(result.get(1).getStartTime());
+                assertThat(result.get(1).getStartTime())
+                                .isBefore(result.get(2).getStartTime());
 
-        List<DoctorAppointmentView> result =
-                appointmentService.getTodaysAppointmentsForDoctor(doctorId);
+                // verify patient names came through correctly
+                assertThat(result.get(0).getPatientFullName()).isEqualTo("Jane Doe");
+                assertThat(result.get(1).getPatientFullName()).isEqualTo("John Smith");
+                assertThat(result.get(2).getPatientFullName()).isEqualTo("Sara Ali");
+        }
 
-        // none of the results should be CANCELLED
-        assertThat(result)
-                .extracting(DoctorAppointmentView::getStatus)
-                .doesNotContain(AppointmentStatus.CANCELLED);
-    }
+        @Test
+        @DisplayName("getTodaysAppointments → returns empty list when no appointments today")
+        void getTodaysAppointments_returnsEmpty_whenNone() {
+                when(appointmentRepository.findTodaysAppointmentsForDoctor(
+                                any(), any(), any())).thenReturn(List.of());
+
+                List<DoctorAppointmentView> result = appointmentService.getTodaysAppointmentsForDoctor(1L);
+
+                assertThat(result).isEmpty();
+
+                // repo still called exactly once even when empty
+                verify(appointmentRepository, times(1))
+                                .findTodaysAppointmentsForDoctor(any(), any(), any());
+        }
+
+        @Test
+        @DisplayName("getTodaysAppointments → never returns CANCELLED appointments")
+        void getTodaysAppointments_neverReturnsCancelled() {
+                Long doctorId = 1L;
+
+                // repo returns only non-cancelled — simulating correct filter
+                List<DoctorAppointmentView> mockResults = List.of(
+                                new DoctorAppointmentView(
+                                                1L, "Jane Doe",
+                                                LocalTime.of(9, 0), LocalTime.of(9, 30),
+                                                AppointmentStatus.CONFIRMED, null, 200.0f),
+                                new DoctorAppointmentView(
+                                                2L, "John Smith",
+                                                LocalTime.of(10, 0), LocalTime.of(10, 30),
+                                                AppointmentStatus.COMPLETED, null, 200.0f));
+
+                when(appointmentRepository.findTodaysAppointmentsForDoctor(
+                                any(), any(), any())).thenReturn(mockResults);
+
+                List<DoctorAppointmentView> result = appointmentService.getTodaysAppointmentsForDoctor(doctorId);
+
+                // none of the results should be CANCELLED
+                assertThat(result)
+                                .extracting(DoctorAppointmentView::getStatus)
+                                .doesNotContain(AppointmentStatus.CANCELLED);
+        }
+        // =========================================================
+        // UPDATE VISIT STATUS
+        // =========================================================
+
+        @Test
+        void shouldUpdateVisitStatusSuccessfully() {
+                Doctor doctor = new Doctor();
+                doctor.setId(1L);
+
+                Appointment appointment = new Appointment();
+                appointment.setDoctor(doctor);
+                appointment.setStatus(AppointmentStatus.CONFIRMED);
+
+                when(appointmentRepository.findById(1L))
+                                .thenReturn(Optional.of(appointment));
+
+                appointmentService.updateVisitStatus(
+                                1L,
+                                AppointmentStatus.COMPLETED,
+                                1L);
+
+                assertEquals(AppointmentStatus.COMPLETED, appointment.getStatus());
+        }
+
+        @Test
+        void shouldRejectInvalidStatus() {
+                assertThrows(RuntimeException.class,
+                                () -> appointmentService.updateVisitStatus(
+                                                1L,
+                                                AppointmentStatus.CONFIRMED,
+                                                1L));
+        }
+
+        @Test
+        void shouldThrowWhenDoctorMismatch() {
+                Doctor doctor = new Doctor();
+                doctor.setId(1L);
+
+                Appointment appointment = new Appointment();
+                appointment.setDoctor(doctor);
+                appointment.setStatus(AppointmentStatus.CONFIRMED);
+
+                when(appointmentRepository.findById(1L))
+                                .thenReturn(Optional.of(appointment));
+
+                assertThrows(RuntimeException.class,
+                                () -> appointmentService.updateVisitStatus(
+                                                1L,
+                                                AppointmentStatus.COMPLETED,
+                                                99L));
+        }
 }
