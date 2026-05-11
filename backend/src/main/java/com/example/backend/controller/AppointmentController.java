@@ -2,16 +2,20 @@ package com.example.backend.controller;
 
 import com.example.backend.dto.BookingRequest;
 import com.example.backend.entity.Appointment;
+import com.example.backend.enums.Role;
 import com.example.backend.security.AuthenticatedUserRequestAttributes;
 import com.example.backend.service.AppointmentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.CancelRequest;
 import com.example.backend.dto.EditRequest;
 import com.example.backend.dto.appointment.DoctorAppointmentView;
+import com.example.backend.dto.appointment.VisitStatusUpdateRequest;
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -82,5 +86,36 @@ public class AppointmentController {
 
         return ResponseEntity.ok(
                 appointmentService.getTodaysAppointmentsForDoctor(doctorId));
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<?> updateVisitStatus(@PathVariable Long id,
+            @RequestBody VisitStatusUpdateRequest request,
+            HttpServletRequest httpRequest) {
+        Long authenticatedUserId = (Long) httpRequest.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ID);
+        Role authenticatedRole = (Role) httpRequest.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ROLE);
+
+        if (authenticatedUserId == null || authenticatedRole == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("{\"message\":\"Unauthorized\"}");
+        }
+
+        if (authenticatedRole == Role.PATIENT) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("{\"message\":\"Forbidden\"}");
+        }
+
+        try {
+            appointmentService.updateVisitStatus(id, request.getStatus(), authenticatedUserId);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            if (e.getMessage().equals("Forbidden")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body("{\"message\":\"Forbidden\"}");
+            }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }

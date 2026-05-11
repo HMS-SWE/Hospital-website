@@ -193,10 +193,36 @@ public class AppointmentService {
     private static final ZoneId EGYPT_ZONE = ZoneId.of("Africa/Cairo");
 
     public List<DoctorAppointmentView> getTodaysAppointmentsForDoctor(Long doctorId) {
-        LocalDate today = LocalDate.now(EGYPT_ZONE);   // ← timezone-aware
+        LocalDate today = LocalDate.now(EGYPT_ZONE); // ← timezone-aware
         return appointmentRepository.findTodaysAppointmentsForDoctor(
                 doctorId,
                 today,
                 AppointmentStatus.CANCELLED);
+    }
+
+    @Transactional
+    public void updateVisitStatus(Long appointmentId, AppointmentStatus newStatus,
+            Long authenticatedUserId) {
+        if (appointmentId == null) {
+            throw new RuntimeException("Appointment ID cannot be null");
+        }
+
+        if (newStatus != AppointmentStatus.COMPLETED && newStatus != AppointmentStatus.NOSHOW) {
+            throw new RuntimeException("Invalid visit status. Only COMPLETED or NOSHOW are allowed");
+        }
+
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        if (!authenticatedUserId.equals(appointment.getDoctor().getId())) {
+            throw new RuntimeException("Forbidden");
+        }
+
+        if (appointment.getStatus() != AppointmentStatus.CONFIRMED) {
+            throw new RuntimeException("Can only update status of CONFIRMED appointments");
+        }
+
+        appointment.setStatus(newStatus);
+        appointmentRepository.save(appointment);
     }
 }
