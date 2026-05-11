@@ -12,13 +12,21 @@ type DoctorAppointmentDTO = {
     status: string;
 };
 
+type AppointmentCard = {
+    id: string;
+    patientName: string;
+    time: string;
+    status: string;
+    type?: string;
+};
+
 function Schedule(){
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const doctorName = user.name || "Doctor";
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-GB');
     const [showModal, setShowModal] = useState(false);
-    const [appointments, setAppointments] = useState<any[]>([])
+    const [appointments, setAppointments] = useState<AppointmentCard[]>([])
     const hasPendingAppointments = appointments.some(
         (a) => a.status === "Pending"
         );
@@ -125,7 +133,7 @@ function Schedule(){
                             patientName={appointment.patientName}
                             time={appointment.time}
                             status={appointment.status}
-                            type={appointment.type}
+                            type='Appointment'
                             />))
                         ):(
                             <h1>No Appointments Till Now!</h1>
