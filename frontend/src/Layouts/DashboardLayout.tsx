@@ -3,14 +3,25 @@ import Styles from './DashboardLayout.module.css'
 import {logout} from '../Components/auth'
 import { SidebarLinks, type UserRole } from "./SidebarLinks";
 
-interface DashboardLayoutProps {
-    role: UserRole;
-}
 
-function DashboardLayout({role}: DashboardLayoutProps) {
+function DashboardLayout() {
     const location = useLocation();
+    const handleLogout = async () => {
+        try {
+            await logout(); 
+        } catch (error) {
+            console.error("Logout error:", error);
+        }
+        localStorage.removeItem("user");
+        
+        window.dispatchEvent(new Event("authChange"));
+    };
 
-    const menu = SidebarLinks[role];
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const role = user.role as UserRole;
+
+    const menu = SidebarLinks[role] ?? [];
+
     return (
         <>
             <div className={Styles.Layout}>
@@ -18,7 +29,7 @@ function DashboardLayout({role}: DashboardLayoutProps) {
                     <div className={Styles.sidebarContent}>
                         <div className={Styles.logo}>
                         <h2>HealthCare</h2>
-                        <span>{role}'s' Portal</span>
+                        <span>{role}'s Portal</span>
                     </div>
                     <div className={Styles.divider}></div>
 

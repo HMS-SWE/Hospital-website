@@ -7,7 +7,7 @@ import Dashboard from "../Pages/Dashboard/Dashboard/Dashboard"
 import BookAppointment from "../Pages/Dashboard/BookAppointment/BookAppointment";
 import { LoginForm } from "../Components/LoginForm";
 import Register from "../Pages/Register";
-import Schedule from "../Pages/Doctor_Dashboard/Shcedule/Schedule"
+import Schedule from "../Pages/Doctor_Dashboard/Schedule/Schedule"
 
 const router = createBrowserRouter([
     {
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
                 },
                 {
                     path: "dashboard",
-                    element: <DashboardLayout role="patient" />,
+                    element: <DashboardLayout/>,
                     children: [
                         {index: true, element: <Dashboard />},
                         {path: "appointments", element: <Appointments />},
@@ -37,7 +37,7 @@ const router = createBrowserRouter([
                 },
                 {
                     path: "doctor",
-                    element: <DashboardLayout role="doctor" />,
+                    element: <DashboardLayout/>,
                     children: [
                         {index: true, element: <Schedule />},
                     ]
@@ -45,16 +45,7 @@ const router = createBrowserRouter([
                 {
                     path: '/register',
                     element: <Register/>,
-                },
-                {
-                path: "dashboard",
-                element: <DashboardLayout />,
-                children: [
-                    { index: true, element: <Dashboard /> },
-                    { path: "appointments", element: <Appointments /> },
-                    { path: "book-appointment", element: <BookAppointment /> },
-                ]
-            },
+                }
     ]}
 
 ]);

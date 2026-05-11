@@ -64,7 +64,11 @@ export function LoginForm() {
       window.dispatchEvent(new Event("authChange"));
 
       alert(`Signed in as ${data.role}`);
-      navigate('/dashboard');
+     if (data.role === 'DOCTOR') {
+        navigate('/doctor');
+      } else {
+        navigate('/dashboard');
+      }
 
     } catch (error) {
       console.error("Login failed:", error);
