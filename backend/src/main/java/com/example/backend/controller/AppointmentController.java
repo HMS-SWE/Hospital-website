@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.CancelRequest;
 import com.example.backend.dto.EditRequest;
@@ -88,30 +89,28 @@ public class AppointmentController {
                 appointmentService.getTodaysAppointmentsForDoctor(doctorId));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR')")
     @PatchMapping("/{id}/status")
-    public ResponseEntity<?> updateVisitStatus(@PathVariable Long id,
+    public ResponseEntity<?> updateVisitStatus(
+            @PathVariable Long id,
             @RequestBody VisitStatusUpdateRequest request,
             HttpServletRequest httpRequest) {
+
         Long authenticatedUserId = (Long) httpRequest.getAttribute(
                 AuthenticatedUserRequestAttributes.USER_ID);
         Role authenticatedRole = (Role) httpRequest.getAttribute(
                 AuthenticatedUserRequestAttributes.USER_ROLE);
-
+ 
         if (authenticatedUserId == null || authenticatedRole == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("{\"message\":\"Unauthorized\"}");
         }
-
-        if (authenticatedRole == Role.PATIENT) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body("{\"message\":\"Forbidden\"}");
-        }
-
+ 
         try {
             appointmentService.updateVisitStatus(id, request.getStatus(), authenticatedUserId);
             return ResponseEntity.ok().build();
         } catch (RuntimeException e) {
-            if (e.getMessage().equals("Forbidden")) {
+            if ("Forbidden".equals(e.getMessage())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("{\"message\":\"Forbidden\"}");
             }
