@@ -24,11 +24,11 @@ public class AppointmentService {
     @Transactional
     public Appointment bookAppointment(String token, Long slotId) {
         long userId = jwtService.extractUserId(token);
-            Role role = jwtService.extractRole(token);
+        Role role = jwtService.extractRole(token);
         if (role != Role.PATIENT) {
             throw new RuntimeException("Only patients can book appointments");
-        }   
-        
+        }
+
         Patient patient = patientRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
 
@@ -110,50 +110,51 @@ public class AppointmentService {
         timeSlotRepository.save(slot);
     }
 
-@Transactional
-public void editAppointment(String token, Long appointmentId, Long newSlotId) {
-    long userId = jwtService.extractUserId(token);
-    Role role = jwtService.extractRole(token);
-     
-    Appointment appointment = appointmentRepository.findById(appointmentId)
-            .orElseThrow(() -> new RuntimeException("Appointment not found"));
+    @Transactional
+    public void editAppointment(String token, Long appointmentId, Long newSlotId) {
+        long userId = jwtService.extractUserId(token);
+        Role role = jwtService.extractRole(token);
 
-    if(role != Role.PATIENT){
-        throw new RuntimeException("Only patients can edit appointments");
-    }
-    if(userId != appointment.getPatient().getId()){
-        throw new RuntimeException("Unauthorized");
-    }
-    if(appointment.getStatus() == AppointmentStatus.CANCELLED){
-        throw new RuntimeException("Cannot edit cancelled appointment");
-    }
-    TimeSlot oldSlot = appointment.getTimeSlot();
-    TimeSlot newSlot = timeSlotRepository.findByIdForUpdate(newSlotId)
-            .orElseThrow(() -> new RuntimeException("New time slot not found"));
-    if(oldSlot.getId() == newSlot.getId()){
-        throw new RuntimeException("Already booked in this time slot");
-    }
-     if(newSlot.getDate().isBefore(java.time.LocalDate.now())|| (newSlot.getDate().isEqual(java.time.LocalDate.now())
-             && newSlot.getStartTime().isBefore(java.time.LocalTime.now()))  ){
+        Appointment appointment = appointmentRepository.findById(appointmentId)
+                .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+        if (role != Role.PATIENT) {
+            throw new RuntimeException("Only patients can edit appointments");
+        }
+        if (userId != appointment.getPatient().getId()) {
+            throw new RuntimeException("Unauthorized");
+        }
+        if (appointment.getStatus() == AppointmentStatus.CANCELLED) {
+            throw new RuntimeException("Cannot edit cancelled appointment");
+        }
+        TimeSlot oldSlot = appointment.getTimeSlot();
+        TimeSlot newSlot = timeSlotRepository.findByIdForUpdate(newSlotId)
+                .orElseThrow(() -> new RuntimeException("New time slot not found"));
+        if (oldSlot.getId() == newSlot.getId()) {
+            throw new RuntimeException("Already booked in this time slot");
+        }
+        if (newSlot.getDate().isBefore(java.time.LocalDate.now())
+                || (newSlot.getDate().isEqual(java.time.LocalDate.now())
+                        && newSlot.getStartTime().isBefore(java.time.LocalTime.now()))) {
             throw new RuntimeException("Cannot book past time slot");
         }
-    if (newSlot.getStatus() != TimeSlotStatus.AVAILABLE) {
-        throw new RuntimeException("New time slot is not available");       
-}
-   Patient patient = appointment.getPatient();
-   if(patient.getAppointments().stream().anyMatch(a -> a.getTimeSlot().getDate().isEqual(newSlot.getDate()) &&
-             a.getTimeSlot().getStartTime().equals(newSlot.getStartTime()))){
+        if (newSlot.getStatus() != TimeSlotStatus.AVAILABLE) {
+            throw new RuntimeException("New time slot is not available");
+        }
+        Patient patient = appointment.getPatient();
+        if (patient.getAppointments().stream().anyMatch(a -> a.getTimeSlot().getDate().isEqual(newSlot.getDate()) &&
+                a.getTimeSlot().getStartTime().equals(newSlot.getStartTime()))) {
             throw new RuntimeException("Patient already has an appointment at this time");
 
-             }
-    oldSlot.setStatus(TimeSlotStatus.AVAILABLE);
-    newSlot.setStatus(TimeSlotStatus.BOOKED);
-    appointment.setTimeSlot(newSlot);
+        }
+        oldSlot.setStatus(TimeSlotStatus.AVAILABLE);
+        newSlot.setStatus(TimeSlotStatus.BOOKED);
+        appointment.setTimeSlot(newSlot);
 
-    timeSlotRepository.save(oldSlot);
-    timeSlotRepository.save(newSlot);
-    appointmentRepository.save(appointment);
-}
+        timeSlotRepository.save(oldSlot);
+        timeSlotRepository.save(newSlot);
+        appointmentRepository.save(appointment);
+    }
 
     @Transactional
     public java.util.List<AppointmentResponse> getMyAppointments(String token) {
@@ -192,11 +193,10 @@ public void editAppointment(String token, Long appointmentId, Long newSlotId) {
     private static final ZoneId EGYPT_ZONE = ZoneId.of("Africa/Cairo");
 
     public List<DoctorAppointmentView> getTodaysAppointments(Long doctorId) {
-        LocalDate today = LocalDate.now(EGYPT_ZONE);   // ← timezone-aware
+        LocalDate today = LocalDate.now(EGYPT_ZONE); // ← timezone-aware
         return appointmentRepository.findTodaysAppointmentsForDoctor(
                 doctorId,
                 today,
-                AppointmentStatus.CANCELLED
-        );
+                AppointmentStatus.CANCELLED);
     }
 }
