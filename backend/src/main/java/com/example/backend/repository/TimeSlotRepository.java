@@ -8,16 +8,29 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.time.LocalDate;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import jakarta.persistence.LockModeType;
 import java.util.Optional;
 
-
 public interface TimeSlotRepository extends JpaRepository<TimeSlot, Long> {
-   
 
-   List<TimeSlot> findBySchedule_Doctor_IdAndDateAndStatusOrderByStartTimeAsc(Long doctorId, LocalDate date, TimeSlotStatus status);
+    List<TimeSlot> findBySchedule_Doctor_IdAndDateAndStatusOrderByStartTimeAsc(Long doctorId, LocalDate date,
+            TimeSlotStatus status);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT t FROM TimeSlot t WHERE t.id = :id")
     Optional<TimeSlot> findByIdForUpdate(Long id);
+
+    @Modifying
+    @Query("""
+                UPDATE TimeSlot ts
+                SET ts.status = :newStatus
+                WHERE ts.id IN :ids
+            """)
+    int bulkUpdateStatus(
+            @Param("ids") List<Long> ids,
+            @Param("newStatus") TimeSlotStatus newStatus);
 }
