@@ -1,6 +1,8 @@
 package com.example.backend.service;
 
 import com.example.backend.dto.CancellationSummaryResponse;
+import com.example.backend.dto.DayResponse;
+import com.example.backend.dto.SlotResponse;
 import com.example.backend.entity.*;
 import com.example.backend.enums.AppointmentStatus;
 import com.example.backend.enums.TimeSlotStatus;
@@ -31,9 +33,12 @@ class ScheduleServiceTest {
     @InjectMocks
     private ScheduleService scheduleService;
 
-    @Mock private AppointmentRepository appointmentRepository;
-    @Mock private TimeSlotRepository timeSlotRepository;
-    @Mock private ScheduleRepository scheduleRepository;
+    @Mock
+    private AppointmentRepository appointmentRepository;
+    @Mock
+    private TimeSlotRepository timeSlotRepository;
+    @Mock
+    private ScheduleRepository scheduleRepository;
 
     // ── Helper ────────────────────────────────────────────────────────────────
 
@@ -51,6 +56,62 @@ class ScheduleServiceTest {
     }
 
     // ── Tests ─────────────────────────────────────────────────────────────────
+    @Test
+    void shouldReturnAvailableDays_whenDoctorHasSchedules() {
+        Schedule schedule = new Schedule();
+        schedule.setDayOfWeek(java.time.DayOfWeek.MONDAY);
+        schedule.setStartTime(java.time.LocalTime.of(9, 0));
+        schedule.setEndTime(java.time.LocalTime.of(17, 0));
+
+        when(scheduleRepository.findByDoctorId(1L)).thenReturn(List.of(schedule));
+
+        List<DayResponse> result = scheduleService.getAvailableDaysForDoctor(1L);
+
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals("MONDAY", result.get(0).getDayName());
+    }
+
+    @Test
+    void shouldReturnEmptyList_whenDoctorHasNoSchedules() {
+        when(scheduleRepository.findByDoctorId(1L)).thenReturn(Collections.emptyList());
+
+        List<DayResponse> result = scheduleService.getAvailableDaysForDoctor(1L);
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void shouldReturnAvailableSlots_whenSlotsExistForDate() {
+        TimeSlot slot = new TimeSlot();
+        slot.setId(1L);
+        slot.setStartTime(java.time.LocalTime.of(9, 0));
+        slot.setEndTime(java.time.LocalTime.of(9, 30));
+        slot.setStatus(TimeSlotStatus.AVAILABLE);
+
+        when(timeSlotRepository.findBySchedule_Doctor_IdAndDateAndStatusOrderByStartTimeAsc(
+                eq(1L), eq(LocalDate.now()), eq(TimeSlotStatus.AVAILABLE)))
+                .thenReturn(List.of(slot));
+
+        List<SlotResponse> result = scheduleService.getAvailableSlotsForDoctorAndDate(1L, LocalDate.now());
+
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        assertEquals("09:00", result.get(0).getStartTime());
+    }
+
+    @Test
+    void shouldReturnEmptyList_whenNoSlotsAvailableForDate() {
+        when(timeSlotRepository.findBySchedule_Doctor_IdAndDateAndStatusOrderByStartTimeAsc(
+                any(), any(), any()))
+                .thenReturn(Collections.emptyList());
+
+        List<SlotResponse> result = scheduleService.getAvailableSlotsForDoctorAndDate(1L, LocalDate.now());
+
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
 
     @Test
     void shouldReturnZeroCounts_whenNoCancellableAppointmentsExist() {
@@ -70,11 +131,11 @@ class ScheduleServiceTest {
 
     @Test
     void shouldCancelOnlyConfirmedAppointments_whenSomAreAlreadyCompleted() {
-        // Only CONFIRMED appointments are returned by the query (COMPLETED are filtered out)
+        // Only CONFIRMED appointments are returned by the query (COMPLETED are filtered
+        // out)
         List<Appointment> cancellable = List.of(
                 makeAppointment(1L, 10L),
-                makeAppointment(2L, 20L)
-        );
+                makeAppointment(2L, 20L));
 
         when(appointmentRepository.findCancellableAppointments(
                 eq(1L), eq(LocalDate.now()), any()))
@@ -95,8 +156,7 @@ class ScheduleServiceTest {
         List<Appointment> cancellable = List.of(
                 makeAppointment(1L, 10L),
                 makeAppointment(2L, 20L),
-                makeAppointment(3L, 30L)
-        );
+                makeAppointment(3L, 30L));
 
         when(appointmentRepository.findCancellableAppointments(
                 eq(1L), eq(LocalDate.now()), any()))
