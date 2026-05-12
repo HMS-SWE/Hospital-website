@@ -1,7 +1,14 @@
 import Doctor from '../Doctor/Doctor';
 import Styles from './MedicationCard.module.css'
 
-function MedicationCard(){
+
+type MedicationCardProps = {
+    diagnosis: string;
+    medication: string;
+    treatmentPlan: string;
+}
+
+function MedicationCard({diagnosis, medication, treatmentPlan}: MedicationCardProps){
     return(
         <>
             <div className={Styles.cardContainer}>
@@ -11,7 +18,7 @@ function MedicationCard(){
                         <Doctor />
                         <div className={Styles.medCardDetails}>
                             <span>09/05/2026</span>
-                            <span>Diagnosis: Severe Trauma</span>
+                            <span>Diagnosis: {diagnosis}</span>
                         </div>
                     </div>
                        
@@ -20,22 +27,20 @@ function MedicationCard(){
                     <div className={Styles.medCardLower}>
                         <ul className={Styles.DoctorAppContents}>
                             <li>
-                                <input type="checkbox" name='accordion' id='1'></input>
-                                <label htmlFor='1'>Expand</label>
+                                <input type="checkbox" name='accordion' id={diagnosis}></input>
+                                <label htmlFor={diagnosis}>Expand</label>
                                 <div className={Styles.medCardExpand}>
                                         <div className={Styles.ExpandCol}>   
                                                 <h3>Diagnosis: </h3> 
-                                                <span>Bro is cooked Fr Fr</span>
+                                                <span>{diagnosis}</span>
                                         </div>
                                         <div className={Styles.ExpandCol}>   
                                                 <h3>Medications:</h3>
-                                                    <span>Doliprane 1000mg</span>
-                                                    <span> Panadol Extra </span>
+                                                    <span>{medication}</span>
                                         </div>
                                         <div className={Styles.ExpandCol}>   
                                                 <h3>Treatement Plan:</h3>
-                                                <span>X1 before lunch</span>
-                                                <span>X2 daily</span>
+                                                <span>{treatmentPlan}</span>
                                         </div>
                                     
                                 </div>

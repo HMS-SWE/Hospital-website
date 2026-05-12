@@ -1,4 +1,5 @@
 
+import { useNavigate } from 'react-router-dom';
 import Doctor from '../Doctor/Doctor';
 import Styles from './DoctorApp.module.css'
 
@@ -12,6 +13,15 @@ type DoctorAppProps = {
 }
 
 function DoctorApp({ id, patientName, time, status, type }: DoctorAppProps){
+    const navigate = useNavigate();
+    function handleViewMedicalHistory(){
+        navigate('/doctor/medical-history', {
+            state: {
+                patientId: id,
+                patientName: patientName
+            }
+        });
+    }
     return(
         <>
         <div className={Styles.DoctorAppContainer}>
@@ -39,7 +49,7 @@ function DoctorApp({ id, patientName, time, status, type }: DoctorAppProps){
                         <input type="checkbox" name='accordion' id={id}></input>
                         <label htmlFor={id}>Examine</label>
                         <div className={Styles.content}>
-                            <button className={Styles.AppViewButton}>View Medical History</button>
+                            <button className={Styles.AppViewButton} onClick={handleViewMedicalHistory}>View Medical History</button>
                             <button className={Styles.AppUploadButton}>Upload Diagnosis</button>
                             <button className={Styles.AppDShowButton}>Didn't Show up</button>
                         </div>
