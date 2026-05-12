@@ -2,9 +2,13 @@ import { Outlet, Link, useLocation } from "react-router-dom";
 import Styles from './DashboardLayout.module.css'
 import {logout} from '../Components/auth'
 import { SidebarLinks, type UserRole } from "./SidebarLinks";
+import { SidebarLinks, type UserRole } from "./SidebarLinks";
 
+interface DashboardLayoutProps {
+    role: UserRole;
+}
 
-function DashboardLayout() {
+function DashboardLayout({role}: DashboardLayoutProps) {
     const location = useLocation();
     const handleLogout = async () => {
         try {

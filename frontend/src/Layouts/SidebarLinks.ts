@@ -17,5 +17,6 @@ export const SidebarLinks: Record<UserRole, MenuItem[]> = {
 
     doctor: [
         { name: "Today's Schedule", path: "/doctor" },
+
     ]
 };
