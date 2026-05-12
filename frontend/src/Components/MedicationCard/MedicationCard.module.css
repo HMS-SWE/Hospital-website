@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+
+.cardContainer{
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: auto;
+    width: 100%;
+    font-family: 'Open Sans', 'sans-serif';
+    background-color: white;
+    margin-top: 3%;
+}
+
+.cardContents{
+    width: 95%;
+    justify-self: center;
+}
+
+.medCardUpper{
+    display: grid;
+    grid-template-columns: 70% 30%;
+}
+
+.medCardDetails{
+    display: grid;
+    grid-template-rows: auto auto;
+    position: relative;
+    top: 20%;
+}
+
+.divider {
+  font-size: 0.8vw;
+  display: flex;
+  align-items: center;
+  opacity: 0.4;
+  margin: 1vh 0 1vh 0;
+
+}
+
+.divider::before, .divider::after {
+  flex: 1;
+  content: '';
+  padding: 0.5px;
+  background-color: black;
+  border-radius: 10px
+}
+
+
+.DoctorAppContents{
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.DoctorAppContents li{
+    justify-self: start;
+    list-style: none;
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.DoctorAppContents li label{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.DoctorAppContents li label::before{
+    content: '+';
+    margin-right: 10px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+
+input[type="checkbox"]{
+    display: none;
+}
+
+.DoctorAppContents .medCardExpand{
+    padding: 0 10px;
+    line-height: 26px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s, padding 0.5s;
+    display: grid;
+    grid-template-columns: auto auto auto;
+}
+
+.DoctorAppContents input[type="checkbox"]:checked + label + .medCardExpand {
+    max-height: 400px;
+    padding: 10px 10px 20px;
+}
+
+.DoctorAppContents input[type="checkbox"]:checked + label::before{
+    content: '-';
+}
+
+.medCardExpand h3{
+    display: inline-block;font-size: 1vw;
+    font-weight: 700;
+}
+
+.ExpandCol{
+    display: grid;
+    grid-template-rows: auto auto;
+}
+
+.ExpandCol span{
+    margin-left: 5%;
+}

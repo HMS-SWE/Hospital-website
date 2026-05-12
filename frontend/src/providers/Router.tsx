@@ -8,6 +8,7 @@ import BookAppointment from "../Pages/Dashboard/BookAppointment/BookAppointment"
 import { LoginForm } from "../Components/LoginForm";
 import Register from "../Pages/Register";
 import Schedule from "../Pages/Doctor_Dashboard/Schedule/Schedule"
+import MedicalHistory from "../Pages/Doctor_Dashboard/medicalHistory/medicalHistoy"
 
 const router = createBrowserRouter([
     {
@@ -32,7 +33,8 @@ const router = createBrowserRouter([
                     children: [
                         {index: true, element: <Dashboard />},
                         {path: "appointments", element: <Appointments />},
-                        {path: "book-appointment", element: <BookAppointment /> }
+                        {path: "book-appointment", element: <BookAppointment /> },
+                        {path: "medication", element: <MedicalHistory />}
                     ]
                 },
                 {
