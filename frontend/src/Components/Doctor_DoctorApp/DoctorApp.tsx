@@ -22,6 +22,13 @@ function DoctorApp({ id, patientName, time, status, type }: DoctorAppProps){
             }
         });
     }
+     function handleUploadDiagnosis() {
+        navigate(`/doctor/diagnose/${id}`, {
+            state: {
+                patientName: patientName
+            }
+        });
+    }
     return(
         <>
         <div className={Styles.DoctorAppContainer}>
@@ -50,7 +57,7 @@ function DoctorApp({ id, patientName, time, status, type }: DoctorAppProps){
                         <label htmlFor={id}>Examine</label>
                         <div className={Styles.content}>
                             <button className={Styles.AppViewButton} onClick={handleViewMedicalHistory}>View Medical History</button>
-                            <button className={Styles.AppUploadButton}>Upload Diagnosis</button>
+                            <button className={Styles.AppUploadButton} onClick={handleUploadDiagnosis}>Upload Diagnosis</button>
                             <button className={Styles.AppDShowButton}>Didn't Show up</button>
                         </div>
                     </li>

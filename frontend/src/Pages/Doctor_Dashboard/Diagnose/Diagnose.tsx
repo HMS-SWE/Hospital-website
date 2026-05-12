@@ -1,16 +1,22 @@
 import { useState, useEffect } from "react";
-import Styles from './Diagnose.module.css'
+import Styles from './Diagnose.module.css';
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-type DiagnoseProps = {
-    patientName: string;
-}
 
-function Diagnose({patientName}:DiagnoseProps){
+function Diagnose(){
+
+    const { visitId } = useParams();
     const [diagnosis, setDiagnosis] = useState("");
     const [medications, setMedications] = useState("");
     const [treatmentPlan, setTreatmentPlan] = useState("");
+    const [prescription, setPrescription] = useState("");
     const [showLeaveModal, setShowLeaveModal] = useState(false);
     const [pendingNavigation, setPendingNavigation] = useState<(() => void) | null>(null);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const patientName = location.state?.patientName || "Unknown Patient";
 
     const [errors, setErrors] = useState({
         diagnosis: "",
@@ -21,7 +27,8 @@ function Diagnose({patientName}:DiagnoseProps){
     const hasUnsavedChanges =
     diagnosis.trim() !== "" ||
     medications.trim() !== "" ||
-    treatmentPlan.trim() !== "";
+    treatmentPlan.trim() !== ""||
+    prescription.trim() !== "";
 
     useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -65,13 +72,50 @@ function Diagnose({patientName}:DiagnoseProps){
         return isValid;
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        
         if (!validate()) {
             return;
         }
-        alert("Diagnosis Saved!");
+        if (!visitId) {
+            alert("Missing visit ID");
+            navigate(-1);
+            return;
+        }
+        const payload = {
+            diagnosis: diagnosis,
+            treatmentPlan: treatmentPlan,
+            prescription: prescription,
+            medications: medications
+        };
+        try {
+            // Target the DiagnosisController
+            const response = await fetch(`http://localhost:8080/api/visits/${visitId}/diagnosis`, { 
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // Authorization header for JwtAuthenticationFilter
+                    "Authorization": `Bearer ${localStorage.getItem("token")}` 
+                },
+                body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+                alert("Diagnosis Saved!");
+                // Clear state so hasUnsavedChanges becomes false
+                setDiagnosis("");
+                setMedications("");
+                setTreatmentPlan("");
+                setPrescription("");
+                navigate(-1);
+            } else {
+                const errorData = await response.json();
+                alert(`Error: ${errorData.message || "Validation failed"}`);
+            }
+        } catch (err) {
+            alert("Could not connect to the server.");
+        }
     };
 
     const handleLeave = () => {
