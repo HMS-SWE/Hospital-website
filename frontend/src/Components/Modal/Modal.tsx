@@ -26,7 +26,8 @@ function Modal({ doctorId, doctorName }: ModalProps) {
     const [error, setError] = useState('');
 
     const toggleModal = () => {
-        setModal(!modal);
+        const opening = !modal;
+        setModal(opening);
         setStep(1); 
         setDays([]);
         setSlots([]);
@@ -34,39 +35,50 @@ function Modal({ doctorId, doctorName }: ModalProps) {
         setSelectedSlotId(null);
         setSelectedSlotLabel('');
         setError('');
+        if (opening) {
+            setLoadingDays(true);
+            setLoadingSlots(true);
+        }
     };
 
     useEffect(() => {
         if (!modal) return;
-        setLoadingDays(true);
-        setError('');
+        let cancelled = false;
         getAvailableDays(doctorId)
             .then((data) => {
+                if (cancelled) return;
                 setDays(data);
                 if (data.length > 0) {
                     setSelectedDate(data[0].date);
                 }
             })
             .catch((err) => {
+                if (cancelled) return;
                 setError(err instanceof Error ? err.message : 'Failed to load available days');
             })
-            .finally(() => setLoadingDays(false));
+            .finally(() => {
+                if (!cancelled) setLoadingDays(false);
+            });
+        return () => { cancelled = true; };
     }, [modal, doctorId]);
 
     useEffect(() => {
         if (!selectedDate || !modal) return;
-        setLoadingSlots(true);
+        let cancelled = false;
         setSlots([]);
-        setSelectedSlotId(null);
-        setSelectedSlotLabel('');
         getAvailableSlots(doctorId, selectedDate)
             .then((data) => {
+                if (cancelled) return;
                 setSlots(data);
             })
             .catch((err) => {
+                if (cancelled) return;
                 setError(err instanceof Error ? err.message : 'Failed to load available slots');
             })
-            .finally(() => setLoadingSlots(false));
+            .finally(() => {
+                if (!cancelled) setLoadingSlots(false);
+            });
+        return () => { cancelled = true; };
     }, [selectedDate, doctorId, modal]);
 
     const formatTime = (time: string) => {

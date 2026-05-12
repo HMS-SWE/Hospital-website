@@ -26,7 +26,18 @@ function Appointments(){
     };
 
     useEffect(() => {
-        fetchAppointments();
+        let cancelled = false;
+        getMyAppointments()
+            .then((data) => {
+                if (!cancelled) setAppointments(data);
+            })
+            .catch((err) => {
+                if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load appointments');
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+        return () => { cancelled = true; };
     }, []);
 
     return(

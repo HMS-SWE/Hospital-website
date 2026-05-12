@@ -17,15 +17,18 @@ function Dashboard() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    setLoading(true);
+    let cancelled = false;
     getMyAppointments()
       .then((data) => {
-        setAppointments(data);
+        if (!cancelled) setAppointments(data);
       })
       .catch((err) => {
-        setError(err instanceof Error ? err.message : 'Failed to load appointments');
+        if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load appointments');
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const upcomingAppointments = appointments.filter(

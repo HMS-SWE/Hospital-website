@@ -29,7 +29,18 @@ function BookAppointment(){
     };
 
     useEffect(() => {
-        fetchDoctors('');
+        let cancelled = false;
+        searchDoctors('')
+            .then((data) => {
+                if (!cancelled) setDoctors(data);
+            })
+            .catch((err) => {
+                if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to search doctors');
+            })
+            .finally(() => {
+                if (!cancelled) setLoading(false);
+            });
+        return () => { cancelled = true; };
     }, []);
 
     const handleSearchChange = (value: string) => {
