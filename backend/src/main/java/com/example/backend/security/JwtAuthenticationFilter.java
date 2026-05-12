@@ -59,10 +59,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                         Set.of(Role.ADMIN, Role.DOCTOR)),
                         new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),
                                         Set.of(Role.ADMIN, Role.DOCTOR)),
+
                         new RouteRoleRule(
                                         new AntPathRequestMatcher("/api/appointments/*/status",
                                                         HttpMethod.PATCH.name()),
-                                        Set.of(Role.ADMIN, Role.DOCTOR)));
+                                        Set.of(Role.ADMIN, Role.DOCTOR)),
+                        new RouteRoleRule(new AntPathRequestMatcher("/api/visits/**"),
+                                        Set.of(Role.DOCTOR)));
 
         // ── Sensitive — DB is loaded to check password-change invalidation ────────
         private static final List<RequestMatcher> SENSITIVE_ROUTES = List.of(
