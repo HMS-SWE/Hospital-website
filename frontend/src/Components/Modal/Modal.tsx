@@ -65,7 +65,6 @@ function Modal({ doctorId, doctorName }: ModalProps) {
     useEffect(() => {
         if (!selectedDate || !modal) return;
         let cancelled = false;
-        setSlots([]);
         getAvailableSlots(doctorId, selectedDate)
             .then((data) => {
                 if (cancelled) return;
