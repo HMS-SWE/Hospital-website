@@ -2,38 +2,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faFileMedical, faPills, faClock } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import Styles from './Dashboard.module.css';
-import { useState } from 'react';
-
-const appointments = [
-  {
-    doctor: 'Dr. Sarah Johnson',
-    specialty: 'Cardiology',
-    date: '2026-04-28',
-    time: '10:00 AM',
-    status: 'confirmed',
-  },
-  {
-    doctor: 'Dr. Michael Chen',
-    specialty: 'General Medicine',
-    date: '2026-05-05',
-    time: '2:30 PM',
-    status: 'pending',
-  },
-];
-
-
-const medications = [
-  {
-    name: 'Lisinopril 10mg',
-    frequency: 'Once daily',
-    since: '2026-03-01',
-  },
-  {
-    name: 'Vitamin D',
-    frequency: 'Once daily',
-    since: '2026-02-15',
-  },
-];
+import { useState, useEffect } from 'react';
+import { getMyAppointments } from '../../../Components/api';
+import type { AppointmentResponse } from '../../../Components/api';
 
 function Dashboard() {
   const [name] = useState(() => {
@@ -41,8 +12,41 @@ function Dashboard() {
     return user.fullName || user.name || user.userName || "User";
   });
 
+  const [appointments, setAppointments] = useState<AppointmentResponse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  
+  useEffect(() => {
+    setLoading(true);
+    getMyAppointments()
+      .then((data) => {
+        setAppointments(data);
+      })
+      .catch((err) => {
+        setError(err instanceof Error ? err.message : 'Failed to load appointments');
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const upcomingAppointments = appointments.filter(
+    (a) => a.status !== 'CANCELLED'
+  );
+
+  const sortedUpcoming = [...upcomingAppointments].sort((a, b) => {
+    const dateCompare = a.date.localeCompare(b.date);
+    if (dateCompare !== 0) return dateCompare;
+    return a.startTime.localeCompare(b.startTime);
+  });
+
+  const nextAppointment = sortedUpcoming[0];
+
+  const formatTime = (time: string) => {
+    const [hours, minutes] = time.split(':').map(Number);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const displayHour = hours % 12 || 12;
+    return `${displayHour}:${String(minutes).padStart(2, '0')} ${ampm}`;
+  };
+
   return (
     <div className={Styles.dashboardPage}>
       <header className={Styles.pageHeader}>
@@ -64,8 +68,10 @@ function Dashboard() {
             </span>
             <span className={Styles.statLabel}>Upcoming Appointments</span>
           </div>
-          <div className={Styles.statValue}>2</div>
-          <div className={Styles.statMeta}>Next visit: 28 Apr 2026</div>
+          <div className={Styles.statValue}>{loading ? '...' : upcomingAppointments.length}</div>
+          <div className={Styles.statMeta}>
+            {nextAppointment ? `Next visit: ${nextAppointment.date}` : 'No upcoming visits'}
+          </div>
         </article>
 
         <article className={Styles.statCard}>
@@ -75,8 +81,8 @@ function Dashboard() {
             </span>
             <span className={Styles.statLabel}>Active Medications</span>
           </div>
-          <div className={Styles.statValue}>2</div>
-          <div className={Styles.statMeta}>Last updated today</div>
+          <div className={Styles.statValue}>—</div>
+          <div className={Styles.statMeta}>No data available</div>
         </article>
 
         <article className={Styles.statCard}>
@@ -86,8 +92,8 @@ function Dashboard() {
             </span>
             <span className={Styles.statLabel}>Medical Records</span>
           </div>
-          <div className={Styles.statValue}>8</div>
-          <div className={Styles.statMeta}>All records are current</div>
+          <div className={Styles.statValue}>—</div>
+          <div className={Styles.statMeta}>No data available</div>
         </article>
       </section>
 
@@ -102,15 +108,21 @@ function Dashboard() {
           </Link>
         </div>
 
+        {loading && <p style={{ padding: '16px' }}>Loading appointments...</p>}
+        {error && <p style={{ padding: '16px', color: '#c00' }}>{error}</p>}
+
         <div className={Styles.appointmentList}>
-          {appointments.map((appointment) => (
-            <div key={appointment.doctor + appointment.date} className={Styles.appointmentItem}>
+          {!loading && sortedUpcoming.length === 0 && !error && (
+            <p style={{ padding: '16px', color: '#888' }}>No upcoming appointments. <Link to="/dashboard/book-appointment">Book one now!</Link></p>
+          )}
+          {sortedUpcoming.slice(0, 3).map((appointment) => (
+            <div key={appointment.appointmentId} className={Styles.appointmentItem}>
               <div className={Styles.appointmentRow}>
                 <div>
-                  <h3>{appointment.doctor}</h3>
-                  <p>{appointment.specialty}</p>
+                  <h3>{appointment.doctorName}</h3>
+                  <p>{appointment.examinationPrice != null ? `${appointment.examinationPrice} EGP` : ''}</p>
                 </div>
-                <span className={`${Styles.statusBadge} ${appointment.status === 'confirmed' ? Styles.confirmed : Styles.pending}`}>
+                <span className={`${Styles.statusBadge} ${appointment.status === 'CONFIRMED' ? Styles.confirmed : Styles.pending}`}>
                   {appointment.status}
                 </span>
               </div>
@@ -121,31 +133,9 @@ function Dashboard() {
                 </div>
                 <div className={Styles.detailItem}>
                   <FontAwesomeIcon icon={faClock} />
-                  <span>{appointment.time}</span>
+                  <span>{formatTime(appointment.startTime)} - {formatTime(appointment.endTime)}</span>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className={Styles.section}>
-        <div className={Styles.sectionHeader}>
-          <div>
-            <h2>Active Medications</h2>
-            <p className={Styles.sectionSubtitle}>Current prescriptions and dosing schedule.</p>
-          </div>
-          <span className={Styles.sectionTag}>Since 2026</span>
-        </div>
-
-        <div className={Styles.medicationList}>
-          {medications.map((medication) => (
-            <div key={medication.name} className={Styles.medicationCard}>
-              <div>
-                <h3>{medication.name}</h3>
-                <p>{medication.frequency}</p>
-              </div>
-              <div className={Styles.medicationSince}>Since {medication.since}</div>
             </div>
           ))}
         </div>
