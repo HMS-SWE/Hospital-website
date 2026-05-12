@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new RouteRoleRule(new AntPathRequestMatcher("/api/specializations/**"),
                                         Set.of(Role.ADMIN)),
                         new RouteRoleRule(new AntPathRequestMatcher("/api/doctors/**"),
-                                        Set.of(Role.ADMIN, Role.DOCTOR)),
+                                        Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
                         new RouteRoleRule(new AntPathRequestMatcher("/api/patients/**"),
                                         Set.of(Role.ADMIN, Role.PATIENT)),
                         new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/**"),
@@ -58,7 +58,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new RouteRoleRule(new AntPathRequestMatcher("/api/appointments/doctor/**"),
                                         Set.of(Role.ADMIN, Role.DOCTOR)),
                         new RouteRoleRule(new AntPathRequestMatcher("/api/schedules/**"),
-                                        Set.of(Role.ADMIN, Role.DOCTOR)),
+                                        Set.of(Role.ADMIN, Role.DOCTOR, Role.PATIENT)),
                         new RouteRoleRule(
                                         new AntPathRequestMatcher("/api/appointments/*/status",
                                                         HttpMethod.PATCH.name()),

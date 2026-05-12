@@ -12,7 +12,7 @@ const OAuthCallback = () => {
     const image = params.get("image");
 
     if (token) {
-      localStorage.setItem("jwt", token);
+      localStorage.setItem("token", token);
       const user = {
         name,
         image
