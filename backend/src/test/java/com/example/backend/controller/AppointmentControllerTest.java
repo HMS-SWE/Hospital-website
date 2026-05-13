@@ -44,6 +44,8 @@ class AppointmentControllerTest {
         private com.example.backend.service.JwtService jwtService;
         @MockitoBean
         private com.example.backend.repository.UserRepository userRepository;
+        @MockitoBean
+        private com.example.backend.service.MedicalRecordService medicalRecordService;
 
         private ObjectMapper objectMapper;
         private static final String VALID_TOKEN = "Bearer fake.jwt.token";

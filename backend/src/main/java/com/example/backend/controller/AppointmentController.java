@@ -8,6 +8,7 @@ import com.example.backend.service.AppointmentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
+import com.example.backend.service.MedicalRecordService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.example.backend.dto.CancelRequest;
 import com.example.backend.dto.EditRequest;
+import com.example.backend.dto.VisitResponse;
 import com.example.backend.dto.appointment.DoctorAppointmentView;
 import com.example.backend.dto.appointment.VisitStatusUpdateRequest;
 
@@ -23,6 +25,7 @@ import com.example.backend.dto.appointment.VisitStatusUpdateRequest;
 @RequiredArgsConstructor
 public class AppointmentController {
     private final AppointmentService appointmentService;
+    private final MedicalRecordService medicalRecordService;
 
     @PostMapping("/book")
     public ResponseEntity<?> bookAppointment(@RequestBody BookingRequest request,
@@ -100,12 +103,12 @@ public class AppointmentController {
                 AuthenticatedUserRequestAttributes.USER_ID);
         Role authenticatedRole = (Role) httpRequest.getAttribute(
                 AuthenticatedUserRequestAttributes.USER_ROLE);
- 
+
         if (authenticatedUserId == null || authenticatedRole == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body("{\"message\":\"Unauthorized\"}");
         }
- 
+
         try {
             appointmentService.updateVisitStatus(id, request.getStatus(), authenticatedUserId);
             return ResponseEntity.ok().build();
@@ -114,6 +117,25 @@ public class AppointmentController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                         .body("{\"message\":\"Forbidden\"}");
             }
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/visit")
+    public ResponseEntity<?> getVisit(@PathVariable Long id,
+            HttpServletRequest httpRequest) {
+        Role authenticatedRole = (Role) httpRequest.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ROLE);
+
+        if (authenticatedRole == Role.PATIENT) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("{\"message\":\"Forbidden\"}");
+        }
+
+        try {
+            VisitResponse response = medicalRecordService.getVisitByAppointmentId(id);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

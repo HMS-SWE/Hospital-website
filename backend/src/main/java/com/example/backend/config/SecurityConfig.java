@@ -67,11 +67,11 @@ public class SecurityConfig {
                                                 // Role-based access
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                                                 .requestMatchers("/api/specializations/**").hasRole("ADMIN")
-                                                .requestMatchers("/api/doctors/**").hasAnyRole("ADMIN", "DOCTOR")
+                                                .requestMatchers("/api/doctors/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                                                 .requestMatchers("/api/patients/**").hasAnyRole("ADMIN", "PATIENT")
                                                 .requestMatchers("/api/appointments/**")
                                                 .hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
-                                                .requestMatchers("/api/schedules/**").hasAnyRole("ADMIN", "DOCTOR")
+                                                .requestMatchers("/api/schedules/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                                                 .anyRequest().authenticated())
                                 .oauth2Login(oauth2 -> oauth2
                                                 .userInfoEndpoint(userInfo -> userInfo
