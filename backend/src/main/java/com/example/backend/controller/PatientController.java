@@ -102,6 +102,7 @@ public class PatientController {
                     .body("{\"message\":\"Forbidden\"}");
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
+            
         }
     }
 }
