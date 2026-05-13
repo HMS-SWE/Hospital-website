@@ -27,226 +27,237 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(SpecialtyController.class)
-@AutoConfigureMockMvc(addFilters = false)   // skip JWT filter
+@AutoConfigureMockMvc(addFilters = false) // skip JWT filter
 class SpecialtyControllerTest {
 
-    @Autowired private MockMvc mockMvc;
-    @Autowired private ObjectMapper objectMapper;
+        @Autowired
+        private MockMvc mockMvc;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @MockitoBean private SpecialtyService specialtyService;
-    @MockitoBean private com.example.backend.service.JwtService jwtService;
-    @MockitoBean private com.example.backend.repository.UserRepository userRepository;
+        @MockitoBean
+        private SpecialtyService specialtyService;
+        @MockitoBean
+        private com.example.backend.service.JwtService jwtService;
+        @MockitoBean
+        private com.example.backend.repository.UserRepository userRepository;
 
-    private SpecialtyResponse stubResponse;
+        private SpecialtyResponse stubResponse;
 
-    @BeforeEach
-    void setUp() {
-        stubResponse = SpecialtyResponse.builder()
-                .id(1L)
-                .name("Cardiology")
-                .location("Building A")
-                .doctorCount(3)
-                .build();
-    }
+        @BeforeEach
+        void setUp() {
+                stubResponse = SpecialtyResponse.builder()
+                                .id(1L)
+                                .name("Cardiology")
+                                .location("Building A")
+                                .doctorCount(3)
+                                .build();
+        }
 
-    // ── GET ALL ───────────────────────────────────────────────────────────────
+        // ── GET ALL ───────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("GET /api/specialties → 200 with list")
-    void getAll_returns200() throws Exception {
-        when(specialtyService.getAll()).thenReturn(List.of(stubResponse));
+        @Test
+        @DisplayName("GET /api/specialties → 200 with list")
+        void getAll_returns200() throws Exception {
+                when(specialtyService.getAll()).thenReturn(List.of(stubResponse));
 
-        mockMvc.perform(get("/api/specialties"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Cardiology"))
-                .andExpect(jsonPath("$[0].doctorCount").value(3));
-    }
+                mockMvc.perform(get("/api/specialties"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$[0].name").value("Cardiology"))
+                                .andExpect(jsonPath("$[0].doctorCount").value(3));
+        }
 
-    @Test
-    @DisplayName("GET /api/specialties → returns empty list when none exist")
-    void getAll_returnsEmptyList() throws Exception {
-        when(specialtyService.getAll()).thenReturn(List.of());
+        @Test
+        @DisplayName("GET /api/specialties → returns empty list when none exist")
+        void getAll_returnsEmptyList() throws Exception {
+                when(specialtyService.getAll()).thenReturn(List.of());
 
-        mockMvc.perform(get("/api/specialties"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$").isEmpty());
-    }
+                mockMvc.perform(get("/api/specialties"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$").isArray())
+                                .andExpect(jsonPath("$").isEmpty());
+        }
 
-    // ── GET ONE ───────────────────────────────────────────────────────────────
+        // ── GET ONE ───────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("GET /api/specialties/{id} → 200 when found")
-    void getById_returns200() throws Exception {
-        when(specialtyService.getById(1L)).thenReturn(stubResponse);
+        @Test
+        @DisplayName("GET /api/specialties/{id} → 200 when found")
+        void getById_returns200() throws Exception {
+                when(specialtyService.getById(1L)).thenReturn(stubResponse);
 
-        mockMvc.perform(get("/api/specialties/1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name").value("Cardiology"))
-                .andExpect(jsonPath("$.location").value("Building A"));
-    }
+                mockMvc.perform(get("/api/specialties/1"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.id").value(1))
+                                .andExpect(jsonPath("$.name").value("Cardiology"))
+                                .andExpect(jsonPath("$.location").value("Building A"));
+        }
 
-    @Test
-    @DisplayName("GET /api/specialties/{id} → 404 when not found")
-    void getById_returns404() throws Exception {
-        when(specialtyService.getById(99L))
-                .thenThrow(new ResourceNotFoundException("Specialty not found with id: 99"));
+        @Test
+        @DisplayName("GET /api/specialties/{id} → 404 when not found")
+        void getById_returns404() throws Exception {
+                when(specialtyService.getById(99L))
+                                .thenThrow(new ResourceNotFoundException("Specialty not found with id: 99"));
 
-        mockMvc.perform(get("/api/specialties/99"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.status").value(404))
-                .andExpect(jsonPath("$.errors[0].message")
-                        .value("Specialty not found with id: 99"));
-    }
+                mockMvc.perform(get("/api/specialties/99"))
+                                .andExpect(status().isNotFound())
+                                .andExpect(jsonPath("$.status").value(404))
+                                .andExpect(jsonPath("$.errors[0].message")
+                                                .value("Specialty not found with id: 99"));
+        }
 
-    // ── POST ──────────────────────────────────────────────────────────────────
+        // ── POST ──────────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("POST /api/specialties → 201 when valid")
-    void create_returns201() throws Exception {
-        when(specialtyService.create(any())).thenReturn(stubResponse);
+        @Test
+        @DisplayName("POST /api/specialties → 201 when valid")
+        void create_returns201() throws Exception {
+                when(specialtyService.create(any())).thenReturn(stubResponse);
 
-        mockMvc.perform(post("/api/specialties").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(validRequest()))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Cardiology"));
-    }
+                mockMvc.perform(post("/api/specialties")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(validRequest()))
+                                .andExpect(status().isCreated())
+                                .andExpect(jsonPath("$.name").value("Cardiology"));
+        }
 
-    @Test
-    @DisplayName("POST /api/specialties → 409 when name duplicate")
-    void create_returns409_whenDuplicate() throws Exception {
-        when(specialtyService.create(any()))
-                .thenThrow(new ConflictException("Specialty with name 'Cardiology' already exists"));
+        @Test
+        @DisplayName("POST /api/specialties → 409 when name duplicate")
+        void create_returns409_whenDuplicate() throws Exception {
+                when(specialtyService.create(any()))
+                                .thenThrow(new ConflictException("Specialty with name 'Cardiology' already exists"));
 
-        mockMvc.perform(post("/api/specialties").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(validRequest()))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.status").value(409))
-                .andExpect(jsonPath("$.errors[0].message")
-                        .value("Specialty with name 'Cardiology' already exists"));
-    }
+                mockMvc.perform(post("/api/specialties")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(validRequest()))
+                                .andExpect(status().isConflict())
+                                .andExpect(jsonPath("$.status").value(409))
+                                .andExpect(jsonPath("$.errors[0].message")
+                                                .value("Specialty with name 'Cardiology' already exists"));
+        }
 
-    @Test
-    @DisplayName("POST /api/specialties → 400 when name blank")
-    void create_returns400_whenNameBlank() throws Exception {
-        String invalidBody = objectMapper.writeValueAsString(
-                new SpecialtyRequest("", "Building A")
-        );
+        @Test
+        @DisplayName("POST /api/specialties → 400 when name blank")
+        void create_returns400_whenNameBlank() throws Exception {
+                String invalidBody = objectMapper.writeValueAsString(
+                                new SpecialtyRequest("", "Building A"));
 
-        mockMvc.perform(post("/api/specialties").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("name"));
-    }
+                mockMvc.perform(post("/api/specialties")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(invalidBody))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.errors[0].field").value("name"));
+        }
 
-    @Test
-    @DisplayName("POST /api/specialties → 400 when location blank")
-    void create_returns400_whenLocationBlank() throws Exception {
-        String invalidBody = objectMapper.writeValueAsString(
-                new SpecialtyRequest("Cardiology", "")
-        );
+        @Test
+        @DisplayName("POST /api/specialties → 400 when location blank")
+        void create_returns400_whenLocationBlank() throws Exception {
+                String invalidBody = objectMapper.writeValueAsString(
+                                new SpecialtyRequest("Cardiology", ""));
 
-        mockMvc.perform(post("/api/specialties").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].field").value("location"));
-    }
+                mockMvc.perform(post("/api/specialties")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(invalidBody))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.errors[0].field").value("location"));
+        }
 
-    // ── PUT ───────────────────────────────────────────────────────────────────
+        // ── PUT ───────────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("PUT /api/specialties/{id} → 200 when valid")
-    void update_returns200() throws Exception {
-        SpecialtyResponse updated = SpecialtyResponse.builder()
-                .id(1L)
-                .name("Cardiology Updated")
-                .location("Building B")
-                .doctorCount(3)
-                .build();
+        @Test
+        @DisplayName("PUT /api/specialties/{id} → 200 when valid")
+        void update_returns200() throws Exception {
+                SpecialtyResponse updated = SpecialtyResponse.builder()
+                                .id(1L)
+                                .name("Cardiology Updated")
+                                .location("Building B")
+                                .doctorCount(3)
+                                .build();
 
-        when(specialtyService.update(eq(1L), any())).thenReturn(updated);
+                when(specialtyService.update(eq(1L), any())).thenReturn(updated);
 
-        mockMvc.perform(put("/api/specialties/1").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new SpecialtyRequest("Cardiology Updated", "Building B")
-                        )))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Cardiology Updated"))
-                .andExpect(jsonPath("$.location").value("Building B"));
-    }
+                mockMvc.perform(put("/api/specialties/1")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(
+                                                new SpecialtyRequest("Cardiology Updated", "Building B"))))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.name").value("Cardiology Updated"))
+                                .andExpect(jsonPath("$.location").value("Building B"));
+        }
 
-    @Test
-    @DisplayName("PUT /api/specialties/{id} → 409 when name taken by another")
-    void update_returns409_whenNameTaken() throws Exception {
-        when(specialtyService.update(eq(1L), any()))
-                .thenThrow(new ConflictException("Specialty with name 'Neurology' already exists"));
+        @Test
+        @DisplayName("PUT /api/specialties/{id} → 409 when name taken by another")
+        void update_returns409_whenNameTaken() throws Exception {
+                when(specialtyService.update(eq(1L), any()))
+                                .thenThrow(new ConflictException("Specialty with name 'Neurology' already exists"));
 
-        mockMvc.perform(put("/api/specialties/1").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(
-                                new SpecialtyRequest("Neurology", "Building C")
-                        )))
-                .andExpect(status().isConflict());
-    }
+                mockMvc.perform(put("/api/specialties/1")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(
+                                                new SpecialtyRequest("Neurology", "Building C"))))
+                                .andExpect(status().isConflict());
+        }
 
-    @Test
-    @DisplayName("PUT /api/specialties/{id} → 404 when not found")
-    void update_returns404_whenNotFound() throws Exception {
-        when(specialtyService.update(eq(99L), any()))
-                .thenThrow(new ResourceNotFoundException("Specialty not found with id: 99"));
+        @Test
+        @DisplayName("PUT /api/specialties/{id} → 404 when not found")
+        void update_returns404_whenNotFound() throws Exception {
+                when(specialtyService.update(eq(99L), any()))
+                                .thenThrow(new ResourceNotFoundException("Specialty not found with id: 99"));
 
-        mockMvc.perform(put("/api/specialties/99").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(validRequest()))
-                .andExpect(status().isNotFound());
-    }
+                mockMvc.perform(put("/api/specialties/99")
+                                .requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(validRequest()))
+                                .andExpect(status().isNotFound());
+        }
 
-    // ── DELETE ────────────────────────────────────────────────────────────────
+        // ── DELETE ────────────────────────────────────────────────────────────────
 
-    @Test
-    @DisplayName("DELETE /api/specialties/{id} → 204 when no doctors assigned")
-    void delete_returns204() throws Exception {
-        doNothing().when(specialtyService).delete(1L);
+        @Test
+        @DisplayName("DELETE /api/specialties/{id} → 204 when no doctors assigned")
+        void delete_returns204() throws Exception {
+                doNothing().when(specialtyService).delete(1L);
 
-        mockMvc.perform(delete("/api/specialties/1").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN))
-                .andExpect(status().isNoContent());
+                mockMvc.perform(delete("/api/specialties/1").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE,
+                                Role.ADMIN))
+                                .andExpect(status().isNoContent());
 
-        verify(specialtyService).delete(1L);
-    }
+                verify(specialtyService).delete(1L);
+        }
 
-    @Test
-    @DisplayName("DELETE /api/specialties/{id} → 409 when doctors assigned")
-    void delete_returns409_whenDoctorsAssigned() throws Exception {
-        doThrow(new ConflictException("Cannot delete specialty 'Cardiology' — 3 doctor(s) are still assigned to it"))
-                .when(specialtyService).delete(1L);
+        @Test
+        @DisplayName("DELETE /api/specialties/{id} → 409 when doctors assigned")
+        void delete_returns409_whenDoctorsAssigned() throws Exception {
+                doThrow(new ConflictException(
+                                "Cannot delete specialty 'Cardiology' — 3 doctor(s) are still assigned to it"))
+                                .when(specialtyService).delete(1L);
 
-        mockMvc.perform(delete("/api/specialties/1").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.errors[0].message")
-                        .value("Cannot delete specialty 'Cardiology' — 3 doctor(s) are still assigned to it"));
-    }
+                mockMvc.perform(delete("/api/specialties/1").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE,
+                                Role.ADMIN))
+                                .andExpect(status().isConflict())
+                                .andExpect(jsonPath("$.errors[0].message")
+                                                .value("Cannot delete specialty 'Cardiology' — 3 doctor(s) are still assigned to it"));
+        }
 
-    @Test
-    @DisplayName("DELETE /api/specialties/{id} → 404 when not found")
-    void delete_returns404_whenNotFound() throws Exception {
-        doThrow(new ResourceNotFoundException("Specialty not found with id: 99"))
-                .when(specialtyService).delete(99L);
+        @Test
+        @DisplayName("DELETE /api/specialties/{id} → 404 when not found")
+        void delete_returns404_whenNotFound() throws Exception {
+                doThrow(new ResourceNotFoundException("Specialty not found with id: 99"))
+                                .when(specialtyService).delete(99L);
 
-        mockMvc.perform(delete("/api/specialties/99").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE, Role.ADMIN))
-                .andExpect(status().isNotFound());
-    }
+                mockMvc.perform(delete("/api/specialties/99").requestAttr(AuthenticatedUserRequestAttributes.USER_ROLE,
+                                Role.ADMIN))
+                                .andExpect(status().isNotFound());
+        }
 
-    // ── HELPER ────────────────────────────────────────────────────────────────
+        // ── HELPER ────────────────────────────────────────────────────────────────
 
-    private String validRequest() throws Exception {
-        return objectMapper.writeValueAsString(
-                new SpecialtyRequest("Cardiology", "Building A")
-        );
-    }
+        private String validRequest() throws Exception {
+                return objectMapper.writeValueAsString(
+                                new SpecialtyRequest("Cardiology", "Building A"));
+        }
 }
