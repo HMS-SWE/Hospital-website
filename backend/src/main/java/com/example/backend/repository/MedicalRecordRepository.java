@@ -43,4 +43,12 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, Lo
                         """)
         List<MedicalRecord> findPatientHistory(@Param("patientId") Long patientId);
 
+        @Query("""
+                            SELECT mr FROM MedicalRecord mr
+                            LEFT JOIN FETCH mr.medications
+                            WHERE mr.patient.id = :patientId
+                            ORDER BY mr.createdAt DESC
+                        """)
+        List<MedicalRecord> findLatestRecordWithMedications(@Param("patientId") Long patientId);
+
 }
