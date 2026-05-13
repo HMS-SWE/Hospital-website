@@ -116,7 +116,10 @@ public class MedicalRecordService {
                 if (!appointment.getDoctor().getId().equals(doctorId)) {
                         throw new AccessDeniedException("Only the assigned doctor may create a diagnosis record");
                 }
-
+                if (!appointmentRepository.existsByDoctorIdAndPatientId(doctorId, patientId)) {
+                        throw new AccessDeniedException(
+                                        "Only doctors assigned to this patient may create diagnosis records");
+                }
                 // Immutable — no updates allowed
                 if (medicalRecordRepository.existsByAppointmentId(request.appointmentId())) {
                         throw new RuntimeException("Diagnosis already exists for this appointment");
