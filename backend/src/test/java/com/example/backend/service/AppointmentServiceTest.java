@@ -366,4 +366,29 @@ class AppointmentServiceTest {
                                                 AppointmentStatus.COMPLETED,
                                                 99L));
         }
+
+        // ── Helpers ──────────────────────────────────────────────────────────
+
+        private void setId(BaseEntity entity, Long id) {
+                setField(entity, "id", id);
+        }
+
+        private void setField(Object target, String fieldName, Object value) {
+                try {
+                        Class<?> clazz = target.getClass();
+                        while (clazz != null) {
+                                try {
+                                        var field = clazz.getDeclaredField(fieldName);
+                                        field.setAccessible(true);
+                                        field.set(target, value);
+                                        return;
+                                } catch (NoSuchFieldException e) {
+                                        clazz = clazz.getSuperclass();
+                                }
+                        }
+                        throw new RuntimeException("Field not found: " + fieldName);
+                } catch (IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                }
+        }
 }

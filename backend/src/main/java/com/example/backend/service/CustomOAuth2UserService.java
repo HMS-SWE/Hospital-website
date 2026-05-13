@@ -55,6 +55,8 @@ public class CustomOAuth2UserService extends OidcUserService {
                         .fullName(name)
                         .userName(email.split("@")[0])
                         .password(null)
+                        .role(com.example.backend.enums.Role.PATIENT)
+                        .isActive(true)
                         .profilePicturePath(picture)
                         .build();
                 Patient saved = userRepository.save(newPatient);
