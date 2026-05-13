@@ -1,5 +1,6 @@
 package com.example.backend.controller;
 
+import com.example.backend.dto.ActiveMedicationResponse;
 import com.example.backend.dto.MedicalHistoryResponse;
 import com.example.backend.enums.Role;
 import com.example.backend.security.AuthenticatedUserRequestAttributes;
@@ -41,6 +42,32 @@ public class PatientController {
         try {
             List<MedicalHistoryResponse> history = medicalRecordService.getPatientHistory(id);
             return ResponseEntity.ok(history);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    @GetMapping("/{id}/medications/active")
+    public ResponseEntity<?> getActiveMedications(@PathVariable Long id,
+            HttpServletRequest httpRequest) {
+        Long authenticatedUserId = (Long) httpRequest.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ID);
+        Role authenticatedRole = (Role) httpRequest.getAttribute(
+                AuthenticatedUserRequestAttributes.USER_ROLE);
+
+        if (authenticatedUserId == null || authenticatedRole == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("{\"message\":\"Unauthorized\"}");
+        }
+
+        if (authenticatedRole == Role.PATIENT && !authenticatedUserId.equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("{\"message\":\"Forbidden\"}");
+        }
+
+        try {
+            List<ActiveMedicationResponse> medications = medicalRecordService
+                    .getActiveMedications(id);
+            return ResponseEntity.ok(medications);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

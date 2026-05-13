@@ -1,5 +1,6 @@
 package com.example.backend.service;
 
+import com.example.backend.dto.ActiveMedicationResponse;
 import com.example.backend.dto.MedicalHistoryResponse;
 import com.example.backend.dto.VisitResponse;
 import com.example.backend.entity.MedicalRecord;
@@ -57,6 +58,32 @@ public class MedicalRecordService {
                                                 .date(record.getCreatedAt() != null
                                                                 ? record.getCreatedAt().toLocalDate().toString()
                                                                 : null)
+                                                .build())
+                                .toList();
+        }
+
+        public List<ActiveMedicationResponse> getActiveMedications(Long patientId) {
+                List<MedicalRecord> records = medicalRecordRepository
+                                .findLatestRecordWithMedications(patientId);
+
+                if (records.isEmpty()) {
+                        return Collections.emptyList();
+                }
+
+                MedicalRecord latest = records.get(0);
+
+                if (latest.getMedications() == null || latest.getMedications().isEmpty()) {
+                        return Collections.emptyList();
+                }
+
+                return latest.getMedications().stream()
+                                .map(m -> ActiveMedicationResponse.builder()
+                                                .medicationId(m.getId())
+                                                .name(m.getName())
+                                                .diagnosisDate(latest.getCreatedAt() != null
+                                                                ? latest.getCreatedAt().toLocalDate().toString()
+                                                                : null)
+                                                .condition(latest.getDiagnosis())
                                                 .build())
                                 .toList();
         }
