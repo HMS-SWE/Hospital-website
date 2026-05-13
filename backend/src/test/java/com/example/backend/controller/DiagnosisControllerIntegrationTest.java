@@ -3,7 +3,6 @@ package com.example.backend.controller;
 import com.example.backend.dto.diagnosis.*;
 import com.example.backend.security.AuthenticatedUserRequestAttributes;
 import com.example.backend.service.DiagnosisService;
-import com.example.backend.service.JwtService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
