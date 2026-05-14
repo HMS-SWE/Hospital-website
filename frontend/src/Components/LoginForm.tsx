@@ -57,14 +57,18 @@ export function LoginForm() {
         id: profile?.id ?? 'unknown',
         role: data.role,
         email: formData.email,
-        name: profile?.fullName ?? profile?.userName ?? formData.email,
+        name: profile?.fullName ?? profile?.userName ?? formData.email
       };
       
       localStorage.setItem('user', JSON.stringify(user));
       window.dispatchEvent(new Event("authChange"));
 
       alert(`Signed in as ${data.role}`);
-      navigate('/dashboard');
+     if (data.role === 'DOCTOR') {
+        navigate('/doctor');
+      } else {
+        navigate('/dashboard');
+      }
 
     } catch (error) {
       console.error("Login failed:", error);

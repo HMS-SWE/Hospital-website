@@ -1,0 +1,209 @@
+.divider {
+    font-size: 0.8vw;
+    display: flex;
+    align-items: center;
+    opacity: 0.4;
+    margin: 2vh 0 2vh 0;
+    width: 90%;
+    justify-self: center;
+}
+
+.divider::before, .divider::after {
+  flex: 1;
+  content: '';
+  padding: 0.5px;
+  background-color: black;
+  border-radius: 10px
+}
+
+.DoctorAppContainer{
+    background-color: white;
+    display: grid;
+    grid-template-columns: auto;
+    border-radius: 10px;
+    height: 100%;
+    width: 100%;
+    justify-self: center;
+    margin-bottom: 2%;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.DoctorAppContainer h4{
+    font-size: 1.2vw;
+}
+.DoctorAppContents{
+    justify-self: center;
+    width: 90%;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+.DoctorAppContents li{
+    justify-self: start;
+    list-style: none;
+    width: 100%;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    background-color: transparent;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.DoctorAppContents li label{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 18px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.DoctorAppContents li label::before{
+    content: '+';
+    margin-right: 10px;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+
+input[type="checkbox"]{
+    display: none;
+}
+
+.DoctorAppContents .content{
+    padding: 0 10px;
+    line-height: 26px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s, padding 0.5s;
+}
+
+.DoctorAppContents input[type="checkbox"]:checked + label + .content {
+    max-height: 400px;
+    padding: 10px 10px 20px;
+}
+
+.DoctorAppContents input[type="checkbox"]:checked + label::before{
+    content: '-';
+}
+
+.AppViewButton{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid green;
+    color: green;
+    border-radius: 5px;
+    margin-right: 2%;
+}
+
+.AppViewButton:hover{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    border: 1px solid green;
+    color: white;
+    background-color: green;
+}
+
+
+
+.AppUploadButton{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid orange;
+    color: orange;
+    border-radius: 5px;
+    margin-right: 2%;
+}
+
+.AppUploadButton:hover{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    border: 1px solid orange;
+    color: white;
+    background-color: orange;
+}
+
+
+.AppDShowButton{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    height: 5vh;
+    font-size: 1vw;
+    border: 1px solid red;
+    color: red;
+    border-radius: 5px;
+    margin-right: 2%;
+}
+
+.AppDShowButton:hover{
+    cursor: pointer;
+    transition: ease;
+    transition-duration: 0.5s;
+    background-color: transparent;
+    border: 1px solid red;
+    color: white;
+    background-color: red;
+}
+
+.DocAppDet{
+    display: grid;
+    grid-template-columns: 75% 20%;
+    align-items: center;
+}
+
+.DocAppDet .Time{
+    display: grid;
+    grid-template-rows: auto auto;
+}
+.DocAppDet .AppDAT{
+    display: grid;
+    grid-template-columns: auto auto;
+    position: relative;
+    top: 20%;
+}
+.DocAppDet .Time span{
+    justify-self: end;
+}
+
+.DocAppDet .Status{
+    display: grid;
+    grid-template-columns: auto;
+    width: 60%;
+    justify-self: end;
+    border-radius: 10px;
+}
+.DocAppDet .Status span{
+    justify-self: center;
+    align-self: center;
+    border-radius: 15px;
+    top: 0%;
+}
+
+.Pending{
+    color: orange;
+    background-color: rgba(255, 238, 0, 0.5);
+}
+
+.Completed{
+    color: green;
+    background-color: rgb(0, 255, 0, 0.2);
+}
+
+.Cancelled{
+    color: red;
+    background-color: rgb(255, 0, 0, 0.2);
+}

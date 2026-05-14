@@ -1,0 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+.medHisHead{
+    display: grid;
+    grid-template-columns: 90% 10%;
+}
+
+.medHisHead button{
+    background-color: white;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    border-radius: 10px;
+    font-family: 'Open Sans', 'sans-serif';
+    cursor: pointer;
+    font-size: 1vw;
+    transition-duration: 0.5s;
+}
+
+.medHisHead button:hover{
+    background-color: black;
+    color: white;
+    transition-duration: 0.5s;
+}
+.medHisContainer{
+    background-color: #e9f5f3;
+    height: 100%;
+    display: grid;
+    grid-template-columns: auto;
+    font-family: 'Open Sans', 'sans-serif';
+}
+
+.medHisContent{
+    justify-self: center;
+    width: 90%;
+    margin-top: 3%;
+}

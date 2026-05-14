@@ -15,7 +15,7 @@ function DoctorCard({ doctor }: DoctorCardProps){
         <>
         <div className={Styles.CardBody}>
             <div className={Styles.Upper}>
-                <Doctor name={doctor.fullName} specialty={doctor.specialtyName} />
+                <Doctor name={doctor.fullName} speciality={doctor.specialtyName} />
                 <span>4.8<FontAwesomeIcon icon={faStar}></FontAwesomeIcon></span>
             </div>
             <div className={Styles.DCdivider}></div>

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.example.backend.enums.AppointmentStatus;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -69,6 +69,8 @@ public class DiagnosisService {
         record.getMedications().addAll(parseMedications(request.medications(), record));
 
         MedicalRecord saved = medicalRecordRepository.save(record);
+        Appointment savedAppointment = record.getAppointment();
+        savedAppointment.setStatus(AppointmentStatus.COMPLETED);
         return toDiagnosisResponse(saved);
     }
 
