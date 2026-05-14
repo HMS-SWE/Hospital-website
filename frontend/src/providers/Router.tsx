@@ -10,6 +10,8 @@ import Register from "../Pages/Register";
 import MedicalHistory from "../Pages/Doctor_Dashboard/medicalHistory/MedicalHistoy";
 import Schedule from "../Pages/Doctor_Dashboard/Schedule/Schedule";
 import Diagnose from "../Pages/Doctor_Dashboard/Diagnose/Diagnose";
+import PatientProfile from "../Pages/patientProfile/PatientProfile";
+import DoctorProfile from "../Pages/DoctorProfile/DoctorProfile";
 
 const router = createBrowserRouter([
     {
@@ -30,7 +32,8 @@ const router = createBrowserRouter([
                         {index: true, element: <Dashboard />},
                         {path: "appointments", element: <Appointments />},
                         {path: "book-appointment", element: <BookAppointment /> },
-                        {path: "medication", element: <MedicalHistory />}
+                        {path: "medical-history/:patientId", element: <MedicalHistory /> },
+                        {path: "patient-profile", element: <PatientProfile />}
                     ]
                 },
                 {
@@ -42,7 +45,9 @@ const router = createBrowserRouter([
                     element: <DashboardLayout />,
                     children: [
                         {index: true, element: <Schedule />},
-                        {path: "diagnose/:visitId", element: <Diagnose />}
+                        {path: "diagnose/:visitId", element: <Diagnose />},
+                        {path: "medical-history/:patientId", element: <MedicalHistory /> },
+                        {path: "doctor-profile", element: <DoctorProfile/>}
                     ]
                 }
     ]}

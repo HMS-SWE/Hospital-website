@@ -2,21 +2,20 @@
 import MedicationCard from '../../../Components/MedicationCard/MedicationCard';
 import Styles from './MedicalHistory.module.css'
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 type MedicalRecord = {
-    id: number;
-    medicationName: string;
-    diagnosis: string;
-    medication: string;
+    recordId: number;
+    condition: string;
     treatmentPlan: string;
+    medications: string[];
+    date: string;
 };
 
 function MedicalHistory(){
-    const location = useLocation();
     const navigate = useNavigate();
-    const {patientId, patientName} = location.state || {};
+    const { patientId } = useParams();
     const [records, setRecords] = useState<MedicalRecord[]>([]);
     useEffect(() => {
 
@@ -24,7 +23,7 @@ function MedicalHistory(){
 
             try{
                 const response = await fetch(
-                    `http://localhost:8080/api/patients/${patientId}/medical-history`,
+                    `http://localhost:8080/api/patients/${patientId}/history`,
                     {
                         headers:{
                             'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -37,7 +36,6 @@ function MedicalHistory(){
                 }
 
                 const data = await response.json();
-
                 setRecords(data);
 
             }catch(error){
@@ -58,7 +56,7 @@ function MedicalHistory(){
             <div className={Styles.medHisContainer}>
                 <div className={Styles.medHisContent}>
                     <div className={Styles.medHisHead}>
-                        <h1>Medical Records for, {patientName}</h1>
+                        <h1>Medical Records</h1>
                         <button className={Styles.backButton}
                                 onClick={() => navigate(-1)}>Back</button>
                     </div>
@@ -66,10 +64,12 @@ function MedicalHistory(){
                     {
                         records.map((record) =>(
                             <MedicationCard 
-                                key={record.id}
-                                diagnosis={record.diagnosis}
-                                medication={record.medication}
+                                key={record.recordId}
+                                recordId={record.recordId}
+                                diagnosis={record.condition}
+                                medications={record.medications}
                                 treatmentPlan={record.treatmentPlan}
+                                date={record.date}
                             />
                         ))
                     }

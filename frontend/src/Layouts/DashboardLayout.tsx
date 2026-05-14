@@ -17,8 +17,7 @@ function DashboardLayout() {
     };
 
     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    const role = user.role as UserRole;
-
+    const role = user.role?.toLowerCase() as UserRole;
     const menu = SidebarLinks[role] ?? [];
 
     return (

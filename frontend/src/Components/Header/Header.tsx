@@ -2,8 +2,10 @@ import { faHospital } from "@fortawesome/free-solid-svg-icons";
 import SocialLink from "../SocialLink/SocialLink";
 import Styles from './Header.module.css';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
+    const navigate = useNavigate();
     const [Image, setImage] = useState(() => {
         const user = JSON.parse(localStorage.getItem("user") || "{}");
         return user.image || "";
@@ -47,7 +49,7 @@ function Header() {
                 <div className={Styles.headerButtons}>
                     
                     {isLoggedIn && (
-                        <button className={Styles.headerLink}> 
+                        <button className={Styles.headerLink} onClick={() => navigate("doctor/doctor-profile")} > 
                             {Image && <img className={Styles.HeaderImg} src={Image} alt="profile pic" />} 
                             Profile 
                         </button>

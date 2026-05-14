@@ -15,12 +15,7 @@ type DoctorAppProps = {
 function DoctorApp({ id, patientName, time, status, type }: DoctorAppProps){
     const navigate = useNavigate();
     function handleViewMedicalHistory(){
-        navigate('/doctor/medical-history', {
-            state: {
-                patientId: id,
-                patientName: patientName
-            }
-        });
+        navigate(`/doctor/medical-history/${id}`);
     }
      function handleUploadDiagnosis() {
         navigate(`/doctor/diagnose/${id}`, {
@@ -33,7 +28,7 @@ function DoctorApp({ id, patientName, time, status, type }: DoctorAppProps){
         <>
         <div className={Styles.DoctorAppContainer}>
                 <div className={Styles.DocAppDet}>
-                    <Doctor name={patientName} type={type}/>
+                    <Doctor name={patientName} speciality={type}/>
                     <div className={Styles.AppDAT}>
                         <div className={Styles.Time}>
                         <span>Time</span>

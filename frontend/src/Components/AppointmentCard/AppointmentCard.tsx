@@ -83,7 +83,7 @@ function AppointmentCard({ appointment, onUpdated }: AppointmentCardProps){
             <div className={Styles.appCardContents}>
                     <div className={Styles.appHead}>
                         <div className={Styles.appDoctor}>
-                            <Doctor name={appointment.doctorName} specialty="" />
+                            <Doctor name={appointment.doctorName} speciality="" />
                         </div>
                         <div className={Styles.appstatus}>
                             <label className={statusClass}>{appointment.status}</label>

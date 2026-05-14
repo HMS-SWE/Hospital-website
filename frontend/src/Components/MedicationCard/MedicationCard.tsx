@@ -3,12 +3,15 @@ import Styles from './MedicationCard.module.css'
 
 
 type MedicationCardProps = {
+    recordId: number;
     diagnosis: string;
-    medication: string;
+    medications: string[];
     treatmentPlan: string;
+    date: string;
 }
 
-function MedicationCard({diagnosis, medication, treatmentPlan}: MedicationCardProps){
+function MedicationCard({recordId, diagnosis, medications, treatmentPlan, date}: MedicationCardProps){
+    const safeId = `expand-${recordId}`;
     return(
         <>
             <div className={Styles.cardContainer}>
@@ -17,7 +20,7 @@ function MedicationCard({diagnosis, medication, treatmentPlan}: MedicationCardPr
                     <div className={Styles.medCardUpper}>
                         <Doctor />
                         <div className={Styles.medCardDetails}>
-                            <span>09/05/2026</span>
+                            <span>{new Date(date).toLocaleDateString()}</span>
                             <span>Diagnosis: {diagnosis}</span>
                         </div>
                     </div>
@@ -27,8 +30,8 @@ function MedicationCard({diagnosis, medication, treatmentPlan}: MedicationCardPr
                     <div className={Styles.medCardLower}>
                         <ul className={Styles.DoctorAppContents}>
                             <li>
-                                <input type="checkbox" name='accordion' id={diagnosis}></input>
-                                <label htmlFor={diagnosis}>Expand</label>
+                                <input type="checkbox" id={safeId} aria-controls={`panel-${recordId}`}></input>
+                                <label htmlFor={safeId}>Expand</label>
                                 <div className={Styles.medCardExpand}>
                                         <div className={Styles.ExpandCol}>   
                                                 <h3>Diagnosis: </h3> 
@@ -36,7 +39,11 @@ function MedicationCard({diagnosis, medication, treatmentPlan}: MedicationCardPr
                                         </div>
                                         <div className={Styles.ExpandCol}>   
                                                 <h3>Medications:</h3>
-                                                    <span>{medication}</span>
+                                                    <ul>
+                                                        {medications.map((m, i) => (
+                                                            <li key={i}>{m}</li>
+                                                        ))}
+                                                    </ul>
                                         </div>
                                         <div className={Styles.ExpandCol}>   
                                                 <h3>Treatement Plan:</h3>
