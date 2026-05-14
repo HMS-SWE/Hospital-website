@@ -65,6 +65,14 @@ public class GlobalExceptionHandler {
         );
     }
 
+    // ← access denied (wrong role, not assigned doctor, etc.) → 403
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<Map<String, String>> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(Map.of("message", ex.getMessage()));
+    }
+
     // ← username taken, wrong password, etc. → 400
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ValidationErrorResponse> handleRuntimeException(

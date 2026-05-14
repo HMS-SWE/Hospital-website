@@ -2,9 +2,9 @@
 import Styles from './Doctor.module.css'
 type doctorProps = {
     name?: string;
-    type?: string;
+    speciality?: string;
 }
-function Doctor({name, type}: doctorProps){
+function Doctor({name, speciality}: doctorProps){
     return(
         <>
         <div className={Styles.appDoctor}>
@@ -13,7 +13,7 @@ function Doctor({name, type}: doctorProps){
             </div>
             <div className={Styles.DoctorDetails}>
                 <h4>{name}</h4>
-                <span>{type}</span>
+                <span>{speciality}</span>
             </div>
         </div>
         </>

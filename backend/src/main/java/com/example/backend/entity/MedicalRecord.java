@@ -3,6 +3,8 @@ package com.example.backend.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "medical_records", indexes = {
@@ -18,20 +20,25 @@ import java.time.LocalDate;
 public class MedicalRecord extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "patient_id", nullable = false, foreignKey = @ForeignKey(name = "fk_mr_patient"))
+    @JoinColumn(name = "patient_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_mr_patient"))
     private Patient patient;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "doctor_id", nullable = false, foreignKey = @ForeignKey(name = "fk_mr_doctor"))
+    @JoinColumn(name = "doctor_id", nullable = false,
+            foreignKey = @ForeignKey(name = "fk_mr_doctor"))
     private Doctor doctor;
 
-    // Nullable — a record can be created independently of an appointment
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "appointment_id", foreignKey = @ForeignKey(name = "fk_mr_appointment"))
+    @JoinColumn(name = "appointment_id",
+            foreignKey = @ForeignKey(name = "fk_mr_appointment"))
     private Appointment appointment;
 
     @Column(length = 1000)
     private String diagnosis;
+
+    @Column(name = "treatment_plan", length = 1000)
+    private String treatmentPlan;
 
     @Column(length = 1000)
     private String prescription;
@@ -44,4 +51,9 @@ public class MedicalRecord extends BaseEntity {
 
     @Column(name = "start_date")
     private LocalDate startDate;
+
+    @OneToMany(mappedBy = "medicalRecord", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Medication> medications = new ArrayList<>();
 }

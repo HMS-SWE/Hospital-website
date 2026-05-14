@@ -3,9 +3,9 @@ package com.example.backend.controller;
 import com.example.backend.dto.BookingRequest;
 import com.example.backend.dto.CancelRequest;
 import com.example.backend.dto.EditRequest;
+import com.example.backend.dto.VisitResponse;
 import com.example.backend.dto.appointment.AppointmentResponse;
 import com.example.backend.dto.appointment.DoctorAppointmentView;
-import com.example.backend.dto.appointment.VisitStatusUpdateRequest;
 import com.example.backend.entity.Appointment;
 import com.example.backend.enums.AppointmentStatus;
 import com.example.backend.enums.Role;
@@ -15,14 +15,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -44,6 +46,8 @@ class AppointmentControllerTest {
         private com.example.backend.service.JwtService jwtService;
         @MockitoBean
         private com.example.backend.repository.UserRepository userRepository;
+        @MockitoBean
+        private com.example.backend.service.MedicalRecordService medicalRecordService;
 
         private ObjectMapper objectMapper;
         private static final String VALID_TOKEN = "Bearer fake.jwt.token";
@@ -394,5 +398,61 @@ class AppointmentControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content("{\"status\":\"COMPLETED\"}"))
                                 .andExpect(status().isUnauthorized());
+        }
+        // ── GET /{id}/visit ───────────────────────────────────────────────────
+
+        @Nested
+        @DisplayName("GET /api/appointments/{id}/visit")
+        class GetVisit {
+
+                @Test
+                @WithMockUser(roles = "DOCTOR")
+                @DisplayName("200 — doctor can view visit")
+                void doctorCanViewVisit() throws Exception {
+                        VisitResponse visit = VisitResponse.builder()
+                                        .appointmentId(1L).patientId(20L)
+                                        .patientFullName("Jane Doe")
+                                        .appointmentDate("2025-06-01").appointmentTime("09:00")
+                                        .diagnosis("Flu").treatmentPlan("Rest")
+                                        .medications(List.of("Paracetamol"))
+                                        .build();
+                        when(medicalRecordService.getVisitByAppointmentId(1L)).thenReturn(visit);
+
+                        mockMvc.perform(get("/api/appointments/1/visit")
+                                        .with(withAttributes(10L, Role.DOCTOR)))
+                                        .andExpect(status().isOk())
+                                        .andExpect(jsonPath("$.patientFullName").value("Jane Doe"));
+                }
+
+                @Test
+                @WithMockUser(roles = "PATIENT")
+                @DisplayName("403 — patient role is rejected")
+                void patientRoleRejected() throws Exception {
+                        mockMvc.perform(get("/api/appointments/1/visit")
+                                        .with(withAttributes(1L, Role.PATIENT)))
+                                        .andExpect(status().isForbidden());
+                }
+
+                @Test
+                @WithMockUser(roles = "DOCTOR")
+                @DisplayName("400 — service throws RuntimeException")
+                void serviceThrows() throws Exception {
+                        when(medicalRecordService.getVisitByAppointmentId(1L))
+                                        .thenThrow(new RuntimeException("Visit not found"));
+
+                        mockMvc.perform(get("/api/appointments/1/visit")
+                                        .with(withAttributes(10L, Role.DOCTOR)))
+                                        .andExpect(status().isBadRequest());
+                }
+        }
+
+        // ── Helper ───────────────────────────────────────────────────────────
+
+        private RequestPostProcessor withAttributes(Long userId, Role role) {
+                return request -> {
+                        request.setAttribute(AuthenticatedUserRequestAttributes.USER_ID, userId);
+                        request.setAttribute(AuthenticatedUserRequestAttributes.USER_ROLE, role);
+                        return request;
+                };
         }
 }

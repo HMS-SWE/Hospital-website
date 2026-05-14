@@ -57,7 +57,7 @@ export function LoginForm() {
         id: profile?.id ?? 'unknown',
         role: data.role,
         email: formData.email,
-        name: profile?.fullName ?? profile?.userName ?? formData.email,
+        name: profile?.fullName ?? profile?.userName ?? formData.email
       };
       
       localStorage.setItem('user', JSON.stringify(user));
