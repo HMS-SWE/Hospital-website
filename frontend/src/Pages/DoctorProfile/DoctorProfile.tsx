@@ -77,7 +77,7 @@ function DoctorProfile(){
 
       if (!response.ok) throw new Error('Image upload failed');
 
-    } catch (err) {
+    } catch {
       setError('Failed to upload image');
     }
   };

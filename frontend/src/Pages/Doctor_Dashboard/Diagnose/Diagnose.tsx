@@ -113,7 +113,7 @@ function Diagnose(){
                 const errorData = await response.json();
                 alert(`Error: ${errorData.message || "Validation failed"}`);
             }
-        } catch (err) {
+        } catch{
             alert("Could not connect to the server.");
         }
     };

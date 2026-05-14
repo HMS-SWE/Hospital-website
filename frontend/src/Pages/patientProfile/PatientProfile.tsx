@@ -1,9 +1,19 @@
 import { useEffect,useState } from 'react';
 import Input from '../../Components/Input/input' 
 import Styles from './PatientProfile.module.css'
+
+type PatientProfileData = {
+    firstName: string;
+    middleName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    nationalId: string;
+    dateOfBirth: string;
+};
+
 function PatientProfile(){
-    const [profile,setProfile] = useState<any>(null);
-    const today = new Date().toISOString().split("T")[0];
+    const [profile, setProfile] = useState<PatientProfileData | null>(null);    const today = new Date().toISOString().split("T")[0];
     const [showPassword, setShowPassword] = useState(false);
     const [form, setForm]= useState({
         firstName: "",
@@ -45,23 +55,19 @@ function PatientProfile(){
         .then(data => {
             console.log("PROFILE DATA:", data);
             setProfile(data);
+            setForm({
+                firstName: data.firstName || "",
+                middleName: data.middleName || "",
+                lastName: data.lastName || "",
+                email: data.email || "",
+                phone: data.phone || "",
+                nationalId: data.nationalId || "",
+                dateOfBirth: data.dateOfBirth || "",
+            });
         })
-        .catch(err => console.error("FETCH ERROR:", err));
+        .catch((error:unknown) => console.error("FETCH ERROR:", error));
     }, []);
-    useEffect(() => {
-        if (!profile) return;
-
-        setForm({
-            firstName: profile.firstName || "",
-            middleName: profile.middleName || "",
-            lastName: profile.lastName || "",
-            email: profile.email || "",
-            phone: profile.phone || "",
-            nationalId: profile.nationalId || "",
-            dateOfBirth: profile.dateOfBirth || "",
-        });
-    }, [profile]);
-
+    
     const handleCancel = () => {
         if (!profile) return;
 
@@ -91,7 +97,7 @@ function PatientProfile(){
                 console.log("Updated:", data);
                 setProfile(data);
             })
-            .catch(err => console.error(err));
+            .catch((error:unknown) => console.error(error));
     };
 
     return(
@@ -110,7 +116,7 @@ function PatientProfile(){
                                     label='First Name:'
                                     type='text'
                                     value={form.firstName}
-                                    onChange={(e: any) =>
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, firstName: e.target.value })
                                     }
                                 />
@@ -118,7 +124,7 @@ function PatientProfile(){
                                     label='Middle Name:'
                                     type='text'
                                     value={form.middleName}
-                                    onChange={(e: any) =>
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, middleName: e.target.value })
                                     }
                                 />
@@ -126,7 +132,7 @@ function PatientProfile(){
                                     label='Last Name:'
                                     type='text'
                                     value={form.lastName}
-                                    onChange={(e: any) =>
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, lastName: e.target.value })
                                     }
                                 />
@@ -137,7 +143,7 @@ function PatientProfile(){
                                        type="text"
                                        value={form.nationalId}
                                        inputProps={{ inputMode: "numeric", maxLength: 14 }}
-                                       onChange={(e: any) =>
+                                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, nationalId: e.target.value })
                                     }
                                 />
@@ -146,14 +152,14 @@ function PatientProfile(){
                                        type="date"
                                        value={form.dateOfBirth}
                                        inputProps={{ max: today }}
-                                       onChange={(e: any) =>
+                                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, dateOfBirth: e.target.value })
                                     }
                                 />
                                 <Input label="Email:"
                                        type="text"
                                        value={form.email}
-                                       onChange={(e: any) =>
+                                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, email: e.target.value })
                                     }
                                 />
@@ -161,7 +167,7 @@ function PatientProfile(){
                                 <Input label="Phone Number:"
                                        type="text"
                                        value={form.phone}
-                                       onChange={(e: any) =>
+                                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                         setForm({ ...form, phone: e.target.value })
                                     }
                                 />
@@ -201,7 +207,7 @@ function PatientProfile(){
                                 />
                             </div>
                             <div className={Styles.pButtons}>
-                                        <button className={Styles.saveButton} onClick={handleSave}>Save Changes</button>
+                                        <button type="button" className={Styles.saveButton} onClick={handleSave}>Save Changes</button>
                                         <button className={Styles.cancelButton} onClick={handleCancel}>Cancel</button>
                             </div>
                             
